@@ -7,15 +7,24 @@ import { OptionCard } from "./components/OptionCard";
 import { LessonButton } from "./components/Buttons";
 import { LessonHeader } from "./components/LessonHeader";
 import { PageTitle } from "./components/PageTitle";
-import lessonRaw from "./lessons/lesson-1.json";
+//Add your lesson stuff here
+import lesson1Raw from "./lessons/lesson-1.json";
+import lesson2Raw from "./lessons/lesson-2.json";
 import type { LessonData, LessonPage, GraphState } from "./types/lesson";
 import { playNoteSound } from "./helpers";
 
-const lessonData = lessonRaw as unknown as LessonData;
+//Add the lesson here, I think it will automatically use the correct lesson, so just use LessonData (to be properly tested)
+const lessons: Record<number, LessonData> = {
+  1: lesson1Raw as unknown as LessonData,
+  2: lesson2Raw as unknown as LessonData,
+};
 
 function App() {
   const [currentPageIndex, setCurrentPageIndex] = useState<number>(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
+
+  const [currentLessonId, setCurrentLessonId] = useState<number>(1);
+  const lessonData = lessons[currentLessonId];
 
   const currentPage: LessonPage = lessonData.pages[currentPageIndex];
   const totalPages = lessonData.pages.length;
@@ -174,9 +183,13 @@ function App() {
 
       <LessonButton
         label={currentPage.buttonLabel}
+        //OnClick changed -> need to add page that shows next lesson inbetween, will create it soon
         onClick={() => {
           if (currentPageIndex < totalPages - 1) {
             setCurrentPageIndex((prev) => prev + 1);
+          } else if (lessons[currentLessonId + 1]) {
+            setCurrentLessonId((prev) => prev + 1);
+            setCurrentPageIndex(0);
           }
         }}
       />
