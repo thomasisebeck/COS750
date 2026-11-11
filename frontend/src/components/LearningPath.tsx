@@ -1,8 +1,8 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
-import { Logo } from "./Logo";
+import { Logo } from "./logo";
 import { PageTitle } from "./PageTitle";
-import { LessonButton } from "./Buttons";
+import { LessonButton } from "./buttons";
 
 export interface LessonSummary {
   id: number;

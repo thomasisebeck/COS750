@@ -1,21 +1,24 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { LiveGraph } from "./components/LiveGraph";
-import { ProgressBar } from "./components/ProgressBar";
-import { InfoCard } from "./components/InfoCard";
-import { OptionCard } from "./components/OptionCard";
-import { LessonButton } from "./components/Buttons";
+import { ProgressBar } from "./components/progressBar";
+import { InfoCard } from "./components/infoCard";
+import { OptionCard } from "./components/optionCard";
+import { LessonButton } from "./components/buttons";
 import { LessonHeader } from "./components/LessonHeader";
 import { PageTitle } from "./components/PageTitle";
 import { LearningPath, type LessonSummary } from "./components/LearningPath";
 import lesson1Raw from "./lessons/lesson-1.json";
-import lesson2Raw from "./lessons/lesson-2.json"; // Add as you create more
+import lesson2Raw from "./lessons/lesson-2.json";
+import lesson3Raw from "./lessons/lesson-3.json";
+import { Lesson3Experience } from "./components/Lesson3Experience";
 import type { LessonData, LessonPage, GraphState } from "./types/lesson";
 import { playNoteSound } from "./helpers";
 
 const lessonsMap: Record<number, LessonData> = {
   1: lesson1Raw as unknown as LessonData,
   2: lesson2Raw as unknown as LessonData,
+  3: lesson3Raw as unknown as LessonData,
 };
 
 const lessonList: LessonSummary[] = [
@@ -129,6 +132,10 @@ function App() {
         }}
       />
     );
+  }
+
+  if (currentLessonId === 3) {
+    return <Lesson3Experience lesson={lessonData} onExit={() => setView("menu")} />;
   }
 
   return (
