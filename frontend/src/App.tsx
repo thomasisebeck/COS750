@@ -7,25 +7,33 @@ import { OptionCard } from "./components/OptionCard";
 import { LessonButton } from "./components/Buttons";
 import { LessonHeader } from "./components/LessonHeader";
 import { PageTitle } from "./components/PageTitle";
-//Add your lesson stuff here
+import { LearningPath, type LessonSummary } from "./components/LearningPath";
 import lesson1Raw from "./lessons/lesson-1.json";
-import lesson2Raw from "./lessons/lesson-2.json";
+import lesson2Raw from "./lessons/lesson-2.json"; // Add as you create more
 import type { LessonData, LessonPage, GraphState } from "./types/lesson";
 import { playNoteSound } from "./helpers";
 
-//Add the lesson here, I think it will automatically use the correct lesson, so just use LessonData (to be properly tested)
-const lessons: Record<number, LessonData> = {
+const lessonsMap: Record<number, LessonData> = {
   1: lesson1Raw as unknown as LessonData,
   2: lesson2Raw as unknown as LessonData,
 };
 
+const lessonList: LessonSummary[] = [
+  { id: 1, title: "Meet the Graph", subtitle: "Vertices & edges" },
+  { id: 2, title: "Follow Connections", subtitle: "Adjacency & direction" },
+  { id: 3, title: "Weigh Your Options", subtitle: "Paths & costs" },
+  { id: 4, title: "Find the Route", subtitle: "Dijkstra explained" },
+  { id: 5, title: "Think Like Dijkstra", subtitle: "Guided practice" },
+  { id: 6, title: "Prove Your Skills", subtitle: "Independent assessment" },
+];
+
 function App() {
+  const [view, setView] = useState<"menu" | "lesson">("menu");
+  const [currentLessonId, setCurrentLessonId] = useState<number>(1);
   const [currentPageIndex, setCurrentPageIndex] = useState<number>(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
 
-  const [currentLessonId, setCurrentLessonId] = useState<number>(1);
-  const lessonData = lessons[currentLessonId];
-
+  const lessonData = lessonsMap[currentLessonId] ?? lessonsMap[1];
   const currentPage: LessonPage = lessonData.pages[currentPageIndex];
   const totalPages = lessonData.pages.length;
   const contentBox = currentPage.contentBox;
@@ -44,7 +52,7 @@ function App() {
       setGraphState(null);
     }
     setSelectedOptionId(null);
-  }, [currentPageIndex]);
+  }, [currentPageIndex, currentLessonId]);
 
   const handleNodeMove = (nodeId: string, x: number, y: number) => {
     setGraphState((prev: GraphState | null) => {
@@ -107,9 +115,28 @@ function App() {
     }
   };
 
+  if (view === "menu") {
+    return (
+      <LearningPath
+        lessons={lessonList}
+        selectedLessonId={currentLessonId}
+        onSelectLesson={(id) => setCurrentLessonId(id)}
+        onStartLesson={(id) => {
+          if (!lessonsMap[id]) return; // Prevents opening lessons without JSON yet
+          setCurrentLessonId(id);
+          setCurrentPageIndex(0);
+          setView("lesson");
+        }}
+      />
+    );
+  }
+
   return (
     <div className="w-full min-h-screen bg-[#111116] text-slate-100 p-6 flex flex-col gap-6">
-      <LessonHeader lessonNumber={lessonData.meta.lessonNumber} />
+      <LessonHeader
+        lessonNumber={lessonData.meta.lessonNumber}
+        onMenuClick={() => setView("menu")}
+      />
 
       <ProgressBar
         currentIndex={currentPageIndex}
@@ -134,7 +161,6 @@ function App() {
               <LiveGraph
                 nodes={graphState.nodes}
                 edges={graphState.edges}
-                isDirected={false}
                 highlightedNodeIds={graphState.highlightedNodes}
                 highlightedEdgeIds={graphState.highlightedEdges}
                 onNodeMove={handleNodeMove}
@@ -183,13 +209,15 @@ function App() {
 
       <LessonButton
         label={currentPage.buttonLabel}
-        //OnClick changed -> need to add page that shows next lesson inbetween, will create it soon
         onClick={() => {
           if (currentPageIndex < totalPages - 1) {
             setCurrentPageIndex((prev) => prev + 1);
-          } else if (lessons[currentLessonId + 1]) {
-            setCurrentLessonId((prev) => prev + 1);
+          } else {
+            if (currentLessonId < lessonList.length) {
+              setCurrentLessonId((prev) => prev + 1);
+            }
             setCurrentPageIndex(0);
+            setView("menu");
           }
         }}
       />
