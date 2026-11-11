@@ -1,19 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Circle, Activity } from "lucide-react";
-
-export const INITIAL_NODES: GraphNode[] = [
-  { id: "1", label: "Gateway", x: 100, y: 200 },
-  { id: "2", label: "Auth Service", x: 300, y: 100 },
-  { id: "3", label: "Database", x: 500, y: 200 },
-  { id: "4", label: "Cache (Redis)", x: 300, y: 300 },
-];
-
-export const INITIAL_EDGES: GraphEdge[] = [
-  { id: "e1-2", source: "1", target: "2", label: "HTTPS" },
-  { id: "e2-3", source: "2", target: "3", label: "SQL" },
-  { id: "e1-4", source: "1", target: "4", label: "Read" },
-  { id: "e4-3", source: "4", target: "3", label: "Sync" },
-];
+import { Activity, RotateCcw } from "lucide-react";
 
 export interface GraphNode {
   id: string;
@@ -38,6 +24,7 @@ interface LiveGraphProps {
   onNodeClick?: (nodeId: string) => void;
   onEdgeClick?: (edgeId: string) => void;
   onNodeMove?: (nodeId: string, x: number, y: number) => void;
+  onReset?: () => void;
   width?: number;
   height?: number;
 }
@@ -50,6 +37,7 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
   onNodeClick,
   onEdgeClick,
   onNodeMove,
+  onReset,
   width = 600,
   height = 400,
 }) => {
@@ -95,11 +83,22 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
       <div className="flex items-center justify-between w-full mb-3 px-2">
         <div className="flex items-center gap-2 text-slate-200 font-medium text-sm">
           <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
-          <span>Sandbox</span>
+          <span>Interactive Sandbox</span>
         </div>
-        <span className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700">
-          {nodes.length} Nodes | {edges.length} Edges
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700">
+            {nodes.length} Nodes | {edges.length} Edges
+          </span>
+          {onReset && (
+            <button
+              onClick={onReset}
+              className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-lg bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 hover:border-red-500/50 transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Reset
+            </button>
+          )}
+        </div>
       </div>
 
       <svg
@@ -199,7 +198,6 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
               transform={`translate(${node.x}, ${node.y})`}
               onMouseDown={(e) => handleMouseDown(e, node.id)}
               onClick={() => {
-                // Only trigger click if the mouse didn't move during the interaction
                 if (!hasMovedRef.current && onNodeClick) {
                   onNodeClick(node.id);
                 }

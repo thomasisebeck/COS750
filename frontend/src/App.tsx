@@ -1,26 +1,30 @@
 import { useState } from "react";
 import "./App.css";
 import {
-  INITIAL_EDGES,
-  INITIAL_NODES,
   LiveGraph,
   type GraphEdge,
   type GraphNode,
 } from "./components/LiveGraph";
 
+const INITIAL_NODES: GraphNode[] = [
+  { id: "1", label: "Gateway", x: 100, y: 200 },
+  { id: "2", label: "Auth Service", x: 300, y: 100 },
+  { id: "3", label: "Database", x: 500, y: 200 },
+  { id: "4", label: "Cache (Redis)", x: 300, y: 300 },
+];
+
+const INITIAL_EDGES: GraphEdge[] = [
+  { id: "e1-2", source: "1", target: "2", label: "HTTPS" },
+  { id: "e2-3", source: "2", target: "3", label: "SQL" },
+  { id: "e1-4", source: "1", target: "4", label: "Read" },
+  { id: "e4-3", source: "4", target: "3", label: "Sync" },
+];
+
+const INITIAL_HIGHLIGHTED_NODES = ["1"];
+
 function App() {
   const [nodes, setNodes] = useState<GraphNode[]>(INITIAL_NODES);
   const [edges, setEdges] = useState<GraphEdge[]>(INITIAL_EDGES);
-  const [highlightedNodes, setHighlightedNodes] = useState<string[]>(["1"]);
-  const [highlightedEdges, setHighlightedEdges] = useState<string[]>([]);
-
-  const playNote = (count: number) => {
-    if (count >= 1 && count <= 18) {
-      const audio = new Audio(`/notes/${count}.mp3`);
-      audio.currentTime = 0;
-      audio.play().catch((err) => console.error("Audio playback error:", err));
-    }
-  };
 
   // Helper to find connecting edge IDs between consecutive nodes in the path sequence
   const getConnectingEdges = (path: string[], graphEdges: GraphEdge[]) => {
@@ -29,7 +33,6 @@ function App() {
       const u = path[i];
       const v = path[i + 1];
 
-      // Find an edge connecting consecutive nodes in either direction
       const matchingEdge = graphEdges.find(
         (edge) =>
           (edge.source === u && edge.target === v) ||
@@ -41,6 +44,21 @@ function App() {
       }
     }
     return activeEdgeIds;
+  };
+
+  const [highlightedNodes, setHighlightedNodes] = useState<string[]>(
+    INITIAL_HIGHLIGHTED_NODES,
+  );
+  const [highlightedEdges, setHighlightedEdges] = useState<string[]>(() =>
+    getConnectingEdges(INITIAL_HIGHLIGHTED_NODES, INITIAL_EDGES),
+  );
+
+  const playNote = (count: number) => {
+    if (count >= 1 && count <= 18) {
+      const audio = new Audio(`/notes/${count}.mp3`);
+      audio.currentTime = 0;
+      audio.play().catch((err) => console.error("Audio playback error:", err));
+    }
   };
 
   const handleNodeClick = (nodeId: string) => {
@@ -74,6 +92,18 @@ function App() {
     );
   };
 
+  const handleReset = () => {
+    setNodes(INITIAL_NODES);
+    setEdges(INITIAL_EDGES);
+    setHighlightedNodes(INITIAL_HIGHLIGHTED_NODES);
+    const initialEdges = getConnectingEdges(
+      INITIAL_HIGHLIGHTED_NODES,
+      INITIAL_EDGES,
+    );
+    setHighlightedEdges(initialEdges);
+    playNote(INITIAL_HIGHLIGHTED_NODES.length);
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-8 flex flex-col items-center justify-center gap-6">
       <LiveGraph
@@ -83,6 +113,7 @@ function App() {
         highlightedEdgeIds={highlightedEdges}
         onNodeClick={handleNodeClick}
         onNodeMove={handleNodeMove}
+        onReset={handleReset}
         width={650}
         height={350}
       />
