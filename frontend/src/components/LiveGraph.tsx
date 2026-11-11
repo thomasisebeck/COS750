@@ -11,8 +11,8 @@ export interface GraphNode {
 
 export interface GraphEdge {
   id: string;
-  source: string; // Node ID
-  target: string; // Node ID
+  source: string;
+  target: string;
   label?: string;
 }
 
@@ -27,6 +27,8 @@ interface LiveGraphProps {
   onReset?: () => void;
   width?: number;
   height?: number;
+  showCounts?: boolean;
+  mustSelectPath?: boolean;
 }
 
 export const LiveGraph: React.FC<LiveGraphProps> = ({
@@ -40,33 +42,72 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
   onReset,
   width = 600,
   height = 400,
+  showCounts,
+  mustSelectPath = true,
 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
 
-  // Track whether the mouse has actually moved during the current press
+  // Offset between cursor and center of the dragged node
+  const dragOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  // Track whether mouse moved significantly during press to suppress click events
   const hasMovedRef = useRef<boolean>(false);
 
   // Quick lookup map for node coordinates
   const nodeMap = new Map<string, GraphNode>(nodes.map((n) => [n.id, n]));
 
-  // Handle start of node drag
-  const handleMouseDown = (e: React.MouseEvent, nodeId: string) => {
-    e.stopPropagation();
-    setDraggingNodeId(nodeId);
-    hasMovedRef.current = false; // Reset movement tracker on fresh click
+  // Helper to convert screen coordinates to SVG viewBox coordinates
+  const getSvgCoordinates = (e: React.MouseEvent) => {
+    if (!svgRef.current) return null;
+    const ctm = svgRef.current.getScreenCTM();
+    if (!ctm) return null;
+
+    return {
+      x: (e.clientX - ctm.e) / ctm.a,
+      y: (e.clientY - ctm.f) / ctm.d,
+    };
   };
 
-  // Handle node movement across the SVG canvas
+  // Handle start of node drag
+  const handleMouseDown = (e: React.MouseEvent, node: GraphNode) => {
+    e.stopPropagation();
+    const coords = getSvgCoordinates(e);
+    if (!coords) return;
+
+    setDraggingNodeId(node.id);
+    hasMovedRef.current = false;
+
+    // Save exact offset between click position and node center
+    dragOffsetRef.current = {
+      x: coords.x - node.x,
+      y: coords.y - node.y,
+    };
+  };
+
+  // Handle node movement across SVG space
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     if (!draggingNodeId || !svgRef.current) return;
 
-    // Mark that movement has occurred
-    hasMovedRef.current = true;
+    const coords = getSvgCoordinates(e);
+    if (!coords) return;
 
-    const svgRect = svgRef.current.getBoundingClientRect();
-    const x = Math.max(20, Math.min(width - 20, e.clientX - svgRect.left));
-    const y = Math.max(20, Math.min(height - 20, e.clientY - svgRect.top));
+    // Apply offset compensation
+    const rawX = coords.x - dragOffsetRef.current.x;
+    const rawY = coords.y - dragOffsetRef.current.y;
+
+    // Constrain within viewBox bounds padding
+    const x = Math.max(25, Math.min(width - 25, rawX));
+    const y = Math.max(25, Math.min(height - 25, rawY));
+
+    // Threshold movement to avoid treating tiny jitters as drags
+    const currentNode = nodeMap.get(draggingNodeId);
+    if (currentNode) {
+      const dist = Math.hypot(x - currentNode.x, y - currentNode.y);
+      if (dist > 3) {
+        hasMovedRef.current = true;
+      }
+    }
 
     if (onNodeMove) {
       onNodeMove(draggingNodeId, x, y);
@@ -78,6 +119,36 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
     setDraggingNodeId(null);
   };
 
+  // Node selection & auto-edge path highlighting logic
+  const handleNodeSelect = (nodeId: string) => {
+    const isAlreadyHighlighted = highlightedNodeIds.includes(nodeId);
+
+    const prevNodeId =
+      highlightedNodeIds.length > 0
+        ? highlightedNodeIds[highlightedNodeIds.length - 1]
+        : null;
+
+    if (mustSelectPath && prevNodeId && !isAlreadyHighlighted) {
+      const connectingEdge = edges.find(
+        (edge) =>
+          (edge.source === prevNodeId && edge.target === nodeId) ||
+          (edge.source === nodeId && edge.target === prevNodeId),
+      );
+
+      if (
+        connectingEdge &&
+        onEdgeClick &&
+        !highlightedEdgeIds.includes(connectingEdge.id)
+      ) {
+        onEdgeClick(connectingEdge.id);
+      }
+    }
+
+    if (onNodeClick) {
+      onNodeClick(nodeId);
+    }
+  };
+
   return (
     <div className="relative border border-slate-700 bg-slate-900 rounded-xl overflow-hidden shadow-2xl flex flex-col items-center p-4">
       <div className="flex items-center justify-between w-full mb-3 px-2">
@@ -86,9 +157,11 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
           <span>Interactive Sandbox</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700">
-            {nodes.length} Nodes | {edges.length} Edges
-          </span>
+          {showCounts && (
+            <span className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700">
+              {nodes.length} Vertices | {edges.length} Edges
+            </span>
+          )}
           {onReset && (
             <button
               onClick={onReset}
@@ -103,12 +176,11 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
 
       <svg
         ref={svgRef}
-        width={width}
-        height={height}
+        viewBox={`0 0 ${width} ${height}`}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        className="bg-slate-950/50 rounded-lg border border-slate-800/80 cursor-crosshair select-none"
+        className="w-full h-auto max-h-[350px] bg-slate-950/50 rounded-lg border border-slate-800/80 cursor-crosshair select-none touch-none"
       >
         <defs>
           <marker
@@ -149,8 +221,12 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
           return (
             <g
               key={edge.id}
-              onClick={() => onEdgeClick && onEdgeClick(edge.id)}
-              className="cursor-pointer group"
+              onClick={() => {
+                if (mustSelectPath && onEdgeClick) {
+                  onEdgeClick(edge.id);
+                }
+              }}
+              className={mustSelectPath ? "cursor-pointer group" : "group"}
             >
               <line
                 x1={sourceNode.x}
@@ -159,7 +235,11 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
                 y2={targetNode.y}
                 stroke={isHighlighted ? "#38bdf8" : "#475569"}
                 strokeWidth={isHighlighted ? 3 : 2}
-                className="transition-colors duration-300 group-hover:stroke-indigo-400"
+                className={
+                  mustSelectPath
+                    ? "transition-colors duration-300 group-hover:stroke-indigo-400"
+                    : "transition-colors duration-300"
+                }
                 markerEnd={
                   isHighlighted ? "url(#arrow-highlighted)" : "url(#arrow)"
                 }
@@ -196,10 +276,10 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
             <g
               key={node.id}
               transform={`translate(${node.x}, ${node.y})`}
-              onMouseDown={(e) => handleMouseDown(e, node.id)}
+              onMouseDown={(e) => handleMouseDown(e, node)}
               onClick={() => {
-                if (!hasMovedRef.current && onNodeClick) {
-                  onNodeClick(node.id);
+                if (!hasMovedRef.current) {
+                  handleNodeSelect(node.id);
                 }
               }}
               className="cursor-grab active:cursor-grabbing group transition-transform duration-75"
@@ -211,7 +291,7 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
                   stroke="#38bdf8"
                   strokeWidth="2"
                   strokeDasharray="4 2"
-                  className="animate-spin"
+                  className="animate-spin pointer-events-none"
                 />
               )}
 

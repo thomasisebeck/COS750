@@ -1,9 +1,8 @@
 {
-  "id": "lesson-1",
   "meta": {
     "module": "PathFinder",
-    "lessonNumber": 1,
-    "category": "A NEW WAY TO THINK"
+    "category": "A NEW WAY TO THINK",
+    "lessonNumber": 1
   },
   "pages": [
     {
@@ -26,6 +25,7 @@
       "subtext": "A vertex (or node) represents a place or object.",
       "contentBox": {
         "boxType": "graph",
+        "prohibitPathSelection": true,
         "state": {
           "nodes": [
             { "id": "A", "label": "A", "x": 150, "y": 175 },
@@ -43,10 +43,44 @@
           "highlightedNodes": ["A"],
           "highlightedEdges": []
         },
-        "text": "Tap a circle to select or deselect a vertex."
+        "text": "Tap a circle to inspect a vertex."
       },
       "questionType": "VERT_SELECTION",
       "buttonLabel": "Continue"
+    },
+    {
+      "title": "Find the vertices",
+      "subtext": "Try answer the question below",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "prohibitPathSelection": false,
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 150, "y": 175 },
+            { "id": "B", "label": "B", "x": 325, "y": 75 },
+            { "id": "C", "label": "C", "x": 325, "y": 275 },
+            { "id": "D", "label": "D", "x": 500, "y": 175 }
+          ],
+          "edges": [
+            { "id": "eA-B", "source": "A", "target": "B", "label": "" },
+            { "id": "eA-C", "source": "A", "target": "C", "label": "" },
+            { "id": "eB-C", "source": "B", "target": "C", "label": "" },
+            { "id": "eB-D", "source": "B", "target": "D", "label": "" },
+            { "id": "eC-D", "source": "C", "target": "D", "label": "" }
+          ],
+          "highlightedNodes": ["A"],
+          "highlightedEdges": []
+        },
+        "question": "How many vertices do you see?",
+        "options": [
+          { "id": "opt-1", "label": "3 vertices" },
+          { "id": "opt-2", "label": "4 vertices" },
+          { "id": "opt-3", "label": "5 vertices" }
+        ],
+        "correctAnswerId": "opt-2"
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
     }
   ]
 }
