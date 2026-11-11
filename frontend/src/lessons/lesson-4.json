@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "lessonNumber": 4,
+    "title": "Find the Route",
+    "topic": "Dijkstra's shortest-path algorithm"
+  },
+  "pages": [
+    {
+      "type": "intro", "eyebrow": "LESSON 04", "title": "Meet Dijkstra",
+      "subtext": "How can a computer find the cheapest path automatically?",
+      "cardTitle": "THE IDEA",
+      "cardText": "Dijkstra repeatedly selects the unsettled reachable vertex with the smallest tentative distance, and improves the distances of its neighbours.",
+      "tipTitle": "KEY TAKEAWAY", "tipText": "We'll begin at A and find the shortest route to D.",
+      "button": "Continue"
+    },
+    {
+      "type": "walkthrough", "eyebrow": "STEP 01", "title": "Start at zero",
+      "subtext": "Initialise distances before exploring any edges.",
+      "snapshotIndex": 0, "activeVertex": "A",
+      "note": "INITIALISE: Distance to source A = 0. All others = ∞. Predecessors are unknown.",
+      "button": "Next step"
+    },
+    {
+      "type": "walkthrough", "eyebrow": "STEP 02", "title": "Choose the closest",
+      "subtext": "Pick the unsettled vertex with smallest tentative distance.",
+      "snapshotIndex": 0, "activeVertex": "A",
+      "note": "SELECT A: Only A has a finite distance (0), so visit A first.",
+      "button": "Next step"
+    },
+    {
+      "type": "walkthrough", "eyebrow": "STEP 03", "title": "Improve neighbours",
+      "subtext": "Relax the outgoing edges from A.",
+      "snapshotIndex": 1, "activeVertex": "A", "highlightedEdges": ["AB", "AC"],
+      "note": "CANDIDATE DISTANCE: B: 0 + 4 = 4; C: 0 + 2 = 2. Record predecessor A.",
+      "button": "Next step"
+    },
+    {
+      "type": "quiz", "eyebrow": "YOUR PREDICTION", "title": "Who is next?",
+      "subtext": "Unsettled distances are B = 4, C = 2 and D = ∞.",
+      "snapshotIndex": 1,
+      "question": "Which vertex is selected next?",
+      "options": [
+        { "id": "B", "label": "Vertex B (4)" },
+        { "id": "C", "label": "Vertex C (2)" },
+        { "id": "D", "label": "Vertex D (∞)" }
+      ],
+      "correctAnswerId": "C",
+      "correctFeedback": "Correct! C has the smallest tentative distance (2).",
+      "incorrectFeedback": "Compare the tentative distances for unsettled vertices: 4, 2 and ∞. Which is smallest?",
+      "button": "Check answer"
+    },
+    {
+      "type": "walkthrough", "eyebrow": "STEP 04", "title": "Better way to B",
+      "subtext": "C has tentative distance 2. Inspect its neighbours.",
+      "snapshotIndex": 2, "activeVertex": "C", "highlightedEdges": ["BC", "CD"],
+      "note": "RELAX FROM C: B improves: 2 + 1 = 3 < 4. D becomes 2 + 6 = 8. B's predecessor changes A → C.",
+      "button": "Next step"
+    },
+    {
+      "type": "walkthrough", "eyebrow": "STEP 05", "title": "Improve D again",
+      "subtext": "B = 3 is the smallest unsettled distance.",
+      "snapshotIndex": 3, "activeVertex": "B", "highlightedEdges": ["BD"],
+      "note": "RELAX FROM B: D improves: 3 + 3 = 6 < 8. D's predecessor becomes B.",
+      "button": "Next step"
+    },
+    {
+      "type": "walkthrough", "eyebrow": "STEP 06", "title": "Reconstruct the path",
+      "subtext": "Trace predecessor links backwards from D.",
+      "snapshotIndex": 4, "activeVertex": "D", "showRoute": true,
+      "note": "TRACE BACKWARDS: D ← B ← C ← A; reverse it to get A → C → B → D, total cost 6.",
+      "button": "Next step"
+    },
+    {
+      "type": "limit", "eyebrow": "IMPORTANT LIMIT", "title": "When not to use it",
+      "subtext": "Standard Dijkstra requires non-negative edge weights.",
+      "cardTitle": "WHY NEGATIVE WEIGHTS MATTER",
+      "cardText": "Once Dijkstra settles a vertex, it assumes no later route will improve it. Negative-weight edges can invalidate that assumption.",
+      "tipTitle": "KEY TAKEAWAY", "tipText": "A graph with negative weights needs a different suitable algorithm, such as Bellman–Ford.",
+      "button": "Continue"
+    },
+    {
+      "type": "complete", "eyebrow": "LEVEL COMPLETE", "title": "Dijkstra unlocked",
+      "subtext": "You can now trace the algorithm, not just watch it!",
+      "cardTitle": "Great work!",
+      "cardText": "Initialise 0/∞ → select smallest unsettled distance → relax edges → record predecessor → settle → repeat.",
+      "tipTitle": "REMEMBER THESE RULES", "tipText": "Final route: A → C → B → D with cost 6.",
+      "button": "Next lesson"
+    }
+  ]
+}

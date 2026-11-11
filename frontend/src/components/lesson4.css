@@ -1,0 +1,85 @@
+/* Lesson 04 — PathFinder. Isolated styles to avoid affecting other lessons. */
+.l4-viewport {
+  min-height: 100svh;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: #111116;
+  text-align: left;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #f7f5ff;
+}
+.l4-viewport *, .l4-viewport *::before, .l4-viewport *::after { box-sizing: border-box; }
+.l4-screen {
+  width: min(100%, 390px);
+  min-height: 770px;
+  background: #121218;
+  border: 1px solid #262530;
+  border-radius: 21px;
+  padding: 26px 23px 22px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 12%);
+}
+.l4-header { display: flex; justify-content: space-between; align-items: center; }
+.l4-header .text-sm { font-size: 14px; }
+.l4-lesson-label { color: #bebbc9; font-size: 10px; font-weight: 750; }
+.l4-progress-row { display: flex; align-items: center; gap: 15px; margin: 33px 0 25px; }
+.l4-back { background: transparent; border: 0; border-radius: 6px; padding: 0; color: #b2b0bf; display: grid; place-items: center; width: 24px; height: 25px; cursor: pointer; }
+.l4-back:hover, .l4-back:focus-visible { color: white; background: #2d2938; }
+.l4-progress-track { background: #40404d; border-radius: 100px; height: 6px; flex: 1; overflow: hidden; }
+.l4-progress-track > span { background: #9d60f6; border-radius: inherit; display: block; height: 100%; transition: width 220ms ease; }
+.l4-progress-text { font-size: 10px; color: #b1adbf; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.l4-content { display: flex; flex-direction: column; flex: 1; gap: 11px; }
+.l4-heading { margin-bottom: 12px; }
+.l4-eyebrow { font-size: 10px; color: #c89dff; font-weight: 800; letter-spacing: .02em; }
+.l4-heading h1 { margin: 8px 0 13px; font-size: 24px; line-height: 1.17; color: #f5f3fb; font-weight: 770; letter-spacing: -.025em; }
+.l4-heading p { color: #aaa7b8; font-size: 13px; line-height: 1.32; max-width: 310px; }
+.l4-graph-panel { width: 100%; background: #22222e; border: 1px solid #494758; border-radius: 15px; overflow: hidden; padding: 5px 9px; }
+.l4-graph-svg { display: block; width: 100%; height: auto; max-height: 238px; }
+.l4-edge-label { fill: #ffd17b; font-size: 10px; font-weight: 750; paint-order: stroke; stroke: #22222e; stroke-width: 3px; }
+.l4-node-label { fill: #fff; font-size: 12px; font-weight: 750; }
+.l4-table-panel { width: 100%; background: #292937; border-radius: 12px; padding: 8px 13px 10px; }
+.l4-distance-table { width: 100%; border-collapse: collapse; font-size: 11px; line-height: 1.75; text-align: left; color: #eeeaf8; font-variant-numeric: tabular-nums; }
+.l4-distance-table th, .l4-distance-table td { padding: 1px 3px; }
+.l4-distance-table thead th { color: #c7a7f9; font-size: 9px; font-weight: 850; }
+.l4-distance-table tbody th { font-weight: 650; }
+.l4-distance-table .l4-open { color: #b8b2c9; font-size: 9px; }
+.l4-distance-table .l4-settled { color: #4cd9a4; font-size: 9px; font-weight: 750; }
+.l4-step-note { background: #24232e; border-radius: 8px; color: #b3b0c0; font-size: 10px; line-height: 1.35; padding: 9px 12px; }
+.l4-quiz { display: flex; flex-direction: column; gap: 12px; margin-top: 9px; }
+.l4-question { color: #f3f1fb; font-weight: 750; font-size: 13px; line-height: 1.4; }
+.l4-options { display: grid; gap: 7px; }
+.l4-options .l4-option { min-height: 45px; padding: 10px 12px; border-radius: 10px; background: #22222e; border-color: #494656; gap: 12px; }
+.l4-options .l4-option:has(> div > div) { background: #30293e; border-color: #aa73ff; }
+.l4-options .l4-option > div { height: 16px; width: 16px; }
+.l4-options .l4-option > div > div { height: 7px; width: 7px; }
+.l4-options .l4-option > span { font-size: 12px; font-weight: 500; white-space: normal; line-height: 1.3; }
+.l4-feedback { border-radius: 8px; padding: 9px 11px; font-size: 11px; line-height: 1.4; }
+.l4-feedback-good { color: #aeffdb; background: #1c3d35; border: 1px solid #409876; }
+.l4-feedback-error { color: #ffd0db; background: #3d2933; border: 1px solid #c76d87; }
+.l4-information { width: 100%; min-height: 205px; border: 1px solid #494757; border-radius: 15px; background: #22222e; padding: 19px 16px; margin-top: 4px; }
+.l4-card-heading { font-size: 10px; font-weight: 800; color: #cda5ff; display: flex; align-items: center; gap: 8px; }
+.l4-information > p { color: #f0ecfa; font-size: 14px; line-height: 1.38; margin-top: 18px; }
+.l4-takeaway { border-radius: 14px; background: #2a2938; padding: 18px 16px; min-height: 107px; margin-top: 7px; }
+.l4-takeaway > span { color: #cda5ff; font-size: 10px; font-weight: 850; }
+.l4-takeaway > p { color: #e6e3f1; font-size: 13px; line-height: 1.3; margin-top: 16px; }
+.l4-success { background: #1d3a32; border: 1px solid #39be89; min-height: 132px; }
+.l4-success .l4-card-heading { color: #5de6aa; font-size: 20px; font-weight: 760; }
+.l4-success > p { font-size: 13px; margin-top: 15px; }
+.l4-footer { margin-top: 24px; }
+.l4-primary-button { min-height: 50px; padding: 13px 16px; border-radius: 11px; background: #985df0; justify-content: flex-start; font-weight: 720; font-size: 14px; }
+.l4-primary-button:hover { background: #a06ef5; }
+.l4-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.l4-viewport button:focus-visible { outline: 2px solid #d5b6ff; outline-offset: 3px; }
+@media (max-width: 480px) {
+  .l4-viewport { padding: 0; align-items: stretch; }
+  .l4-screen { width: 100%; min-height: 100svh; border: 0; border-radius: 0; padding: 23px 20px 24px; box-shadow: none; }
+  .l4-graph-svg { max-height: 215px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .l4-progress-track > span { transition: none; }
+}

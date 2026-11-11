@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { LiveGraph } from "./components/LiveGraph";
-import { ProgressBar } from "./components/ProgressBar";
-import { InfoCard } from "./components/InfoCard";
-import { OptionCard } from "./components/OptionCard";
-import { LessonButton } from "./components/Buttons";
+import { ProgressBar } from "./components/progressBar";
+import { InfoCard } from "./components/infoCard";
+import { OptionCard } from "./components/optionCard";
+import { LessonButton } from "./components/buttons";
 import { LessonHeader } from "./components/LessonHeader";
 import { PageTitle } from "./components/PageTitle";
 import { LearningPath, type LessonSummary } from "./components/LearningPath";
@@ -12,6 +12,7 @@ import lesson1Raw from "./lessons/lesson-1.json";
 import lesson2Raw from "./lessons/lesson-2.json"; // Add as you create more
 import type { LessonData, LessonPage, GraphState } from "./types/lesson";
 import { playNoteSound } from "./helpers";
+import { Lesson4Experience } from "./components/Lesson4Experience";
 
 const lessonsMap: Record<number, LessonData> = {
   1: lesson1Raw as unknown as LessonData,
@@ -122,13 +123,17 @@ function App() {
         selectedLessonId={currentLessonId}
         onSelectLesson={(id) => setCurrentLessonId(id)}
         onStartLesson={(id) => {
-          if (!lessonsMap[id]) return; // Prevents opening lessons without JSON yet
+          if (!lessonsMap[id] && id !== 4) return; // Prevent opening unavailable lessons
           setCurrentLessonId(id);
           setCurrentPageIndex(0);
           setView("lesson");
         }}
       />
     );
+  }
+
+  if (currentLessonId === 4) {
+    return <Lesson4Experience onExit={() => setView("menu")} />;
   }
 
   return (
