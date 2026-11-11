@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "module": "Graph Theory",
+    "lessonNumber": 2,
+    "category": "UNDRECTED GRAPHS"
+  },
+  "pages": [
+    {
+      "title": "Two-Way Streets",
+      "subtext": "Undirected graphs connect nodes without arrows.",
+      "contentBox": {
+        "boxType": "graph",
+        "text": "Tap two connected nodes to highlight the edge between them.",
+        "prohibitPathSelection": false,
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 150, "y": 200 },
+            { "id": "B", "label": "B", "x": 450, "y": 200 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "5" }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        }
+      },
+      "buttonLabel": "Next"
+    }
+  ]
+}
