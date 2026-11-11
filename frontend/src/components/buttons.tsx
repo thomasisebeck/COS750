@@ -15,7 +15,7 @@ export const LessonButton: React.FC<LessonButtonProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`group w-full max-w-md flex items-center gap-4 px-4 py-3.5 rounded-2xl bg-[#915eff] hover:bg-[#824df5] active:scale-[0.98] text-white font-semibold text-base transition-all duration-150 cursor-pointer ${className}`}
+      className={`group w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-[#915eff] hover:bg-[#824df5] active:scale-[0.98] text-white font-semibold text-base transition-all duration-150 cursor-pointer ${className}`}
     >
       <span>{label}</span>
 

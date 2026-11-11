@@ -37,7 +37,7 @@ export const InfoCard: React.FC<InfoCardProps> = ({
 
   return (
     <div
-      className={`w-fit max-w-sm min-w-0 px-5 py-4 rounded-2xl border flex flex-col items-center text-center gap-2 ${styles.container} ${className}`}
+      className={`w-full min-w-0 px-5 py-4 rounded-2xl border flex flex-col items-center text-center gap-2 ${styles.container} ${className}`}
     >
       <div className={`flex items-center justify-center gap-2 font-semibold break-words ${styles.heading}`}>
         {variant === 'red' && (
