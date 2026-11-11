@@ -29,6 +29,7 @@ interface LiveGraphProps {
   height?: number;
   showCounts?: boolean;
   mustSelectPath?: boolean;
+  isDirected?: boolean;
 }
 
 export const LiveGraph: React.FC<LiveGraphProps> = ({
@@ -44,6 +45,7 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
   height = 400,
   showCounts,
   mustSelectPath = true,
+  isDirected = true,
 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
@@ -241,7 +243,11 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
                     : "transition-colors duration-300"
                 }
                 markerEnd={
-                  isHighlighted ? "url(#arrow-highlighted)" : "url(#arrow)"
+                  isDirected
+                    ? isHighlighted
+                      ? "url(#arrow-highlighted)"
+                      : "url(#arrow)"
+                    : undefined
                 }
               />
               <line
