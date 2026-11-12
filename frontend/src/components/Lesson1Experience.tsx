@@ -15,7 +15,11 @@ interface LessonExperienceProps {
   onComplete: () => void;
 }
 
-export function Lesson1Experience({ lesson, onExit, onComplete }: LessonExperienceProps) {
+export function Lesson1Experience({
+  lesson,
+  onExit,
+  onComplete,
+}: LessonExperienceProps) {
   const [currentPageIndex, setCurrentPageIndex] = useState<number>(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
 
@@ -121,16 +125,21 @@ export function Lesson1Experience({ lesson, onExit, onComplete }: LessonExperien
 
       <div className="flex-1 flex flex-col gap-4">
         <PageTitle
-          category={lesson.meta.category}
+          category={currentPage.category}
           title={currentPage.title}
           subtext={currentPage.subtext}
         />
 
         {contentBox.boxType === "text" && (
-          <InfoCard heading={contentBox.title} body={contentBox.text} />
+          <InfoCard
+            heading={contentBox.title}
+            body={contentBox.text}
+            variant={contentBox.variant}
+          />
         )}
 
-        {(contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz") &&
+        {(contentBox.boxType === "graph" ||
+          contentBox.boxType === "graph-quiz") &&
           graphState && (
             <div className="flex flex-col gap-4">
               <LiveGraph

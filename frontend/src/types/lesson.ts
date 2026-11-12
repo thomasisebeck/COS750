@@ -2,7 +2,6 @@ import type { GraphNode, GraphEdge } from "../components/LiveGraph";
 
 export interface LessonMeta {
   module: string;
-  category: string;
   lessonNumber: number;
 }
 
@@ -23,7 +22,7 @@ export interface TextContentBox {
   boxType: "text";
   title: string;
   text: string;
-  prohibitPathSelection?: boolean;
+  variant?: "default" | "red" | "green";
 }
 
 export interface GraphContentBox {
@@ -53,6 +52,7 @@ export interface ExtraBox {
 export type QuestionType = "CONTINUE" | "VERT_SELECTION" | "MULT-CHOICE";
 
 export interface LessonPage {
+  category: string;
   title: string;
   subtext: string;
   contentBox: ContentBox;
