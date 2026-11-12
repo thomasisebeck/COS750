@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import { LearningPath, type LessonSummary } from "./components/LearningPath";
 import { Lesson1Experience } from "./components/Lesson1Experience";
+import { Lesson2Experience } from "./components/Lesson2Experience";
 import lesson1Raw from "./lessons/lesson-1.json";
 import lesson2Raw from "./lessons/lesson-2.json";
 import type { LessonData } from "./types/lesson";
@@ -42,17 +43,28 @@ function App() {
   // Render specific lesson components based on currentLessonId
   const currentLessonData = lessonsMap[currentLessonId] ?? lessonsMap[1];
 
+  const handleComplete = () => {
+    if (currentLessonId < lessonList.length) {
+      setCurrentLessonId((prev) => prev + 1);
+    }
+    setView("menu");
+  };
+
   if (currentLessonId === 1) {
     return (
       <Lesson1Experience
         lesson={currentLessonData}
         onExit={() => setView("menu")}
-        onComplete={() => {
-          if (currentLessonId < lessonList.length) {
-            setCurrentLessonId((prev) => prev + 1);
-          }
-          setView("menu");
-        }}
+        onComplete={handleComplete}
+      />
+    );
+  }
+
+  if (currentLessonId === 2) {
+    return (
+      <Lesson2Experience
+        lesson={currentLessonData}
+        onExit={handleComplete}
       />
     );
   }
