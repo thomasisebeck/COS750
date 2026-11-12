@@ -69,7 +69,6 @@
 
 export interface LessonMeta {
   module: string;
-  category: string;
   lessonNumber: number;
   title?: string;
   topic?: string;
@@ -105,7 +104,7 @@ export interface TextContentBox {
   boxType: "text";
   title?: string;
   text?: string;
-  prohibitPathSelection?: boolean;
+  variant?: "default" | "red" | "green";
 }
 
 export interface GraphContentBox {
