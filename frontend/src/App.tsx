@@ -68,7 +68,8 @@ function App() {
     return (
       <Lesson3Experience
         lesson={currentLessonData}
-        onExit={handleComplete}
+        onExit={() => setView("menu")}
+        onComplete={handleComplete}
       />
     );
   }

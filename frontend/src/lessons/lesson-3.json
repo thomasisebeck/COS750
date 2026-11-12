@@ -29,19 +29,66 @@
         "boxType": "graph",
         "state": {
           "nodes": [
-            { "id": "A", "label": "A", "x": 43, "y": 100 },
-            { "id": "B", "label": "B", "x": 130, "y": 26 },
-            { "id": "C", "label": "C", "x": 130, "y": 151 },
-            { "id": "D", "label": "D", "x": 217, "y": 100 }
+            {
+              "id": "A",
+              "label": "A",
+              "x": 43,
+              "y": 100
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 130,
+              "y": 26
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 130,
+              "y": 151
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 217,
+              "y": 100
+            }
           ],
           "edges": [
-            { "id": "AB", "source": "A", "target": "B", "label": "4" },
-            { "id": "AC", "source": "A", "target": "C", "label": "2" },
-            { "id": "BC", "source": "B", "target": "C", "label": "1" },
-            { "id": "BD", "source": "B", "target": "D", "label": "3" },
-            { "id": "CD", "source": "C", "target": "D", "label": "6" }
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "3"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "6"
+            }
           ],
-          "highlightedNodes": ["A"],
+          "highlightedNodes": [
+            "A"
+          ],
           "highlightedEdges": []
         },
         "prohibitPathSelection": true
@@ -77,29 +124,126 @@
         "boxType": "graph-quiz",
         "state": {
           "nodes": [
-            { "id": "A", "label": "A", "x": 43, "y": 100 },
-            { "id": "B", "label": "B", "x": 130, "y": 26 },
-            { "id": "C", "label": "C", "x": 130, "y": 151 },
-            { "id": "D", "label": "D", "x": 217, "y": 100 }
+            {
+              "id": "A",
+              "label": "A",
+              "x": 43,
+              "y": 100
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 130,
+              "y": 26
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 130,
+              "y": 151
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 217,
+              "y": 100
+            }
           ],
           "edges": [
-            { "id": "AB", "source": "A", "target": "B", "label": "4" },
-            { "id": "AC", "source": "A", "target": "C", "label": "2" },
-            { "id": "BC", "source": "B", "target": "C", "label": "1" },
-            { "id": "BD", "source": "B", "target": "D", "label": "3" },
-            { "id": "CD", "source": "C", "target": "D", "label": "6" }
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "3"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "6"
+            }
           ],
           "highlightedNodes": [],
           "highlightedEdges": []
         },
-        "question": "Which has the smaller total cost?",
+        "question": "Which route from A to D has the smaller total cost?",
         "options": [
-          { "id": "route-abd", "label": "A → B → D = 4 + 3 = 7" },
-          { "id": "route-acbd", "label": "A → C → B → D = 2 + 1 + 3 = 6" },
-          { "id": "same-cost", "label": "Both cost the same" }
+          {
+            "id": "route-abd",
+            "label": "A → B → D"
+          },
+          {
+            "id": "route-acbd",
+            "label": "A → C → B → D"
+          },
+          {
+            "id": "same-cost",
+            "label": "Both cost the same"
+          }
         ],
         "correctAnswerId": "route-acbd",
-        "prohibitPathSelection": true
+        "prohibitPathSelection": true,
+        "retryGenerator": {
+          "kind": "compare-routes",
+          "weightRange": {
+            "min": 1,
+            "max": 9
+          },
+          "minCostDifference": 1,
+          "routes": [
+            {
+              "optionId": "route-abd",
+              "path": [
+                "A",
+                "B",
+                "D"
+              ]
+            },
+            {
+              "optionId": "route-acbd",
+              "path": [
+                "A",
+                "C",
+                "B",
+                "D"
+              ]
+            }
+          ],
+          "tieOptionId": "same-cost",
+          "edgeSets": [
+            [
+              "AB",
+              "AC",
+              "BC",
+              "BD",
+              "CD"
+            ],
+            [
+              "AB",
+              "AC",
+              "BC",
+              "BD"
+            ]
+          ]
+        }
       },
       "questionType": "MULT-CHOICE",
       "buttonLabel": "Check answer"
@@ -128,29 +272,119 @@
         "boxType": "graph-quiz",
         "state": {
           "nodes": [
-            { "id": "A", "label": "A", "x": 43, "y": 100 },
-            { "id": "B", "label": "B", "x": 130, "y": 26 },
-            { "id": "C", "label": "C", "x": 130, "y": 151 },
-            { "id": "D", "label": "D", "x": 217, "y": 100 }
+            {
+              "id": "A",
+              "label": "A",
+              "x": 43,
+              "y": 100
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 130,
+              "y": 26
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 130,
+              "y": 151
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 217,
+              "y": 100
+            }
           ],
           "edges": [
-            { "id": "AB", "source": "A", "target": "B", "label": "4" },
-            { "id": "AC", "source": "A", "target": "C", "label": "2" },
-            { "id": "BC", "source": "B", "target": "C", "label": "1" },
-            { "id": "BD", "source": "B", "target": "D", "label": "3" },
-            { "id": "CD", "source": "C", "target": "D", "label": "6" }
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "3"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "6"
+            }
           ],
           "highlightedNodes": [],
           "highlightedEdges": []
         },
-        "question": "4 + 1 + 6 = ?",
+        "question": "What is the total cost of A → B → C → D?",
         "options": [
-          { "id": "cost-10", "label": "10" },
-          { "id": "cost-11", "label": "11" },
-          { "id": "cost-12", "label": "12" }
+          {
+            "id": "cost-10",
+            "label": "10"
+          },
+          {
+            "id": "cost-11",
+            "label": "11"
+          },
+          {
+            "id": "cost-12",
+            "label": "12"
+          }
         ],
         "correctAnswerId": "cost-11",
-        "prohibitPathSelection": true
+        "prohibitPathSelection": true,
+        "retryGenerator": {
+          "kind": "path-cost",
+          "weightRange": {
+            "min": 1,
+            "max": 9
+          },
+          "path": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "distractorOffsets": [
+            -3,
+            -2,
+            -1,
+            1,
+            2,
+            3
+          ],
+          "edgeSets": [
+            [
+              "AB",
+              "AC",
+              "BC",
+              "BD",
+              "CD"
+            ],
+            [
+              "AB",
+              "AC",
+              "BC",
+              "CD"
+            ]
+          ]
+        }
       },
       "questionType": "MULT-CHOICE",
       "buttonLabel": "Check answer"
@@ -169,7 +403,7 @@
         "text": "Repeat with a simpler two-edge route if needed."
       },
       "questionType": "CONTINUE",
-      "buttonLabel": "Try a simpler example"
+      "buttonLabel": "Try another question"
     },
     {
       "category": "NICE WORK",

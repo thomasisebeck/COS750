@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { LessonHeader } from "./LessonHeader";
-import { ProgressBar } from "./ProgressBar";
+import { ProgressBar } from "./progressBar";
 import { PageTitle } from "./PageTitle";
-import { InfoCard } from "./InfoCard";
-import { OptionCard } from "./OptionCard";
-import { LessonButton } from "./Buttons";
+import { InfoCard } from "./infoCard";
+import { OptionCard } from "./optionCard";
+import { LessonButton } from "./buttons";
 import { LiveGraph } from "./LiveGraph";
 import type { LessonData, LessonPage, GraphState } from "../types/lesson";
 import { playNoteSound } from "../helpers";
@@ -30,14 +30,12 @@ export function Lesson1Experience({ lesson, onExit, onComplete }: LessonExperien
     return null;
   });
 
-  useEffect(() => {
-    if (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz") {
-      setGraphState(contentBox.state);
-    } else {
-      setGraphState(null);
-    }
+  const navigateTo = (index: number) => {
+    const nextBox = lesson.pages[index].contentBox;
+    setCurrentPageIndex(index);
     setSelectedOptionId(null);
-  }, [currentPageIndex]);
+    setGraphState(nextBox.boxType === "graph" || nextBox.boxType === "graph-quiz" ? nextBox.state : null);
+  };
 
   const handleNodeMove = (nodeId: string, x: number, y: number) => {
     setGraphState((prev: GraphState | null) => {
@@ -114,7 +112,7 @@ export function Lesson1Experience({ lesson, onExit, onComplete }: LessonExperien
           if (currentPageIndex === 0) {
             onExit();
           } else {
-            setCurrentPageIndex((prev) => Math.max(0, prev - 1));
+            navigateTo(Math.max(0, currentPageIndex - 1));
           }
         }}
       />
@@ -186,7 +184,7 @@ export function Lesson1Experience({ lesson, onExit, onComplete }: LessonExperien
         label={currentPage.buttonLabel}
         onClick={() => {
           if (currentPageIndex < totalPages - 1) {
-            setCurrentPageIndex((prev) => prev + 1);
+            navigateTo(currentPageIndex + 1);
           } else {
             onComplete();
           }

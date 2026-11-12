@@ -33,12 +33,30 @@ export interface GraphContentBox {
   prohibitPathSelection?: boolean;
 }
 
+export type QuizRetryGenerator =
+  | {
+      kind: "compare-routes";
+      weightRange: { min: number; max: number };
+      edgeSets?: string[][];
+      minCostDifference?: number;
+      routes: [{ optionId: string; path: string[] }, { optionId: string; path: string[] }];
+      tieOptionId: string;
+    }
+  | {
+      kind: "path-cost";
+      weightRange: { min: number; max: number };
+      edgeSets?: string[][];
+      path: string[];
+      distractorOffsets?: number[];
+    };
+
 export interface GraphQuizContentBox {
   boxType: "graph-quiz";
   state: GraphState;
   question: string;
   options: QuizOption[];
   correctAnswerId: string;
+  retryGenerator?: QuizRetryGenerator;
   text?: string;
   prohibitPathSelection?: boolean;
 }
