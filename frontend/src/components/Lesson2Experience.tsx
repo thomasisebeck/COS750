@@ -18,13 +18,16 @@ interface Lesson2ExperienceProps {
 export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2ExperienceProps) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
-  const [feedback, setFeedback] = useState<"correct" | "incorrect" | "empty" | null>(null);
+  const [quizChecked, setQuizChecked] = useState(false);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const page = lesson.pages[index];
   const totalPages = lesson.pages.length;
   const contentBox = page.contentBox;
   const isQuiz = page.type === "quiz";
-  const isCheckedCorrect = feedback === "correct";
+  const isCheckpoint = page.type === "checkpoint";
+  const isDirected = contentBox?.isDirected ?? false;
 
   const [graphState, setGraphState] = useState<GraphState | null>(() => {
     if (contentBox && (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz")) {
@@ -40,7 +43,9 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
       setGraphState(null);
     }
     setSelected(null);
-    setFeedback(null);
+    setQuizChecked(false);
+    setIsCorrect(null);
+    setErrorMessage(null);
   }, [index]);
 
   const handleNodeMove = (nodeId: string, x: number, y: number) => {
@@ -84,7 +89,22 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
   const handleEdgeClick = (edgeId: string) => {
     setGraphState((prev: GraphState | null) => {
       if (!prev) return null;
+
+      const edge = prev.edges.find((e) => e.id === edgeId);
+      if (!edge) return prev;
+
       const isHighlighted = prev.highlightedEdges.includes(edgeId);
+
+      if (!isHighlighted && isDirected) {
+        const newNodes = Array.from(new Set([...prev.highlightedNodes, edge.source, edge.target]));
+        playNoteSound(newNodes.length + prev.highlightedEdges.length + 1);
+        return {
+          ...prev,
+          highlightedNodes: newNodes,
+          highlightedEdges: [...prev.highlightedEdges, edgeId],
+        };
+      }
+
       const nextEdges = isHighlighted
         ? prev.highlightedEdges.filter((id: string) => id !== edgeId)
         : [...prev.highlightedEdges, edgeId];
@@ -104,37 +124,63 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
     }
   };
 
-  function navigate(nextIndex: number) {
-    setIndex(nextIndex);
-  }
-
   function back() {
     if (index === 0) {
       onExit();
     } else {
-      navigate(index - 1);
+      setIndex(index - 1);
     }
   }
 
   function next() {
-    if (isQuiz && !isCheckedCorrect) {
-      if (!selected) {
-        setFeedback("empty");
+    if (isQuiz) {
+      if (!quizChecked) {
+        if (!selected) {
+          setErrorMessage("Choose an answer before checking.");
+          return;
+        }
+        const correct = selected === page.correctAnswerId;
+        setIsCorrect(correct);
+        setQuizChecked(true);
+        setErrorMessage(null);
+
+        if (correct) {
+          setIndex(index + 1);
+        }
         return;
+      } else {
+        if (isCorrect) {
+          setIndex(index + 1);
+          return;
+        } else {
+          // If incorrect, clicking try again lets them pick a new choice
+          setQuizChecked(false);
+          setIsCorrect(null);
+          setErrorMessage(null);
+          return;
+        }
       }
-      setFeedback(selected === page.correctAnswerId ? "correct" : "incorrect");
-      return;
     }
 
     if (index === totalPages - 1) {
       if (onComplete) onComplete();
       else onExit();
     } else {
-      navigate(index + 1);
+      setIndex(index + 1);
     }
   }
 
-  const buttonLabel = isQuiz && isCheckedCorrect ? "Continue" : (page.buttonLabel || page.button || "Continue");
+  // Determine button label dynamically
+  let buttonLabel = page.buttonLabel || page.button || "Continue";
+  if (isQuiz && quizChecked && isCorrect) {
+    buttonLabel = "Continue";
+  } else if (isQuiz && quizChecked && !isCorrect) {
+    buttonLabel = "Try again";
+  }
+
+  const cardTitle = isCheckpoint && !isCorrect ? "Not quite" : (page.cardTitle || "");
+  const cardText = isCheckpoint && !isCorrect ? (page.incorrectFeedback || "Review the arrow direction and try again.") : (page.cardText || "");
+  const cardVariant = isCheckpoint && !isCorrect ? "red" : (page.type === "complete" || (isCheckpoint && isCorrect) ? "green" : "default");
 
   return (
     <div className="w-full min-h-screen bg-[#111116] text-slate-100 p-6 flex flex-col gap-6">
@@ -145,12 +191,12 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
       <div className="flex-1 flex flex-col gap-4" key={index}>
         <PageTitle category={page.eyebrow || lesson.meta.category} title={page.title} subtext={page.subtext} />
 
-        {/* Main Content Card (Intro, Concepts, Adjacency Lists, or Quiz Prompts) */}
-        {page.cardTitle && page.cardText && (
+        {/* Main Content Card */}
+        {cardTitle && cardText && !isQuiz && (
           <InfoCard
-            heading={page.cardTitle}
-            body={page.cardText}
-            variant={page.type === "complete" ? "green" : "default"}
+            heading={cardTitle}
+            body={cardText}
+            variant={cardVariant}
           />
         )}
 
@@ -167,7 +213,7 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
               onEdgeClick={handleEdgeClick}
               onReset={handleReset}
               mustSelectPath={!contentBox.prohibitPathSelection}
-              isDirected={contentBox.isDirected ?? false}
+              isDirected={isDirected}
             />
 
             {contentBox.boxType === "graph" && contentBox.text && (
@@ -188,32 +234,43 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
                   label={option.label}
                   selected={selected === option.id}
                   onClick={() => {
-                    if (isCheckedCorrect) return;
                     setSelected(option.id);
-                    setFeedback(null);
+                    setQuizChecked(false);
+                    setIsCorrect(null);
+                    setErrorMessage(null);
                   }}
                 />
               ))}
             </div>
 
-            {feedback && (
+            {quizChecked && isCorrect && (
               <InfoCard
-                heading={isCheckedCorrect ? "That's right!" : "Not quite"}
-                body={
-                  isCheckedCorrect
-                    ? (page.correctFeedback ?? "")
-                    : feedback === "empty"
-                    ? "Choose an answer before checking."
-                    : (page.incorrectFeedback ?? "")
-                }
-                variant={isCheckedCorrect ? "green" : "red"}
+                heading="That's right!"
+                body={page.correctFeedback || "Great job!"}
+                variant="green"
+              />
+            )}
+
+            {quizChecked && !isCorrect && (
+              <InfoCard
+                heading="Incorrect"
+                body={page.incorrectFeedback || "That's not quite right. Select a different option and try again."}
+                variant="red"
+              />
+            )}
+
+            {errorMessage && (
+              <InfoCard
+                heading="Notice"
+                body={errorMessage}
+                variant="red"
               />
             )}
           </div>
         )}
 
         {/* Tip / Key Takeaway Section */}
-        {page.tipTitle && page.tipText && (!isQuiz || isCheckedCorrect) && (
+        {page.tipTitle && page.tipText && (!isQuiz || (isCheckpoint && isCorrect)) && (
           <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col gap-1.5">
             <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
               {page.tipTitle}
