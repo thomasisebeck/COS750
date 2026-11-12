@@ -54,7 +54,9 @@ describe('Lesson 6 content contract', () => {
   });
 
   it('keeps the same valid, undirected, read-only assessment graph on every graph screen', () => {
-    const graphPages = typedLesson.pages.filter(page => 'state' in page.contentBox);
+    const graphPages = typedLesson.pages.filter(page =>
+      'state' in page.contentBox && page.contentBox.isDirected === false);
+    expect(graphPages).toHaveLength(9);
     const first = graphPages[0].contentBox;
     if (!('state' in first)) throw new Error('Missing assessment graph');
     for (const page of graphPages) {
@@ -82,6 +84,24 @@ describe('Lesson 6 content contract', () => {
         expect(Number(edge.label)).toBeGreaterThanOrEqual(0);
       }
     }
+  });
+
+  it.each(['Find the vertices', 'Follow the arrow', 'Compute a path cost',
+    'Set initial distances', 'Explore the source', 'Select the next vertex',
+    'Relax from C', 'Relax from B', 'Find the final route'])(
+    '%s supplies its own graph instead of relying on a previous screen', title => {
+      const box = typedLesson.pages.find(page => page.title === title)!.contentBox;
+      expect(box.boxType).toBe('graph-quiz');
+      expect('state' in box && box.state.nodes.length).toBeGreaterThan(0);
+    });
+
+  it('illustrates the directed-edge question with exactly A to B', () => {
+    const box = typedLesson.pages.find(page => page.title === 'Follow the arrow')!.contentBox;
+    if (box.boxType !== 'graph-quiz') throw new Error('Missing directed graph');
+    expect(box.isDirected).toBe(true);
+    expect(box.readOnly).toBe(true);
+    expect(box.state.nodes.map(node => node.id)).toEqual(['A', 'B']);
+    expect(box.state.edges).toEqual([{ id: 'AB', source: 'A', target: 'B' }]);
   });
 
   it('independently enumerates simple paths to verify the shortest route and distractor costs', () => {

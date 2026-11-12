@@ -24,10 +24,29 @@ async function startAssessment() {
   return user;
 }
 
+function expectQuestionGraph(title: string) {
+  if (title === 'Know the limitation') {
+    expect(screen.queryByText('Assessment graph')).not.toBeInTheDocument();
+    return;
+  }
+  const graph = screen.getByText('Assessment graph').closest('div.relative')!;
+  const svg = graph.querySelector('svg[viewBox="0 0 600 400"]')!;
+  expect(svg).toBeVisible();
+  const labels = [...svg.querySelectorAll('text')].map(node => node.textContent);
+  if (title === 'Follow the arrow') {
+    expect(labels).toEqual(['A', 'B']);
+    expect(svg.querySelectorAll('line[marker-end="url(#arrow)"]')).toHaveLength(1);
+  } else {
+    expect(labels).toEqual(expect.arrayContaining(['A', 'B', 'C', 'D', '4', '2', '1', '5', '8']));
+    expect(svg.querySelectorAll('line[marker-end]')).toHaveLength(0);
+  }
+}
+
 async function finishAssessment(correctCount: number) {
   const user = await startAssessment();
   for (const [index, page] of questions.entries()) {
     expect(screen.getByRole('heading', { level: 1, name: page.title })).toBeVisible();
+    expectQuestionGraph(page.title);
     const options = page.contentBox.options!;
     const label = index < correctCount ? correctLabels[index] : options.find(option => option.label !== correctLabels[index])!.label;
     await user.click(screen.getByRole('button', { name: label }));
@@ -35,6 +54,7 @@ async function finishAssessment(correctCount: number) {
     const feedback = within(screen.getByRole('status'));
     expect(feedback.getByText(index < correctCount ? 'Correct!' : 'Keep learning')).toBeVisible();
     expect(feedback.getByText(page.contentBox.explanation!)).toBeVisible();
+    expectQuestionGraph(page.title);
     for (const option of options) expect(screen.getByRole('button', { name: option.label })).toBeDisabled();
     expect(screen.getByText(new RegExp(`${index + 2}/14`))).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Continue' }));
@@ -131,7 +151,7 @@ describe('Lesson 6 assessment interaction', () => {
     await user.click(screen.getByRole('button', { name: '4' }));
     await user.click(screen.getByRole('button', { name: 'Check answer' }));
     await user.click(screen.getByRole('button', { name: 'Continue' }));
-    expect(screen.queryByText('Assessment graph')).not.toBeInTheDocument();
+    expectQuestionGraph('Follow the arrow');
   });
 });
 
