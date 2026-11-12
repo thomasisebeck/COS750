@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
-import { Check, ChevronLeft } from "lucide-react";
-import { Logo } from "./logo";
-import { LessonButton } from "./buttons";
-import { OptionCard } from "./optionCard";
+import { Check } from "lucide-react";
+import { LessonHeader } from "./LessonHeader";
+import { PageTitle } from "./PageTitle";
+import { ProgressBar } from "./ProgressBar";
+import { InfoCard } from "./InfoCard";
+import { LessonButton } from "./Buttons";
+import { OptionCard } from "./OptionCard";
 import { DijkstraGraph } from "./DijkstraGraph";
 import { computeDijkstraTrace, shortestRoute, LESSON4_VERTICES, LESSON4_EDGES, type VertexId } from "../algorithms/dijkstra";
 import lesson4Raw from "../lessons/lesson-4.json";
-import "./lesson4.css";
 
 type PageKind = "intro" | "walkthrough" | "quiz" | "limit" | "complete";
 
@@ -45,15 +47,17 @@ function distanceLabel(distance: number): string {
   return Number.isFinite(distance) ? String(distance) : "∞";
 }
 
-/** Ten-screen Dijkstra lesson matching the supplied Lesson 4 storyboard. */
+/** Ten-screen Dijkstra lesson mapped to modular Tailwind components. */
 export function Lesson4Experience({ onExit }: { onExit: () => void }) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<VertexId | null>(null);
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | "empty" | null>(null);
+  
   const page = lesson4.pages[index];
   const frame = trace[page.snapshotIndex ?? 0];
   const isQuiz = page.type === "quiz";
   const isCheckedCorrect = feedback === "correct";
+
   const routeEdges = useMemo(() => {
     if (!page.showRoute) return [];
     return finalRoute.slice(1).map((vertex, i) => {
@@ -90,122 +94,140 @@ export function Lesson4Experience({ onExit }: { onExit: () => void }) {
   }
 
   return (
-    <main className="l4-viewport">
-      <article className="l4-screen" aria-label="Lesson 4: Find the Route">
-        <header className="l4-header">
-          <Logo />
-          <span className="l4-lesson-label">LESSON 4</span>
-        </header>
-        <nav className="l4-progress-row" aria-label="Lesson 4 progress">
-          <button type="button" className="l4-back" onClick={back}
-            aria-label={index === 0 ? "Return to learning path" : "Previous page"}>
-            <ChevronLeft size={18} strokeWidth={1.7} />
-          </button>
-          <div className="l4-progress-track" role="progressbar"
-            aria-valuenow={index + 1} aria-valuemin={1} aria-valuemax={lesson4.pages.length}
-            aria-label="Lesson progress">
-            <span style={{ width: `${((index + 1) / lesson4.pages.length) * 100}%` }} />
-          </div>
-          <span className="l4-progress-text">4 · {index + 1}/{lesson4.pages.length}</span>
-        </nav>
+    <div className="w-full min-h-screen bg-[#111116] text-slate-100 p-6 flex flex-col gap-6">
+      {/* Lesson Header with 3 dots menu option */}
+      <LessonHeader
+        lessonNumber={lesson4.meta.lessonNumber}
+        onMenuClick={onExit}
+      />
 
-        <div className="l4-content" key={index}>
-          <div className="l4-heading">
-            <span className="l4-eyebrow">{page.eyebrow}</span>
-            <h1>{page.title}</h1>
-            <p>{page.subtext}</p>
-          </div>
+      {/* Standard Progress Bar */}
+      <ProgressBar
+        currentIndex={index}
+        total={lesson4.pages.length}
+        onBack={back}
+      />
 
-          {(page.type === "walkthrough" || page.type === "quiz") && (
-            <>
-              <DijkstraGraph
-                activeVertex={page.activeVertex ?? null}
-                settledVertices={frame.settled}
-                highlightedEdges={page.showRoute ? routeEdges : (page.highlightedEdges ?? [])}
-                routeVertices={page.showRoute ? finalRoute : []}
-              />
-              {page.type === "walkthrough" && (
-                <>
-                  <div className="l4-table-panel">
-                    <table className="l4-distance-table">
-                      <caption className="l4-sr-only">Tentative distances and predecessors after this step</caption>
-                      <thead><tr>
-                        <th scope="col">VERTEX</th><th scope="col">DIST</th>
-                        <th scope="col">PREV</th><th scope="col">STATE</th>
-                      </tr></thead>
-                      <tbody>
-                        {LESSON4_VERTICES.map((vertex) => (
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col gap-4" key={index}>
+        <PageTitle
+          category={page.eyebrow}
+          title={page.title}
+          subtext={page.subtext}
+        />
+
+        {(page.type === "walkthrough" || page.type === "quiz") && (
+          <div className="flex flex-col gap-4">
+            <DijkstraGraph
+              activeVertex={page.activeVertex ?? null}
+              settledVertices={frame.settled}
+              highlightedEdges={page.showRoute ? routeEdges : (page.highlightedEdges ?? [])}
+              routeVertices={page.showRoute ? finalRoute : []}
+            />
+
+            {page.type === "walkthrough" && (
+              <>
+                <div className="border border-slate-800 bg-slate-900 rounded-xl overflow-hidden shadow-lg p-3">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="text-slate-400 border-b border-slate-800">
+                        <th scope="col" className="py-2 px-2 font-semibold">VERTEX</th>
+                        <th scope="col" className="py-2 px-2 font-semibold">DIST</th>
+                        <th scope="col" className="py-2 px-2 font-semibold">PREV</th>
+                        <th scope="col" className="py-2 px-2 font-semibold">STATE</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60 font-mono">
+                      {LESSON4_VERTICES.map((vertex) => {
+                        const isSettled = frame.settled.includes(vertex);
+                        return (
                           <tr key={vertex}>
-                            <th scope="row">{vertex}</th>
-                            <td>{distanceLabel(frame.distances[vertex])}</td>
-                            <td>{frame.predecessors[vertex] ?? "—"}</td>
-                            <td className={frame.settled.includes(vertex) ? "l4-settled" : "l4-open"}>
-                              {frame.settled.includes(vertex) ? "SETTLED" : "OPEN"}
+                            <th scope="row" className="py-2 px-2 text-slate-200 font-bold">{vertex}</th>
+                            <td className="py-2 px-2 text-slate-300">{distanceLabel(frame.distances[vertex])}</td>
+                            <td className="py-2 px-2 text-slate-300">{frame.predecessors[vertex] ?? "—"}</td>
+                            <td className={`py-2 px-2 font-semibold ${isSettled ? "text-emerald-400" : "text-amber-400"}`}>
+                              {isSettled ? "SETTLED" : "OPEN"}
                             </td>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  {page.note && <div className="l4-step-note">{page.note}</div>}
-                </>
-              )}
-            </>
-          )}
-
-          {isQuiz && (
-            <div className="l4-quiz">
-              <p className="l4-question">{page.question}</p>
-              <div className="l4-options" role="group" aria-label={page.question}>
-                {page.options?.map((option) => (
-                  <OptionCard
-                    key={option.id}
-                    label={option.label}
-                    selected={selected === option.id}
-                    onClick={() => {
-                      if (isCheckedCorrect) return;
-                      setSelected(option.id);
-                      setFeedback(null);
-                    }}
-                    className="l4-option"
-                  />
-                ))}
-              </div>
-              {feedback && (
-                <p className={`l4-feedback ${isCheckedCorrect ? "l4-feedback-good" : "l4-feedback-error"}`}
-                  role="status" aria-live="polite">
-                  {isCheckedCorrect ? page.correctFeedback :
-                    feedback === "empty" ? "Choose a vertex before checking." : page.incorrectFeedback}
-                </p>
-              )}
-            </div>
-          )}
-
-          {(page.type === "intro" || page.type === "limit" || page.type === "complete") && (
-            <>
-              <div className={`l4-information ${page.type === "complete" ? "l4-success" : ""}`}>
-                <div className="l4-card-heading">
-                  {page.type === "complete" && <Check size={17} strokeWidth={3} aria-hidden="true" />}
-                  {page.cardTitle}
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
-                <p>{page.cardText}</p>
-              </div>
-              <div className="l4-takeaway">
-                <span>{page.tipTitle}</span>
-                <p>{page.tipText}</p>
-              </div>
-            </>
-          )}
-        </div>
+                {page.note && (
+                  <p className="text-xs text-slate-400 text-center font-medium bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
+                    {page.note}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        )}
 
-        <footer className="l4-footer">
-          <LessonButton
-            label={isCheckedCorrect ? "Next step" : page.button}
-            onClick={next}
-            className="l4-primary-button"
-          />
-        </footer>
-      </article>
-    </main>
+        {isQuiz && (
+          <div className="flex flex-col gap-4">
+            {page.question && (
+              <h3 className="text-sm font-bold text-slate-100">
+                {page.question}
+              </h3>
+            )}
+            <div className="flex flex-col gap-2.5" role="group" aria-label={page.question}>
+              {page.options?.map((option) => (
+                <OptionCard
+                  key={option.id}
+                  label={option.label}
+                  selected={selected === option.id}
+                  onClick={() => {
+                    if (isCheckedCorrect) return;
+                    setSelected(option.id);
+                    setFeedback(null);
+                  }}
+                />
+              ))}
+            </div>
+
+            {feedback && (
+              <InfoCard
+                heading={isCheckedCorrect ? "Correct!" : "Incorrect"}
+                body={
+                  isCheckedCorrect
+                    ? (page.correctFeedback ?? "")
+                    : feedback === "empty"
+                    ? "Choose a vertex before checking."
+                    : (page.incorrectFeedback ?? "")
+                }
+                variant={isCheckedCorrect ? "green" : "red"}
+              />
+            )}
+          </div>
+        )}
+
+        {(page.type === "intro" || page.type === "limit" || page.type === "complete") && (
+          <div className="flex flex-col gap-4">
+            <InfoCard
+              heading={page.cardTitle || ""}
+              body={page.cardText || ""}
+              variant={page.type === "complete" ? "green" : "default"}
+            />
+            {page.tipTitle && page.tipText && (
+              <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col gap-1.5">
+                <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
+                  {page.tipTitle}
+                </span>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  {page.tipText}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Action Footer */}
+      <LessonButton
+        label={isCheckedCorrect ? "Next step" : page.button}
+        onClick={next}
+      />
+    </div>
   );
 }
