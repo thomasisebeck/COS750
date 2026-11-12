@@ -67,8 +67,8 @@ function App() {
   if (currentLessonId === 4) {
     return (
       <Lesson4Experience
-        lesson={currentLessonData}
-        onExit={handleComplete}
+        onExit={() => setView("menu")}
+        onComplete={handleComplete}
       />
     );
   }
