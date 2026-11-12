@@ -136,7 +136,6 @@ export interface ExtraBox {
 export type QuestionType = "CONTINUE" | "VERT_SELECTION" | "MULT-CHOICE";
 
 export interface LessonPage {
-  category: string;
   title: string;
   subtext: string;
   category?: string;
