@@ -95,18 +95,7 @@
       ],
       "correctAnswerId": "opt1",
       "correctFeedback": "Directed edges have a specified direction. Undirected edges work in both directions.",
-      "incorrectFeedback": "A directed edge only allows movement strictly in the direction of the arrow."
-    },
-    {
-      "type": "checkpoint",
-      "eyebrow": "CHECKPOINT",
-      "title": "Connections understood",
-      "subtext": "You can now reason about which moves are possible.",
-      "buttonLabel": "Continue",
-      "cardTitle": "That's right!",
-      "cardText": "Directed edges have a specified direction. Undirected edges work in both directions.",
-      "tipTitle": "WHY?",
-      "tipText": "For the example graph, neighbours of A are B and C. Adjacency does not require travelling multiple edges."
+      "incorrectFeedback": "A directed edge only allows movement in the direction of the arrow (from A to B)."
     },
     {
       "type": "concept",
@@ -145,13 +134,24 @@
     {
       "type": "list-concept",
       "eyebrow": "BONUS CONCEPT",
-      "title": "Graph as lists",
+      "title": "Graphs as lists",
       "subtext": "A computer can store neighbours in an adjacency list.",
       "buttonLabel": "Continue",
       "cardTitle": "ADJACENCY LIST",
       "cardText": "A: B, C\nB: A, C, D\nC: A, B, D\nD: B, C",
       "tipTitle": "KEY TAKEAWAY",
       "tipText": "Lists store the vertices directly connected to each vertex; this example is undirected."
+    },
+    {
+      "type": "complete",
+      "eyebrow": "CHECKPOINT",
+      "title": "Connections understood",
+      "subtext": "You can now reason about which moves are possible.",
+      "buttonLabel": "Continue",
+      "cardTitle": "That's right!",
+      "cardText": "Directed edges have a specified direction. Undirected edges work in both directions.",
+      "tipTitle": "WHY?",
+      "tipText": "For the example graph, neighbours of A are B and C. Adjacency does not require travelling multiple edges."
     }
   ]
 }
