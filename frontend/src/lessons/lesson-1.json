@@ -186,7 +186,7 @@
       "contentBox": {
         "boxType": "text",
         "variant": "green",
-        "title": "That's right!",
+        "title": "Key takeaway",
         "text": "A graph is built from vertices and edges. Paths follow connected vertices."
       },
       "extraBox": {
