@@ -1,11 +1,11 @@
 {
   "meta": {
     "module": "PathFinder",
-    "category": "A NEW WAY TO THINK",
     "lessonNumber": 1
   },
   "pages": [
     {
+      "category": "A NEW WAY TO THINK",
       "title": "Meet the Graph",
       "subtext": "How do we represent cities, roads and other connections?",
       "contentBox": {
@@ -21,6 +21,7 @@
       "buttonLabel": "Start lesson"
     },
     {
+      "category": "STEP 01",
       "title": "What is a vertex?",
       "subtext": "A vertex (or node) represents a place or object.",
       "contentBox": {
@@ -45,10 +46,15 @@
         },
         "text": "Tap a circle to inspect a vertex."
       },
+      "extraBox": {
+        "title": "VERTEX",
+        "text": "A, B, C and D are vertices. Each circle represents one vertex."
+      },
       "questionType": "VERT_SELECTION",
       "buttonLabel": "Continue"
     },
     {
+      "category": "YOUR TURN",
       "title": "Find the vertices",
       "subtext": "Try answer the question below",
       "contentBox": {
@@ -81,6 +87,114 @@
       },
       "questionType": "MULT-CHOICE",
       "buttonLabel": "Check answer"
+    },
+    {
+      "category": "STEP 02",
+      "title": "What is an edge?",
+      "subtext": "An edge connects two vertices.",
+      "contentBox": {
+        "boxType": "graph",
+        "prohibitPathSelection": false,
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 150, "y": 175 },
+            { "id": "B", "label": "B", "x": 325, "y": 75 },
+            { "id": "C", "label": "C", "x": 325, "y": 275 },
+            { "id": "D", "label": "D", "x": 500, "y": 175 }
+          ],
+          "edges": [
+            { "id": "eA-B", "source": "A", "target": "B", "label": "" },
+            { "id": "eA-C", "source": "A", "target": "C", "label": "" },
+            { "id": "eB-C", "source": "B", "target": "C", "label": "" },
+            { "id": "eB-D", "source": "B", "target": "D", "label": "" },
+            { "id": "eC-D", "source": "C", "target": "D", "label": "" }
+          ],
+          "highlightedNodes": ["A"],
+          "highlightedEdges": []
+        },
+        "text": "Inspect the line linking A and B by clicking on it"
+      },
+      "extraBox": {
+        "title": "EDGE",
+        "text": "The line between A and B is an edge. It represents a relationship or possible route."
+      },
+      "questionType": "EDGE_SELECTION",
+      "buttonLabel": "Continue"
+    },
+
+    {
+      "category": "YOUR TURN",
+
+      "title": "Who is next to A?",
+      "subtext": "Adjacent vertices have an edge between them.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "prohibitPathSelection": false,
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 150, "y": 175 },
+            { "id": "B", "label": "B", "x": 325, "y": 75 },
+
+            { "id": "C", "label": "C", "x": 325, "y": 275 },
+            { "id": "D", "label": "D", "x": 500, "y": 175 }
+          ],
+
+          "edges": [
+            { "id": "eA-B", "source": "A", "target": "B", "label": "" },
+            { "id": "eA-C", "source": "A", "target": "C", "label": "" },
+
+            { "id": "eB-C", "source": "B", "target": "C", "label": "" },
+            { "id": "eB-D", "source": "B", "target": "D", "label": "" },
+            { "id": "eC-D", "source": "C", "target": "D", "label": "" }
+          ],
+          "highlightedNodes": ["A"],
+          "highlightedEdges": []
+        },
+        "question": "Which vertices are adjacent to A?",
+        "options": [
+          { "id": "opt-1", "label": "B and C" },
+          { "id": "opt-2", "label": "B and D" },
+          { "id": "opt-3", "label": "C and D" }
+        ],
+        "correctAnswerId": "opt-1"
+      },
+
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "category": "CONCEPT",
+      "title": "Follow a path",
+      "subtext": "A path is a sequence of connected vertices.",
+      "contentBox": {
+        "boxType": "text",
+        "title": "EXAMPLE: A → C → D",
+        "text": "We travel from A to C along an edge, then from C to D along another edge. Each consecutive pair must be connected."
+      },
+
+      "extraBox": {
+        "title": "KEY TAKEAWAY",
+        "text": "A → D is not a direct edge in this graph. A → C → D is a valid path."
+      },
+      "questionType": "CONTINUE",
+      "buttonLabel": "Continue"
+    },
+    {
+      "category": "CHECKPOINT",
+      "title": "Graph basics unlocked",
+      "subtext": "Your first building blocks are ready.",
+      "contentBox": {
+        "boxType": "text",
+        "variant": "green",
+        "title": "Key takeaway",
+        "text": "A graph is built from vertices and edges. Paths follow connected vertices."
+      },
+      "extraBox": {
+        "title": "WHY?",
+        "text": "Correct labels: A/B/C/D = vertices; lines = edges; neighbours of A = B and C."
+      },
+      "questionType": "CONTINUE",
+      "buttonLabel": "Continue"
     }
   ]
 }
