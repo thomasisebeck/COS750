@@ -5,6 +5,7 @@ interface LessonButtonProps {
   disabled?: boolean;
   onClick?: () => void;
   className?: string;
+  showArrow?: boolean;
 }
 
 export const LessonButton: React.FC<LessonButtonProps> = ({
@@ -12,6 +13,7 @@ export const LessonButton: React.FC<LessonButtonProps> = ({
   disabled = false,
   onClick,
   className = '',
+  showArrow = true,
 }) => {
   return (
     <button
@@ -22,7 +24,7 @@ export const LessonButton: React.FC<LessonButtonProps> = ({
     >
       <span>{label}</span>
 
-      <svg
+      {showArrow && <svg
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -34,7 +36,7 @@ export const LessonButton: React.FC<LessonButtonProps> = ({
       >
         <path d="M5 12h14" />
         <path d="m12 5 7 7-7 7" />
-      </svg>
+      </svg>}
     </button>
   );
 };

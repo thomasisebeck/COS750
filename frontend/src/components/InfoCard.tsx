@@ -74,7 +74,7 @@ export const InfoCard: React.FC<InfoCardProps> = ({
         <span>{heading}</span>
       </div>
 
-      <p className="text-zinc-200 text-sm leading-relaxed break-words">
+      <p className="text-zinc-200 text-sm leading-relaxed break-words whitespace-pre-line font-mono">
         {body}
       </p>
     </div>
