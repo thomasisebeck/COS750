@@ -1,0 +1,320 @@
+{
+  "meta": {
+    "lessonNumber": 5,
+    "title": "Think Like Dijkstra",
+    "topic": "Guided practice working through Dijkstra's shortest path algorithm"
+  },
+  "pages": [
+    {
+      "category": "GUIDED PRACTICE",
+      "title": "Now it’s your turn",
+      "subtext": "Solve a fresh weighted graph. We will guide you when needed.",
+      "buttonLabel": "Begin practice →",
+      "contentBox": {
+        "boxType": "graph",
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 80, "y": 110 },
+            { "id": "B", "label": "B", "x": 200, "y": 45 },
+            { "id": "C", "label": "C", "x": 200, "y": 175 },
+            { "id": "D", "label": "D", "x": 320, "y": 110 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "2" },
+            { "id": "e2", "source": "A", "target": "C", "label": "5" },
+            { "id": "e3", "source": "B", "target": "C", "label": "1" },
+            { "id": "e4", "source": "B", "target": "D", "label": "6" },
+            { "id": "e5", "source": "C", "target": "D", "label": "2" }
+          ],
+          "highlightedNodes": ["A"],
+          "highlightedEdges": []
+        },
+        "text": "Start at vertex A. Find the lowest-cost route to D using Dijkstra’s algorithm."
+      },
+      "extraBox": {
+        "title": "Workflow",
+        "text": "Observe → answer → check → learn from feedback."
+      }
+    },
+    {
+      "category": "STEP 01",
+      "title": "Set the starting values",
+      "subtext": "Before exploring, initialise your distance table.",
+      "buttonLabel": "Check answer",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 80, "y": 110 },
+            { "id": "B", "label": "B", "x": 200, "y": 45 },
+            { "id": "C", "label": "C", "x": 200, "y": 175 },
+            { "id": "D", "label": "D", "x": 320, "y": 110 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "2" },
+            { "id": "e2", "source": "A", "target": "C", "label": "5" },
+            { "id": "e3", "source": "B", "target": "C", "label": "1" },
+            { "id": "e4", "source": "B", "target": "D", "label": "6" },
+            { "id": "e5", "source": "C", "target": "D", "label": "2" }
+          ],
+          "highlightedNodes": ["A"],
+          "highlightedEdges": []
+        },
+        "question": "What is the distance to the source A?",
+        "options": [
+          { "id": "opt-0", "label": "∞ (infinity)" },
+          { "id": "opt-1", "label": "0" },
+          { "id": "opt-2", "label": "1" }
+        ],
+        "correctAnswerId": "opt-1"
+      }
+    },
+    {
+      "category": "STEP 02",
+      "title": "Explore A’s neighbours",
+      "subtext": "A has distance 0. Its edges reach B and C.",
+      "buttonLabel": "Check answer",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 80, "y": 110 },
+            { "id": "B", "label": "B", "x": 200, "y": 45 },
+            { "id": "C", "label": "C", "x": 200, "y": 175 },
+            { "id": "D", "label": "D", "x": 320, "y": 110 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "2" },
+            { "id": "e2", "source": "A", "target": "C", "label": "5" },
+            { "id": "e3", "source": "B", "target": "C", "label": "1" },
+            { "id": "e4", "source": "B", "target": "D", "label": "6" },
+            { "id": "e5", "source": "C", "target": "D", "label": "2" }
+          ],
+          "highlightedNodes": ["A", "B", "C"],
+          "highlightedEdges": ["e1", "e2"]
+        },
+        "question": "What tentative distance should B receive?",
+        "options": [
+          { "id": "opt-0", "label": "2" },
+          { "id": "opt-1", "label": "5" },
+          { "id": "opt-2", "label": "7" }
+        ],
+        "correctAnswerId": "opt-0"
+      }
+    },
+    {
+      "category": "STEP 03",
+      "title": "Choose the next vertex",
+      "subtext": "A is done. The unsettled distances are B: 2, C: 5, D: ∞.",
+      "buttonLabel": "Check answer",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 80, "y": 110 },
+            { "id": "B", "label": "B", "x": 200, "y": 45 },
+            { "id": "C", "label": "C", "x": 200, "y": 175 },
+            { "id": "D", "label": "D", "x": 320, "y": 110 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "2" },
+            { "id": "e2", "source": "A", "target": "C", "label": "5" },
+            { "id": "e3", "source": "B", "target": "C", "label": "1" },
+            { "id": "e4", "source": "B", "target": "D", "label": "6" },
+            { "id": "e5", "source": "C", "target": "D", "label": "2" }
+          ],
+          "highlightedNodes": ["A", "B"],
+          "highlightedEdges": ["e1"]
+        },
+        "question": "Which vertex is selected next?",
+        "options": [
+          { "id": "opt-0", "label": "B (distance 2)" },
+          { "id": "opt-1", "label": "C (distance 5)" },
+          { "id": "opt-2", "label": "D (distance ∞)" }
+        ],
+        "correctAnswerId": "opt-0"
+      }
+    },
+    {
+      "category": "STEP 04",
+      "title": "Find a shorter way to C",
+      "subtext": "Current distance C = 5. B has distance 2; B–C weighs 1.",
+      "buttonLabel": "Check answer",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 80, "y": 110 },
+            { "id": "B", "label": "B", "x": 200, "y": 45 },
+            { "id": "C", "label": "C", "x": 200, "y": 175 },
+            { "id": "D", "label": "D", "x": 320, "y": 110 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "2" },
+            { "id": "e2", "source": "A", "target": "C", "label": "5" },
+            { "id": "e3", "source": "B", "target": "C", "label": "1" },
+            { "id": "e4", "source": "B", "target": "D", "label": "6" },
+            { "id": "e5", "source": "C", "target": "D", "label": "2" }
+          ],
+          "highlightedNodes": ["A", "B", "C"],
+          "highlightedEdges": ["e1", "e3"]
+        },
+        "question": "Should C’s distance be updated?",
+        "options": [
+          { "id": "opt-0", "label": "Yes: 2 + 1 = 3" },
+          { "id": "opt-1", "label": "No: keep 5" },
+          { "id": "opt-2", "label": "Yes: 2 + 1 = 1" }
+        ],
+        "correctAnswerId": "opt-0"
+      }
+    },
+    {
+      "category": "STEP 05",
+      "title": "Record a predecessor",
+      "subtext": "B has distance 2 and its edge to D weighs 6.",
+      "buttonLabel": "Check answer",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 80, "y": 110 },
+            { "id": "B", "label": "B", "x": 200, "y": 45 },
+            { "id": "C", "label": "C", "x": 200, "y": 175 },
+            { "id": "D", "label": "D", "x": 320, "y": 110 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "2" },
+            { "id": "e2", "source": "A", "target": "C", "label": "5" },
+            { "id": "e3", "source": "B", "target": "C", "label": "1" },
+            { "id": "e4", "source": "B", "target": "D", "label": "6" },
+            { "id": "e5", "source": "C", "target": "D", "label": "2" }
+          ],
+          "highlightedNodes": ["A", "B", "D"],
+          "highlightedEdges": ["e1", "e4"]
+        },
+        "question": "What are D’s new distance and predecessor?",
+        "options": [
+          { "id": "opt-0", "label": "6 and A" },
+          { "id": "opt-1", "label": "8 and B" },
+          { "id": "opt-2", "label": "∞ and none" }
+        ],
+        "correctAnswerId": "opt-1"
+      }
+    },
+    {
+      "category": "STEP 06",
+      "title": "Find the next minimum",
+      "subtext": "Unsettled: C: 3 and D: 8. Choose the smallest.",
+      "buttonLabel": "Check answer",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 80, "y": 110 },
+            { "id": "B", "label": "B", "x": 200, "y": 45 },
+            { "id": "C", "label": "C", "x": 200, "y": 175 },
+            { "id": "D", "label": "D", "x": 320, "y": 110 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "2" },
+            { "id": "e2", "source": "A", "target": "C", "label": "5" },
+            { "id": "e3", "source": "B", "target": "C", "label": "1" },
+            { "id": "e4", "source": "B", "target": "D", "label": "6" },
+            { "id": "e5", "source": "C", "target": "D", "label": "2" }
+          ],
+          "highlightedNodes": ["A", "B", "C"],
+          "highlightedEdges": ["e1", "e3"]
+        },
+        "question": "Who should be settled next?",
+        "options": [
+          { "id": "opt-0", "label": "C (distance 3)" },
+          { "id": "opt-1", "label": "D (distance 8)" },
+          { "id": "opt-2", "label": "A (distance 0)" }
+        ],
+        "correctAnswerId": "opt-0"
+      }
+    },
+    {
+      "category": "STEP 07",
+      "title": "Improve D through C",
+      "subtext": "C has distance 3; its edge to D weighs 2.",
+      "buttonLabel": "Check answer",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 80, "y": 110 },
+            { "id": "B", "label": "B", "x": 200, "y": 45 },
+            { "id": "C", "label": "C", "x": 200, "y": 175 },
+            { "id": "D", "label": "D", "x": 320, "y": 110 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "2" },
+            { "id": "e2", "source": "A", "target": "C", "label": "5" },
+            { "id": "e3", "source": "B", "target": "C", "label": "1" },
+            { "id": "e4", "source": "B", "target": "D", "label": "6" },
+            { "id": "e5", "source": "C", "target": "D", "label": "2" }
+          ],
+          "highlightedNodes": ["A", "B", "C", "D"],
+          "highlightedEdges": ["e1", "e3", "e5"]
+        },
+        "question": "Candidate = 3 + 2. What happens to D?",
+        "options": [
+          { "id": "opt-0", "label": "Keep 8" },
+          { "id": "opt-1", "label": "Update to 5; predecessor C" },
+          { "id": "opt-2", "label": "Update to 2; predecessor C" }
+        ],
+        "correctAnswerId": "opt-1"
+      }
+    },
+    {
+      "category": "STEP 08",
+      "title": "Rebuild the path",
+      "subtext": "The final predecessor chain is D ← C ← B ← A.",
+      "buttonLabel": "Check answer",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 80, "y": 110 },
+            { "id": "B", "label": "B", "x": 200, "y": 45 },
+            { "id": "C", "label": "C", "x": 200, "y": 175 },
+            { "id": "D", "label": "D", "x": 320, "y": 110 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "2" },
+            { "id": "e2", "source": "A", "target": "C", "label": "5" },
+            { "id": "e3", "source": "B", "target": "C", "label": "1" },
+            { "id": "e4", "source": "B", "target": "D", "label": "6" },
+            { "id": "e5", "source": "C", "target": "D", "label": "2" }
+          ],
+          "highlightedNodes": ["A", "B", "C", "D"],
+          "highlightedEdges": ["e1", "e3", "e5"]
+        },
+        "question": "Which path has total cost 5?",
+        "options": [
+          { "id": "opt-0", "label": "A → B → C → D" },
+          { "id": "opt-1", "label": "A → B → D" },
+          { "id": "opt-2", "label": "A → C → D" }
+        ],
+        "correctAnswerId": "opt-0"
+      }
+    },
+    {
+      "category": "PRACTICE COMPLETE",
+      "title": "You’ve run Dijkstra’s!",
+      "subtext": "You solved the graph from A to D.",
+      "buttonLabel": "Start assessment →",
+      "contentBox": {
+        "boxType": "text",
+        "title": "Final shortest path",
+        "text": "A → B → C → D costs 2 + 1 + 2 = 5.",
+        "variant": "green"
+      },
+      "extraBox": {
+        "title": "Next steps",
+        "text": "For independent assessment, you’ll solve an unfamiliar graph."
+      }
+    }
+  ]
+}

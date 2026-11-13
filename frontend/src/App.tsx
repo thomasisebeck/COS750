@@ -5,10 +5,12 @@ import { Lesson1Experience } from "./components/Lesson1Experience";
 import { Lesson2Experience } from "./components/Lesson2Experience";
 import { Lesson3Experience } from "./components/Lesson3Experience";
 import { Lesson4Experience } from "./components/Lesson4Experience";
+import { Lesson5Experience } from "./components/Lesson5Experience";
 import lesson1Raw from "./lessons/lesson-1.json";
 import lesson2Raw from "./lessons/lesson-2.json";
 import lesson3Raw from "./lessons/lesson-3.json";
 import lesson4Raw from "./lessons/lesson-4.json";
+import lesson5Raw from "./lessons/lesson-5.json";
 import type { LessonData } from "./types/lesson";
 
 const lessonsMap: Record<number, LessonData> = {
@@ -16,6 +18,7 @@ const lessonsMap: Record<number, LessonData> = {
   2: lesson2Raw as unknown as LessonData,
   3: lesson3Raw as unknown as LessonData,
   4: lesson4Raw as unknown as LessonData,
+  5: lesson5Raw as unknown as LessonData,
 };
 
 const lessonList: LessonSummary[] = [
@@ -87,6 +90,16 @@ function App() {
   if (currentLessonId === 4) {
     return (
       <Lesson4Experience
+        onExit={() => setView("menu")}
+        onComplete={handleComplete}
+      />
+    );
+  }
+
+  if (currentLessonId === 5) {
+    return (
+      <Lesson4Experience
+        // lesson={currentLessonData}
         onExit={() => setView("menu")}
         onComplete={handleComplete}
       />
