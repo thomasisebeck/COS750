@@ -2,6 +2,7 @@ import React from 'react';
 
 interface LessonButtonProps {
   label: string;
+  disabled?: boolean;
   onClick?: () => void;
   className?: string;
   showArrow?: boolean;
@@ -9,6 +10,7 @@ interface LessonButtonProps {
 
 export const LessonButton: React.FC<LessonButtonProps> = ({
   label,
+  disabled = false,
   onClick,
   className = '',
   showArrow = true,
@@ -16,8 +18,9 @@ export const LessonButton: React.FC<LessonButtonProps> = ({
   return (
     <button
       type="button"
+      disabled={disabled}
       onClick={onClick}
-      className={`group w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-[#915eff] hover:bg-[#824df5] active:scale-[0.98] text-white font-semibold text-base transition-all duration-150 cursor-pointer ${className}`}
+      className={`disabled:opacity-50 disabled:cursor-not-allowed group w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-[#915eff] hover:bg-[#824df5] active:scale-[0.98] text-white font-semibold text-base transition-all duration-150 cursor-pointer ${className}`}
     >
       <span>{label}</span>
 

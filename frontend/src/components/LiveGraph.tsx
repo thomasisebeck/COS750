@@ -30,6 +30,7 @@ interface LiveGraphProps {
   showCounts?: boolean;
   mustSelectPath?: boolean;
   isDirected?: boolean;
+  readOnly?: boolean;
 }
 
 export const LiveGraph: React.FC<LiveGraphProps> = ({
@@ -46,6 +47,7 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
   showCounts,
   mustSelectPath = true,
   isDirected = true,
+  readOnly = false,
 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
@@ -156,7 +158,7 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
       <div className="flex items-center justify-between w-full mb-3 px-2">
         <div className="flex items-center gap-2 text-slate-200 font-medium text-sm">
           <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
-          <span>Interactive Sandbox</span>
+          <span>{readOnly ? "Assessment graph" : "Interactive Sandbox"}</span>
         </div>
         <div className="flex items-center gap-3">
           {showCounts && (
@@ -282,9 +284,9 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
             <g
               key={node.id}
               transform={`translate(${node.x}, ${node.y})`}
-              onMouseDown={(e) => handleMouseDown(e, node)}
+              onMouseDown={readOnly ? undefined : (e) => handleMouseDown(e, node)}
               onClick={() => {
-                if (!hasMovedRef.current) {
+                if (!readOnly && !hasMovedRef.current) {
                   handleNodeSelect(node.id);
                 }
               }}

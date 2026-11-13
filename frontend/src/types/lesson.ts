@@ -105,6 +105,9 @@ export interface TextContentBox {
   title?: string;
   text?: string;
   variant?: "default" | "red" | "green";
+  prohibitPathSelection?: boolean;
+  isDirected?: boolean;
+  readOnly?: boolean;
 }
 
 export interface GraphContentBox {
@@ -112,6 +115,16 @@ export interface GraphContentBox {
   state?: GraphState;
   text?: string;
   prohibitPathSelection?: boolean;
+  isDirected?: boolean;
+  readOnly?: boolean;
+}
+
+export interface QuizContentBox {
+  boxType: "quiz";
+  question: string;
+  options: QuizOption[];
+  correctAnswerId: string;
+  explanation?: string;
   isDirected?: boolean;
 }
 
@@ -138,13 +151,15 @@ export interface GraphQuizContentBox {
   question?: string;
   options?: QuizOption[];
   correctAnswerId?: string;
+  explanation?: string;
   retryGenerator?: QuizRetryGenerator;
   text?: string;
   prohibitPathSelection?: boolean;
   isDirected?: boolean;
+  readOnly?: boolean;
 }
 
-export type ContentBox = TextContentBox | GraphContentBox | GraphQuizContentBox;
+export type ContentBox = TextContentBox | GraphContentBox | GraphQuizContentBox | QuizContentBox;
 
 export interface ExtraBox {
   title: string;
@@ -154,6 +169,7 @@ export interface ExtraBox {
 export type QuestionType = "CONTINUE" | "VERT_SELECTION" | "MULT-CHOICE";
 
 export interface LessonPage {
+  pageType?: "results" | "review";
   category?: string;
   title: string;
   subtext: string;

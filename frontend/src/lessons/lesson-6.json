@@ -1,0 +1,943 @@
+{
+  "meta": {
+    "module": "PathFinder",
+    "category": "PROVE YOUR SKILLS",
+    "lessonNumber": 6
+  },
+  "pages": [
+    {
+      "title": "Show what you know",
+      "subtext": "Put your graph and shortest-path skills to the test.",
+      "contentBox": {
+        "boxType": "graph",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "isDirected": false,
+        "readOnly": true,
+        "text": "One graph. Ten questions. Work at your own pace."
+      },
+      "extraBox": {
+        "title": "YOUR CHALLENGE",
+        "text": "Answer ten questions about vertices, edges, paths and Dijkstra\u2019s algorithm. Choose an answer, check it, and learn from the explanation."
+      },
+      "questionType": "CONTINUE",
+      "buttonLabel": "Start assessment"
+    },
+    {
+      "title": "Find the vertices",
+      "subtext": "Start with the building blocks.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "How many vertices are in this graph?",
+        "options": [
+          {
+            "id": "0",
+            "label": "3"
+          },
+          {
+            "id": "1",
+            "label": "4"
+          },
+          {
+            "id": "2",
+            "label": "5"
+          }
+        ],
+        "correctAnswerId": "1",
+        "explanation": "The four vertices are A, B, C and D.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "prohibitPathSelection": true,
+        "isDirected": false,
+        "readOnly": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Follow the arrow",
+      "subtext": "Think about directed connections.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "In a directed graph, what does the edge A \u2192 B allow?",
+        "options": [
+          {
+            "id": "0",
+            "label": "A to B only"
+          },
+          {
+            "id": "1",
+            "label": "B to A only"
+          },
+          {
+            "id": "2",
+            "label": "Both directions"
+          }
+        ],
+        "correctAnswerId": "0",
+        "explanation": "An arrow from A to B permits travel from A to B. The reverse direction needs its own edge.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 180,
+              "y": 200
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 420,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "readOnly": true,
+        "isDirected": true,
+        "prohibitPathSelection": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Compute a path cost",
+      "subtext": "Add the weights along the route.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "What is the cost of A \u2192 C \u2192 B \u2192 D?",
+        "options": [
+          {
+            "id": "0",
+            "label": "7"
+          },
+          {
+            "id": "1",
+            "label": "8"
+          },
+          {
+            "id": "2",
+            "label": "11"
+          }
+        ],
+        "correctAnswerId": "1",
+        "explanation": "A-C costs 2, C-B costs 1 and B-D costs 5. Total: 2 + 1 + 5 = 8.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "prohibitPathSelection": true,
+        "isDirected": false,
+        "readOnly": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Set initial distances",
+      "subtext": "Prepare Dijkstra\u2019s algorithm.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "When starting at A, which initial distances are correct?",
+        "options": [
+          {
+            "id": "0",
+            "label": "A = 0; all others = \u221e"
+          },
+          {
+            "id": "1",
+            "label": "All vertices = 0"
+          },
+          {
+            "id": "2",
+            "label": "A = \u221e; all others = 0"
+          }
+        ],
+        "correctAnswerId": "0",
+        "explanation": "The source has distance 0. Every other distance starts at infinity until a route is discovered.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "readOnly": true,
+        "isDirected": false,
+        "prohibitPathSelection": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Explore the source",
+      "subtext": "Relax the edges leaving A.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "After exploring A, what are the tentative distances to B and C?",
+        "options": [
+          {
+            "id": "0",
+            "label": "B = 4; C = 2"
+          },
+          {
+            "id": "1",
+            "label": "B = 2; C = 4"
+          },
+          {
+            "id": "2",
+            "label": "B = 4; C = 8"
+          }
+        ],
+        "correctAnswerId": "0",
+        "explanation": "The direct edges from A give B a tentative distance of 4 and C a tentative distance of 2.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "prohibitPathSelection": true,
+        "isDirected": false,
+        "readOnly": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Select the next vertex",
+      "subtext": "Choose the smallest unvisited distance.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "After exploring A, which vertex should be visited next?",
+        "options": [
+          {
+            "id": "0",
+            "label": "B"
+          },
+          {
+            "id": "1",
+            "label": "C"
+          },
+          {
+            "id": "2",
+            "label": "D"
+          }
+        ],
+        "correctAnswerId": "1",
+        "explanation": "C has the smallest tentative distance: 2. B has 4 and D is still at infinity.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "prohibitPathSelection": true,
+        "isDirected": false,
+        "readOnly": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Relax from C",
+      "subtext": "Look for an improved route.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "B is currently 4. A \u2192 C costs 2 and C \u2192 B costs 1. What is the new distance to B?",
+        "options": [
+          {
+            "id": "0",
+            "label": "1"
+          },
+          {
+            "id": "1",
+            "label": "3"
+          },
+          {
+            "id": "2",
+            "label": "4"
+          }
+        ],
+        "correctAnswerId": "1",
+        "explanation": "The route through C costs 2 + 1 = 3, which improves B\u2019s previous distance of 4.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "readOnly": true,
+        "isDirected": false,
+        "prohibitPathSelection": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Relax from B",
+      "subtext": "Update the best distance to D.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "B\u2019s distance is 3 and B \u2192 D costs 5. D is currently 10. What should D become?",
+        "options": [
+          {
+            "id": "0",
+            "label": "5"
+          },
+          {
+            "id": "1",
+            "label": "8"
+          },
+          {
+            "id": "2",
+            "label": "10"
+          }
+        ],
+        "correctAnswerId": "1",
+        "explanation": "The route through B costs 3 + 5 = 8, improving D\u2019s previous distance of 10.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "readOnly": true,
+        "isDirected": false,
+        "prohibitPathSelection": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Find the final route",
+      "subtext": "Trace the shortest path from A to D.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "Which route has the lowest total cost?",
+        "options": [
+          {
+            "id": "0",
+            "label": "A \u2192 B \u2192 D"
+          },
+          {
+            "id": "1",
+            "label": "A \u2192 C \u2192 D"
+          },
+          {
+            "id": "2",
+            "label": "A \u2192 C \u2192 B \u2192 D"
+          }
+        ],
+        "correctAnswerId": "2",
+        "explanation": "A \u2192 C \u2192 B \u2192 D has total cost 2 + 1 + 5 = 8, less than the other routes.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "prohibitPathSelection": true,
+        "isDirected": false,
+        "readOnly": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Know the limitation",
+      "subtext": "Choose when Dijkstra is appropriate.",
+      "contentBox": {
+        "boxType": "quiz",
+        "question": "What does Dijkstra\u2019s algorithm require for its usual correctness guarantee?",
+        "options": [
+          {
+            "id": "0",
+            "label": "All edge weights are non-negative"
+          },
+          {
+            "id": "1",
+            "label": "Every edge has the same weight"
+          },
+          {
+            "id": "2",
+            "label": "The graph has no cycles"
+          }
+        ],
+        "correctAnswerId": "0",
+        "explanation": "Dijkstra requires non-negative edge weights. Negative edges can invalidate its decision to finalise the smallest tentative distance."
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Your learning profile",
+      "subtext": "See how your skills are developing.",
+      "contentBox": {
+        "boxType": "text",
+        "title": "ASSESSMENT COMPLETE",
+        "text": "Your results are based on your first answer to each question. Review the explanations and revisit any topic you want to practise."
+      },
+      "questionType": "CONTINUE",
+      "buttonLabel": "See next steps",
+      "pageType": "results"
+    },
+    {
+      "title": "Let\u2019s strengthen one skill",
+      "subtext": "Keep building your shortest-path intuition.",
+      "contentBox": {
+        "boxType": "text",
+        "title": "YOUR NEXT STEP",
+        "text": "Practise choosing the smallest unvisited distance, then relaxing each neighbouring edge. Repeat until the destination is finalised."
+      },
+      "questionType": "CONTINUE",
+      "buttonLabel": "Continue",
+      "pageType": "review"
+    },
+    {
+      "title": "You\u2019re prepared to begin",
+      "subtext": "Take your graph skills into the next challenge.",
+      "contentBox": {
+        "boxType": "text",
+        "title": "TAKE IT FURTHER",
+        "text": "Try a new weighted graph. Set the source to zero, track tentative distances, and record predecessors to reconstruct the shortest route."
+      },
+      "questionType": "CONTINUE",
+      "buttonLabel": "Back to learning path",
+      "extraBox": {
+        "title": "KEEP EXPLORING",
+        "text": "Return to your learning path to revisit graph basics, or retry this assessment to check your progress."
+      }
+    }
+  ]
+}
