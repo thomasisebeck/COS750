@@ -17,6 +17,7 @@ export const OptionCard: React.FC<OptionCardProps> = ({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={selected}
       className={`w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl border transition-colors duration-200 text-left cursor-pointer ${
         selected
           ? 'bg-[#221c33] border-[#8e5bf5]'

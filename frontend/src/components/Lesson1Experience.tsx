@@ -38,9 +38,14 @@ export function Lesson1Experience({
     return null;
   });
 
+  const navigateTo = (index: number) => {
+    setCurrentPageIndex(index);
+  };
+
   useEffect(() => {
-    if (contentBox && (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz")) {
-      setGraphState(contentBox.state ?? null);
+    const nextBox = lesson.pages[currentPageIndex]?.contentBox;
+    if (nextBox && (nextBox.boxType === "graph" || nextBox.boxType === "graph-quiz")) {
+      setGraphState(nextBox.state ?? null);
     } else {
       setGraphState(null);
     }
@@ -48,7 +53,7 @@ export function Lesson1Experience({
     setQuizChecked(false);
     setIsCorrect(null);
     setErrorMessage(null);
-  }, [currentPageIndex]);
+  }, [currentPageIndex, lesson]);
 
   const handleNodeMove = (nodeId: string, x: number, y: number) => {
     setGraphState((prev: GraphState | null) => {
@@ -122,12 +127,20 @@ export function Lesson1Experience({
         setIsCorrect(correct);
         setQuizChecked(true);
         setErrorMessage(null);
-        return; // Stay on screen to show success/error card; clicking Continue/Next moves forward
+        return; // Stay on screen to show success/error card
+      } else if (quizChecked && isCorrect) {
+        // If already checked and correct, clicking continue advances to next page
+        if (currentPageIndex < totalPages - 1) {
+          navigateTo(currentPageIndex + 1);
+        } else {
+          onComplete();
+        }
+        return;
       }
     }
 
     if (currentPageIndex < totalPages - 1) {
-      setCurrentPageIndex((prev) => prev + 1);
+      navigateTo(currentPageIndex + 1);
     } else {
       onComplete();
     }
@@ -155,7 +168,7 @@ export function Lesson1Experience({
           if (currentPageIndex === 0) {
             onExit();
           } else {
-            setCurrentPageIndex((prev) => Math.max(0, prev - 1));
+            navigateTo(Math.max(0, currentPageIndex - 1));
           }
         }}
       />
@@ -210,7 +223,6 @@ export function Lesson1Experience({
                       label={option.label}
                       selected={selectedOptionId === option.id}
                       onClick={() => {
-                        // Allow changing selection even after checking, resetting check state for retry
                         setSelectedOptionId(option.id);
                         setQuizChecked(false);
                         setIsCorrect(null);

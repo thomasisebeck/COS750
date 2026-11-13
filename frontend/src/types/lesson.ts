@@ -115,12 +115,30 @@ export interface GraphContentBox {
   isDirected?: boolean;
 }
 
+export type QuizRetryGenerator =
+  | {
+      kind: "compare-routes";
+      weightRange: { min: number; max: number };
+      edgeSets?: string[][];
+      minCostDifference?: number;
+      routes: [{ optionId: string; path: string[] }, { optionId: string; path: string[] }];
+      tieOptionId: string;
+    }
+  | {
+      kind: "path-cost";
+      weightRange: { min: number; max: number };
+      edgeSets?: string[][];
+      path: string[];
+      distractorOffsets?: number[];
+    };
+
 export interface GraphQuizContentBox {
   boxType: "graph-quiz";
   state?: GraphState;
   question?: string;
   options?: QuizOption[];
   correctAnswerId?: string;
+  retryGenerator?: QuizRetryGenerator;
   text?: string;
   prohibitPathSelection?: boolean;
   isDirected?: boolean;
@@ -136,9 +154,9 @@ export interface ExtraBox {
 export type QuestionType = "CONTINUE" | "VERT_SELECTION" | "MULT-CHOICE";
 
 export interface LessonPage {
+  category?: string;
   title: string;
   subtext: string;
-  category?: string;
   eyebrow?: string;
   type?: string;
   buttonLabel?: string;
