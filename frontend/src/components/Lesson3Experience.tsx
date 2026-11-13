@@ -9,6 +9,7 @@ import { LessonButton } from "./buttons";
 import { LiveGraph } from "./LiveGraph";
 import { generateRetryQuestion, highlightedRoute, quizExplanation } from "../lessons/lesson3Questions";
 import type { GraphQuizContentBox, GraphState, LessonData, LessonPage } from "../types/lesson";
+import { playNoteSound } from "../helpers";
 
 interface Lesson3ExperienceProps {
   lesson: LessonData;
@@ -69,7 +70,6 @@ export function Lesson3Experience({ lesson, onExit, onComplete }: Lesson3Experie
     if (pageIndex === 0) {
       onExit();
     } else if (pageIndex === RECOVERY_INDEX) {
-      // Don't send the learner back to the same already-failed question.
       tryAnotherQuestion();
     } else if (pageIndex === COMPLETION_INDEX) {
       moveTo(SECOND_QUIZ_INDEX);
@@ -104,6 +104,48 @@ export function Lesson3Experience({ lesson, onExit, onComplete }: Lesson3Experie
     }
     moveTo(pageIndex === SECOND_QUIZ_INDEX ? COMPLETION_INDEX : pageIndex + 1);
   }
+
+  const handleNodeClick = (nodeId: string) => {
+    setGraphState((prev: GraphState | null) => {
+      if (!prev) return null;
+      const isHighlighted = prev.highlightedNodes.includes(nodeId);
+      const nextNodes = isHighlighted
+        ? prev.highlightedNodes.filter((id: string) => id !== nodeId)
+        : [...prev.highlightedNodes, nodeId];
+
+      const nextNodesSet = new Set(nextNodes);
+      const validEdges = prev.highlightedEdges.filter((edgeId: string) => {
+        const edge = prev.edges.find((e) => e.id === edgeId);
+        if (!edge) return false;
+        return nextNodesSet.has(edge.source) && nextNodesSet.has(edge.target);
+      });
+
+      playNoteSound(nextNodes.length + validEdges.length);
+
+      return {
+        ...prev,
+        highlightedNodes: nextNodes,
+        highlightedEdges: validEdges,
+      };
+    });
+  };
+
+  const handleEdgeClick = (edgeId: string) => {
+    setGraphState((prev: GraphState | null) => {
+      if (!prev) return null;
+      const isHighlighted = prev.highlightedEdges.includes(edgeId);
+      const nextEdges = isHighlighted
+        ? prev.highlightedEdges.filter((id: string) => id !== edgeId)
+        : [...prev.highlightedEdges, edgeId];
+
+      playNoteSound(prev.highlightedNodes.length + nextEdges.length);
+
+      return {
+        ...prev,
+        highlightedEdges: nextEdges,
+      };
+    });
+  };
 
   // Highlight the route represented by the selected answer, when appropriate.
   const shownGraph = graphState && isQuiz && box.retryGenerator?.kind === "compare-routes"
@@ -146,6 +188,8 @@ export function Lesson3Experience({ lesson, onExit, onComplete }: Lesson3Experie
               height={180}
               isDirected={false}
               mustSelectPath={!box.prohibitPathSelection}
+              onNodeClick={handleNodeClick}
+              onEdgeClick={handleEdgeClick}
               onNodeMove={(nodeId, x, y) => {
                 setGraphState((current) => current && ({
                   ...current,
