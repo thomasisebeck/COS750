@@ -1,8 +1,8 @@
 import React from "react";
-import { ChevronRight } from "lucide-react";
-import { Logo } from "./logo";
+import { Logo } from "./Logo";
 import { PageTitle } from "./PageTitle";
-import { LessonButton } from "./buttons";
+import { LessonButton } from "./Buttons";
+import { LessonCard } from "./LessonCard";
 
 export interface LessonSummary {
   id: number;
@@ -39,57 +39,36 @@ export const LearningPath: React.FC<LearningPathProps> = ({
         subtext="Six quick challenges. One big idea."
       />
 
-      {/* Lesson List */}
-      <div className="flex-1 flex flex-col gap-3">
+      {/* Lesson List using LessonCard */}
+      <div className="flex-1 flex flex-col gap-3 max-w-md mx-auto w-full">
         {lessons.map((lesson) => {
           const isSelected = lesson.id === selectedLessonId;
           const formattedId = String(lesson.id).padStart(2, "0");
 
           return (
-            <button
+            <LessonCard
               key={lesson.id}
-              type="button"
+              number={formattedId}
+              title={lesson.title}
+              subtitle={lesson.subtitle}
               onClick={() => onSelectLesson(lesson.id)}
-              className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl border transition-all text-left cursor-pointer ${
+              className={
                 isSelected
-                  ? "bg-[#251f38] border-[#915eff]"
-                  : "bg-[#181924] border-[#2e303e] hover:border-slate-600"
-              }`}
-            >
-              <div className="flex items-center gap-3.5">
-                <div
-                  className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                    isSelected
-                      ? "bg-[#915eff] text-white"
-                      : "bg-[#232533] text-slate-300 border border-[#34374a]"
-                  }`}
-                >
-                  {formattedId}
-                </div>
-
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-slate-100">
-                    {lesson.title}
-                  </span>
-                  <span className="text-xs text-slate-400">
-                    {lesson.subtitle}
-                  </span>
-                </div>
-              </div>
-
-              {!isSelected && (
-                <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
-              )}
-            </button>
+                  ? "!bg-[#251f38] !border-[#915eff] shadow-lg shadow-purple-950/30"
+                  : ""
+              }
+            />
           );
         })}
       </div>
 
       {/* Start Button */}
-      <LessonButton
-        label={`Begin lesson ${formattedSelected}`}
-        onClick={() => onStartLesson(selectedLessonId)}
-      />
+      <div className="max-w-md mx-auto w-full">
+        <LessonButton
+          label={`Begin lesson ${formattedSelected}`}
+          onClick={() => onStartLesson(selectedLessonId)}
+        />
+      </div>
     </div>
   );
 };

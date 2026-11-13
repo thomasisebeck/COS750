@@ -6,15 +6,25 @@ interface LogoProps {
 
 export const Logo: React.FC<LogoProps> = ({ className = '' }) => {
   return (
-    <div className={`inline-flex items-center gap-1.5 select-none ${className}`}>
-      {/* Four-pointed sparkle icon */}
+    <div className={`inline-flex items-center gap-2 select-none ${className}`}>
+      {/* Node & Edge Network Icon */}
       <svg
         viewBox="0 0 24 24"
-        fill="currentColor"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
         className="w-4 h-4 text-[#b388ff]"
         aria-hidden="true"
       >
-        <path d="M12 2C13.5 8.5 15.5 10.5 22 12C15.5 13.5 13.5 15.5 12 22C10.5 15.5 8.5 13.5 2 12C8.5 10.5 10.5 8.5 12 2Z" />
+        <line x1="4" y1="12" x2="12" y2="6" />
+        <line x1="12" y1="6" x2="20" y2="12" />
+        <line x1="12" y1="6" x2="12" y2="18" />
+        <circle cx="4" cy="12" r="2.5" fill="currentColor" stroke="none" />
+        <circle cx="20" cy="12" r="2.5" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="6" r="2.5" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="18" r="2.5" fill="currentColor" stroke="none" />
       </svg>
 
       {/* Brand text */}

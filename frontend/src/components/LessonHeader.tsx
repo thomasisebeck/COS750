@@ -1,5 +1,6 @@
-import React from "react";
-import { Logo } from "./logo";
+import React from 'react';
+import { Home } from 'lucide-react';
+import { Logo } from './Logo';
 
 interface LessonHeaderProps {
   lessonNumber: string | number;
@@ -24,12 +25,9 @@ export const LessonHeader: React.FC<LessonHeaderProps> = ({
             type="button"
             onClick={onMenuClick}
             aria-label="Back to learning path"
-            className="flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+            className="flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
           >
-            {/* Change this to house */}
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+            <Home className="w-4 h-4" aria-hidden="true" />
           </button>
         )}
       </div>

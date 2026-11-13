@@ -19,7 +19,7 @@ export const PageTitle: React.FC<PageTitleProps> = ({
         </span>
       )}
       <h1 className="text-2xl font-bold text-slate-100 mt-1">{title}</h1>
-      <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+      <p className="text-xs text-slate-400 mt-1.5 leading-relaxed whitespace-pre-line">
         {subtext}
       </p>
     </div>

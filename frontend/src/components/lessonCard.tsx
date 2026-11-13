@@ -19,10 +19,9 @@ export const LessonCard: React.FC<LessonCardProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`group w-full max-w-md flex items-center gap-4 px-4 py-3.5 rounded-2xl bg-[#1d1f29] border-2 border-[#0088ff] hover:bg-[#2b1e3e] hover:border-[#8e5bf5] transition-colors duration-200 text-left cursor-pointer ${className}`}
+      className={`group w-full max-w-md flex items-center gap-4 px-4 py-3.5 rounded-2xl bg-[#181924] border border-[#2e303e] hover:bg-[#251f38] hover:border-[#915eff] transition-all duration-200 text-left cursor-pointer shadow-sm ${className}`}
     >
-        
-      <div className="w-11 h-11 rounded-full bg-[#1d1f29] border-2 border-[#474b5c] group-hover:bg-[#8e5bf5] group-hover:border-[#c4a6ff] flex items-center justify-center shrink-0 transition-colors duration-200">
+      <div className="w-11 h-11 rounded-full bg-[#232533] border border-[#34374a] group-hover:bg-[#915eff] group-hover:border-[#c4a6ff] flex items-center justify-center shrink-0 transition-colors duration-200">
         <span className="text-white font-bold text-sm leading-none">
           {number}
         </span>
@@ -32,7 +31,7 @@ export const LessonCard: React.FC<LessonCardProps> = ({
         <span className="text-white font-semibold text-base leading-snug truncate">
           {title}
         </span>
-        <span className="text-zinc-400 text-xs leading-snug truncate">
+        <span className="text-slate-400 text-xs leading-snug truncate">
           {subtitle}
         </span>
       </div>
@@ -44,7 +43,7 @@ export const LessonCard: React.FC<LessonCardProps> = ({
         strokeWidth={2.5}
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="w-4 h-4 ml-auto text-zinc-400 group-hover:opacity-0 transition-opacity duration-200 shrink-0"
+        className="w-4 h-4 ml-auto text-slate-500 group-hover:text-purple-300 transition-colors duration-200 shrink-0"
         aria-hidden="true"
       >
         <path d="M9 18l6-6-6-6" />
@@ -52,31 +51,3 @@ export const LessonCard: React.FC<LessonCardProps> = ({
     </button>
   );
 };
-
-
-//////////////////
-
-//How to use it:
-
-// import { LessonCard } from './components/lessonCard';
-
-// export default function App() {
-//   return (
-//     <div className="min-h-screen bg-[#111116] flex flex-col items-center justify-center gap-4 p-6">
-//       <LessonCard
-//         number="01"
-//         title="Meet the Graph"
-//         subtitle="Vertices & edges"
-//         onClick={() => console.log('Lesson 01')}
-//       />
-//       <LessonCard
-//         number="02"
-//         title="Follow Connections"
-//         subtitle="Adjacency & direction"
-//         onClick={() => console.log('Lesson 02')}
-//       />
-//     </div>
-//   );
-// }
-
-//////////////////

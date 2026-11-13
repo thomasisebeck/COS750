@@ -22,7 +22,7 @@ const WEIGHT_POSITIONS: Record<string, { x: number; y: number }> = {
   CD: { x: 183, y: 144 },
 };
 
-/** Read-only graph for the Dijkstra walkthrough, with a fixed, accessible layout. */
+/** Read-only graph for the Dijkstra walkthrough, with an accessible layout & color scheme. */
 export function DijkstraGraph({
   activeVertex = null,
   settledVertices = [],
@@ -46,8 +46,9 @@ export function DijkstraGraph({
             <g key={edge.id}>
               <line
                 x1={from.x} y1={from.y} x2={to.x} y2={to.y}
-                stroke={highlighted ? "#b879ff" : "#9796aa"}
-                strokeWidth={highlighted ? 3.2 : 2}
+                // Use a high-contrast teal/cyan or vibrant stroke for highlighted paths
+                stroke={highlighted ? "#2dd4bf" : "#9796aa"}
+                strokeWidth={highlighted ? 3.4 : 2}
                 strokeLinecap="round"
               />
               <text x={label.x} y={label.y} textAnchor="middle" dominantBaseline="middle"
@@ -63,11 +64,15 @@ export function DijkstraGraph({
           return (
             <g key={vertex}>
               <circle cx={x} cy={y} r="15"
-                fill={active ? "#9c60f5" : "#282934"}
-                stroke={active ? "#c69aff" : onRoute ? "#b3a5c8" : settled ? "#a8a6bb" : "#aaa8bc"}
-                strokeWidth="1.9" />
+                // Active = Purple, Settled = Accessible Teal, Default = Dark Slate
+                fill={active ? "#9c60f5" : settled ? "#0f292a" : "#282934"}
+                stroke={active ? "#c69aff" : settled ? "#2dd4bf" : onRoute ? "#b3a5c8" : "#aaa8bc"}
+                strokeWidth={settled || active ? "2.5" : "1.9"} 
+              />
               <text x={x} y={y + 1} textAnchor="middle" dominantBaseline="middle"
-                className="l4-node-label">{vertex}</text>
+                className="l4-node-label"
+                fill={settled ? "#2dd4bf" : "#ffffff"}
+              >{vertex}</text>
             </g>
           );
         })}

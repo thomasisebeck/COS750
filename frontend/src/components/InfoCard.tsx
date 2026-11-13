@@ -17,13 +17,13 @@ const variantStyles: Record<
     container: 'bg-[#1a1b24] border-[#2e303e]',
     heading: 'text-[#b388ff] text-sm tracking-wide',
   },
-  red: {
-    container: 'bg-[#2a1c22] border-[#f07b8a]',
-    heading: 'text-[#f07b8a] text-sm',
+  red: { // Replaced red with high-contrast Amber/Orange
+    container: 'bg-[#2d2013] border-[#f59e0b]',
+    heading: 'text-[#f59e0b] text-sm',
   },
-  green: {
-    container: 'bg-[#172b26] border-[#34d399]',
-    heading: 'text-[#34d399] text-sm',
+  green: { // Replaced green with high-contrast Teal
+    container: 'bg-[#0f292a] border-[#2dd4bf]',
+    heading: 'text-[#2dd4bf] text-sm',
   },
 };
 

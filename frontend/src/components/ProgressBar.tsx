@@ -37,7 +37,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       </div>
 
       <span className="text-xs text-slate-400 font-mono">
-        {currentIndex + 1} · {currentIndex + 1}/{safeTotal}
+        {currentIndex + 1} / {safeTotal}
       </span>
     </div>
   );

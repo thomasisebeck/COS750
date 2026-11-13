@@ -4,6 +4,8 @@ interface WeightedGraphProps {
   nodes: GraphNode[];
   edges: GraphEdge[];
   highlightedNodeIds?: string[];
+  settledNodeIds?: string[];
+  highlightedEdgeIds?: string[];
   className?: string;
 }
 
@@ -16,6 +18,8 @@ export function WeightedGraph({
   nodes,
   edges,
   highlightedNodeIds = [],
+  settledNodeIds = [],
+  highlightedEdgeIds = [],
   className = "",
 }: WeightedGraphProps) {
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
@@ -38,9 +42,9 @@ export function WeightedGraph({
 
           const middleX = (source.x + target.x) / 2;
           const middleY = (source.y + target.y) / 2;
-          // Keep weights clear of the vertical B–C edge and node circles.
           const offsetX = edge.source === "B" && edge.target === "C" ? 8 : 0;
           const offsetY = edge.source === "B" && edge.target === "C" ? 0 : -7;
+          const isHighlighted = highlightedEdgeIds.includes(edge.id);
 
           return (
             <g key={edge.id}>
@@ -49,8 +53,8 @@ export function WeightedGraph({
                 y1={source.y}
                 x2={target.x}
                 y2={target.y}
-                stroke="#9291a5"
-                strokeWidth="2"
+                stroke={isHighlighted ? "#2dd4bf" : "#9291a5"}
+                strokeWidth={isHighlighted ? "3" : "2"}
                 strokeLinecap="round"
               />
               {edge.label && (
@@ -72,20 +76,22 @@ export function WeightedGraph({
         })}
         {nodes.map((node) => {
           const active = highlightedNodeIds.includes(node.id);
+          const settled = settledNodeIds.includes(node.id);
+
           return (
             <g key={node.id}>
               <circle
                 cx={node.x}
                 cy={node.y}
                 r="14"
-                fill={active ? "#995cf6" : "#282934"}
-                stroke={active ? "#c39aff" : "#b6b4c7"}
-                strokeWidth="1.8"
+                fill={active ? "#995cf6" : settled ? "#0f292a" : "#282934"}
+                stroke={active ? "#c39aff" : settled ? "#2dd4bf" : "#b6b4c7"}
+                strokeWidth={active || settled ? "2.2" : "1.8"}
               />
               <text
                 x={node.x}
                 y={node.y + 0.5}
-                fill="#f7f5ff"
+                fill={settled ? "#2dd4bf" : "#f7f5ff"}
                 fontSize="12"
                 fontWeight="700"
                 dominantBaseline="central"
