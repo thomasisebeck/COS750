@@ -21,6 +21,7 @@ import {
   type NextVertexGeneratorConfig,
 } from "../lessons/lesson4Questions";
 import lesson4Raw from "../lessons/lesson-4.json";
+import { playNoteSound } from "../helpers";
 import "./lesson4.css";
 
 type PageKind = "intro" | "walkthrough" | "quiz" | "limit" | "complete";
@@ -97,6 +98,9 @@ export function Lesson4Experience({
   const [retryNumber, setRetryNumber] = useState(0);
   const [quiz, setQuiz] = useState(() => makeInitialLesson4Question(quizTemplate));
   const [nodes, setNodes] = useState<GraphNode[]>(() => lesson4.graph.nodes.map((node) => ({ ...node })));
+  
+  const [extraHighlightedNodes, setExtraHighlightedNodes] = useState<string[]>([]);
+  const [extraHighlightedEdges, setExtraHighlightedEdges] = useState<string[]>([]);
 
   const page = lesson4.pages[index];
   const isQuiz = page.type === "quiz";
@@ -106,19 +110,26 @@ export function Lesson4Experience({
   const frame = activeTrace[frameIndex] ?? activeTrace[0];
   const previousFrame = frameIndex > 0 ? activeTrace[frameIndex - 1] : null;
   const edges = isQuiz ? quiz.edges : LESSON4_EDGES;
-  const highlightedEdges = page.showRoute
+  
+  const baseHighlightedEdges = page.showRoute
     ? routeEdgeIds(finalRoute, LESSON4_EDGES)
     : isQuiz
       ? frame.current ? edges.filter((edge) => edge.source === frame.current || edge.target === frame.current).map((edge) => edge.id) : []
       : (page.highlightedEdges ?? []);
-  const highlightedNodes = page.showRoute
+      
+  const baseHighlightedNodes = page.showRoute
     ? finalRoute
     : [...new Set([...frame.settled, ...(page.activeVertex ? [page.activeVertex] : [])])];
+
+  const highlightedNodes = [...new Set([...baseHighlightedNodes, ...extraHighlightedNodes])];
+  const highlightedEdges = [...new Set([...baseHighlightedEdges, ...extraHighlightedEdges])];
 
   function navigate(nextIndex: number) {
     setIndex(nextIndex);
     setSelected(null);
     setFeedback(null);
+    setExtraHighlightedNodes([]);
+    setExtraHighlightedEdges([]);
   }
 
   function back() {
@@ -135,6 +146,8 @@ export function Lesson4Experience({
         setNodes(lesson4.graph.nodes.map((node) => ({ ...node })));
         setSelected(null);
         setFeedback(null);
+        setExtraHighlightedNodes([]);
+        setExtraHighlightedEdges([]);
         return;
       }
       if (!isCheckedCorrect) {
@@ -153,6 +166,34 @@ export function Lesson4Experience({
   const actionLabel = isQuiz
     ? feedback === "incorrect" ? "Try a new graph" : isCheckedCorrect ? "Next step" : "Check answer"
     : page.button;
+
+  const handleNodeClick = (nodeId: string) => {
+    const isHighlighted = extraHighlightedNodes.includes(nodeId);
+    const nextNodes = isHighlighted
+      ? extraHighlightedNodes.filter((id) => id !== nodeId)
+      : [...extraHighlightedNodes, nodeId];
+
+    const nextNodesSet = new Set(nextNodes);
+    const validEdges = extraHighlightedEdges.filter((edgeId) => {
+      const edge = edges.find((e) => e.id === edgeId);
+      if (!edge) return false;
+      return nextNodesSet.has(edge.source) && nextNodesSet.has(edge.target);
+    });
+
+    playNoteSound(nextNodes.length + validEdges.length);
+    setExtraHighlightedNodes(nextNodes);
+    setExtraHighlightedEdges(validEdges);
+  };
+
+  const handleEdgeClick = (edgeId: string) => {
+    const isHighlighted = extraHighlightedEdges.includes(edgeId);
+    const nextEdges = isHighlighted
+      ? extraHighlightedEdges.filter((id) => id !== edgeId)
+      : [...extraHighlightedEdges, edgeId];
+
+    playNoteSound(extraHighlightedNodes.length + nextEdges.length);
+    setExtraHighlightedEdges(nextEdges);
+  };
 
   return (
     <div className="l4-experience w-full min-h-screen bg-[#111116] text-slate-100 px-4 py-6 sm:px-6 flex flex-col gap-6">
@@ -174,14 +215,20 @@ export function Lesson4Experience({
                   onNodeMove={(id, x, y) => {
                     setNodes((prev) => prev.map((node) => node.id === id ? { ...node, x, y } : node));
                   }}
-                  onReset={() => setNodes(lesson4.graph.nodes.map((node) => ({ ...node })))}
+                  onNodeClick={handleNodeClick}
+                  onEdgeClick={handleEdgeClick}
+                  onReset={() => {
+                    setNodes(lesson4.graph.nodes.map((node) => ({ ...node })));
+                    setExtraHighlightedNodes([]);
+                    setExtraHighlightedEdges([]);
+                  }}
                   width={400}
                   height={285}
                   isDirected={false}
                   mustSelectPath={false}
-                  showCounts
+                  showCounts={false}
                 />
-                <p className="l4-graph-help">Drag vertices to explore the graph. Reset restores their positions.</p>
+                <p className="l4-graph-help">Drag vertices to explore the graph. Click nodes and edges to select paths.</p>
               </div>
 
               <section className="l4-tracker" aria-label="Dijkstra distance tracker">
@@ -284,15 +331,21 @@ export function Lesson4Experience({
 
           {(page.type === "intro" || page.type === "limit" || page.type === "complete") && (
             <div className="flex flex-col gap-4">
-              <InfoCard
-                heading={page.cardTitle ?? ""}
-                body={page.cardText ?? ""}
-                variant={page.type === "complete" ? "green" : "default"}
-              />
+              {page.cardTitle && page.cardText && (
+                <InfoCard
+                  heading={page.cardTitle}
+                  body={page.cardText}
+                  variant={page.type === "complete" ? "green" : "default"}
+                />
+              )}
               {page.tipTitle && page.tipText && (
-                <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-purple-400 flex gap-2 items-center"><Info size={14} aria-hidden="true" />{page.tipTitle}</span>
-                  <p className="text-sm text-slate-300 leading-relaxed">{page.tipText}</p>
+                <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col gap-1.5">
+                  <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
+                    {page.tipTitle}
+                  </span>
+                  <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line font-mono">
+                    {page.tipText}
+                  </p>
                 </div>
               )}
             </div>
