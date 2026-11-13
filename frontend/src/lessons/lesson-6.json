@@ -791,15 +791,15 @@
         "options": [
           {
             "id": "0",
-            "label": "A \u2192 B \u2192 D \u00b7 cost 9"
+            "label": "A \u2192 B \u2192 D"
           },
           {
             "id": "1",
-            "label": "A \u2192 C \u2192 D \u00b7 cost 10"
+            "label": "A \u2192 C \u2192 D"
           },
           {
             "id": "2",
-            "label": "A \u2192 C \u2192 B \u2192 D \u00b7 cost 8"
+            "label": "A \u2192 C \u2192 B \u2192 D"
           }
         ],
         "correctAnswerId": "2",
