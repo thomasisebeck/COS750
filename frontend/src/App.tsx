@@ -98,8 +98,8 @@ function App() {
 
   if (currentLessonId === 5) {
     return (
-      <Lesson4Experience
-        // lesson={currentLessonData}
+      <Lesson5Experience
+        lesson={currentLessonData}
         onExit={() => setView("menu")}
         onComplete={handleComplete}
       />
