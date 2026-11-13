@@ -38,10 +38,18 @@ export function Lesson1Experience({
     return null;
   });
 
-  const navigateTo = (index: number) => {
-    setCurrentPageIndex(index);
-  };
+  // Corrected navigate function (outside of useEffect)
+  function navigate(nextIndex: number) {
+    const nextContent = lesson.pages[nextIndex].contentBox;
+    setCurrentPageIndex(nextIndex);
+    setGraphState(
+      nextContent.boxType === "graph" || nextContent.boxType === "graph-quiz"
+        ? nextContent.state ?? null
+        : null
+    );
+  }
 
+  // Correct top-level useEffect hook
   useEffect(() => {
     const nextBox = lesson.pages[currentPageIndex]?.contentBox;
     if (nextBox && (nextBox.boxType === "graph" || nextBox.boxType === "graph-quiz")) {
@@ -127,11 +135,10 @@ export function Lesson1Experience({
         setIsCorrect(correct);
         setQuizChecked(true);
         setErrorMessage(null);
-        return; // Stay on screen to show success/error card
+        return; 
       } else if (quizChecked && isCorrect) {
-        // If already checked and correct, clicking continue advances to next page
         if (currentPageIndex < totalPages - 1) {
-          navigateTo(currentPageIndex + 1);
+          navigate(currentPageIndex + 1);
         } else {
           onComplete();
         }
@@ -140,7 +147,7 @@ export function Lesson1Experience({
     }
 
     if (currentPageIndex < totalPages - 1) {
-      navigateTo(currentPageIndex + 1);
+      navigate(currentPageIndex + 1);
     } else {
       onComplete();
     }
@@ -168,7 +175,7 @@ export function Lesson1Experience({
           if (currentPageIndex === 0) {
             onExit();
           } else {
-            navigateTo(Math.max(0, currentPageIndex - 1));
+            navigate(Math.max(0, currentPageIndex - 1));
           }
         }}
       />

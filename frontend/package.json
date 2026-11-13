@@ -9,6 +9,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test:lesson4": "node --experimental-strip-types --test tests/lesson4.test.mjs",
     "test:lesson3": "node --experimental-strip-types --test tests/lesson3.test.mjs"
   },
   "dependencies": {
