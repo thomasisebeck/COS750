@@ -2,10 +2,10 @@ import { useState } from "react";
 import { ArrowRight, CircleCheck, Info, RotateCcw } from "lucide-react";
 import { LessonHeader } from "./LessonHeader";
 import { PageTitle } from "./PageTitle";
-import { ProgressBar } from "./progressBar";
-import { InfoCard } from "./infoCard";
-import { LessonButton } from "./buttons";
-import { OptionCard } from "./optionCard";
+import { ProgressBar } from "./ProgressBar";
+import { InfoCard } from "./InfoCard";
+import { LessonButton } from "./Buttons";
+import { OptionCard } from "./OptionCard";
 import { LiveGraph, type GraphNode, type GraphEdge } from "./LiveGraph";
 import {
   computeDijkstraTrace,
@@ -323,7 +323,7 @@ export function Lesson4Experience({
                   body={feedback === "correct" ? `${quiz.explanation}${retryNumber ? " Next, we'll return to the original worked example." : ""}` : feedback === "empty"
                     ? "Pick one of the unsettled vertices, then check your answer."
                     : `${quiz.explanation} Try the same idea on a fresh graph.`}
-                  variant={feedback === "correct" ? "green" : feedback === "empty" ? "default" : "red"}
+                  variant={feedback === "correct" ? "green" : "red"}
                 />}
               </div>
             </section>

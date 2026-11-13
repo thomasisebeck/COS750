@@ -25,9 +25,16 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
   const page = lesson.pages[index];
   const totalPages = lesson.pages.length;
   const contentBox = page.contentBox;
-  const isQuiz = page.type === "quiz";
+
+  // Support quizzes defined either at page level or inside contentBox (graph-quiz / quiz)
+  const isQuiz = page.type === "quiz" || page.type === "checkpoint" || contentBox?.boxType === "quiz" || contentBox?.boxType === "graph-quiz";
   const isCheckpoint = page.type === "checkpoint";
-  const isDirected = contentBox?.isDirected ?? false;
+  const isDirected = contentBox?.isDirected ?? (page as any).isDirected ?? false;
+
+  const quizOptions = page.options || (contentBox && 'options' in contentBox ? contentBox.options : []);
+  const correctAnswerId = page.correctAnswerId || (contentBox && 'correctAnswerId' in contentBox ? contentBox.correctAnswerId : undefined);
+  const correctFeedback = page.correctFeedback || (contentBox && 'explanation' in contentBox ? contentBox.explanation : "Great job!");
+  const incorrectFeedback = page.incorrectFeedback || (contentBox && 'explanation' in contentBox ? contentBox.explanation : "That's not quite right. Select a different option and try again.");
 
   const [graphState, setGraphState] = useState<GraphState | null>(() => {
     if (contentBox && (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz")) {
@@ -133,13 +140,13 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
   }
 
   function next() {
-    if (isQuiz) {
+    if (isQuiz && quizOptions && quizOptions.length > 0) {
       if (!quizChecked) {
         if (!selected) {
           setErrorMessage("Choose an answer before checking.");
           return;
         }
-        const correct = selected === page.correctAnswerId;
+        const correct = String(selected) === String(correctAnswerId);
         setIsCorrect(correct);
         setQuizChecked(true);
         setErrorMessage(null);
@@ -153,7 +160,6 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
           setIndex(index + 1);
           return;
         } else {
-          // If incorrect, clicking try again lets them pick a new choice
           setQuizChecked(false);
           setIsCorrect(null);
           setErrorMessage(null);
@@ -179,7 +185,7 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
   }
 
   const cardTitle = isCheckpoint && !isCorrect ? "Not quite" : (page.cardTitle || "");
-  const cardText = isCheckpoint && !isCorrect ? (page.incorrectFeedback || "Review the arrow direction and try again.") : (page.cardText || "");
+  const cardText = isCheckpoint && !isCorrect ? (incorrectFeedback || "Review the arrow direction and try again.") : (page.cardText || "");
   const cardVariant = isCheckpoint && !isCorrect ? "red" : (page.type === "complete" || (isCheckpoint && isCorrect) ? "green" : "default");
 
   return (
@@ -225,10 +231,10 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
         )}
 
         {/* Quiz Options View */}
-        {isQuiz && (
+        {isQuiz && quizOptions && quizOptions.length > 0 && (
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2.5" role="group" aria-label={page.cardText}>
-              {page.options?.map((option) => (
+              {quizOptions.map((option) => (
                 <OptionCard
                   key={option.id}
                   label={option.label}
@@ -246,7 +252,7 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
             {quizChecked && isCorrect && (
               <InfoCard
                 heading="That's right!"
-                body={page.correctFeedback || "Great job!"}
+                body={correctFeedback}
                 variant="green"
               />
             )}
@@ -254,7 +260,7 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
             {quizChecked && !isCorrect && (
               <InfoCard
                 heading="Incorrect"
-                body={page.incorrectFeedback || "That's not quite right. Select a different option and try again."}
+                body={incorrectFeedback}
                 variant="red"
               />
             )}
