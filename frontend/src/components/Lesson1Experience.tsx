@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LessonHeader } from "./LessonHeader";
-import { ProgressBar } from "./progressBar";
+import { ProgressBar } from "./ProgressBar";
 import { PageTitle } from "./PageTitle";
-import { InfoCard } from "./infoCard";
-import { OptionCard } from "./optionCard";
-import { LessonButton } from "./buttons";
+import { InfoCard } from "./InfoCard";
+import { OptionCard } from "./OptionCard";
+import { LessonButton } from "./Buttons";
 import { LiveGraph } from "./LiveGraph";
 import type { LessonData, LessonPage, GraphState } from "../types/lesson";
 import { playNoteSound } from "../helpers";
@@ -15,25 +15,53 @@ interface LessonExperienceProps {
   onComplete: () => void;
 }
 
-export function Lesson1Experience({ lesson, onExit, onComplete }: LessonExperienceProps) {
+export function Lesson1Experience({
+  lesson,
+  onExit,
+  onComplete,
+}: LessonExperienceProps) {
   const [currentPageIndex, setCurrentPageIndex] = useState<number>(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
+  const [quizChecked, setQuizChecked] = useState<boolean>(false);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const currentPage: LessonPage = lesson.pages[currentPageIndex];
   const totalPages = lesson.pages.length;
   const contentBox = currentPage.contentBox;
+  const isQuiz = currentPage.contentBox?.boxType === "graph-quiz";
 
   const [graphState, setGraphState] = useState<GraphState | null>(() => {
-    if (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz") return contentBox.state;
+    if (contentBox && (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz")) {
+      return contentBox.state ?? null;
+    }
     return null;
   });
 
+  // Corrected navigate function (outside of useEffect)
   function navigate(nextIndex: number) {
     const nextContent = lesson.pages[nextIndex].contentBox;
     setCurrentPageIndex(nextIndex);
-    setGraphState(nextContent.boxType === "graph" || nextContent.boxType === "graph-quiz" ? nextContent.state : null);
-    setSelectedOptionId(null);
+    setGraphState(
+      nextContent.boxType === "graph" || nextContent.boxType === "graph-quiz"
+        ? nextContent.state ?? null
+        : null
+    );
   }
+
+  // Correct top-level useEffect hook
+  useEffect(() => {
+    const nextBox = lesson.pages[currentPageIndex]?.contentBox;
+    if (nextBox && (nextBox.boxType === "graph" || nextBox.boxType === "graph-quiz")) {
+      setGraphState(nextBox.state ?? null);
+    } else {
+      setGraphState(null);
+    }
+    setSelectedOptionId(null);
+    setQuizChecked(false);
+    setIsCorrect(null);
+    setErrorMessage(null);
+  }, [currentPageIndex, lesson]);
 
   const handleNodeMove = (nodeId: string, x: number, y: number) => {
     setGraphState((prev: GraphState | null) => {
@@ -91,10 +119,47 @@ export function Lesson1Experience({ lesson, onExit, onComplete }: LessonExperien
   };
 
   const handleReset = () => {
-    if (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz") {
-      setGraphState(contentBox.state);
+    if (contentBox && (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz")) {
+      setGraphState(contentBox.state ?? null);
     }
   };
+
+  const handleNextClick = () => {
+    if (isQuiz) {
+      if (!quizChecked) {
+        if (!selectedOptionId) {
+          setErrorMessage("Choose an answer before checking.");
+          return;
+        }
+        const correct = selectedOptionId === contentBox.correctAnswerId;
+        setIsCorrect(correct);
+        setQuizChecked(true);
+        setErrorMessage(null);
+        return; 
+      } else if (quizChecked && isCorrect) {
+        if (currentPageIndex < totalPages - 1) {
+          navigate(currentPageIndex + 1);
+        } else {
+          onComplete();
+        }
+        return;
+      }
+    }
+
+    if (currentPageIndex < totalPages - 1) {
+      navigate(currentPageIndex + 1);
+    } else {
+      onComplete();
+    }
+  };
+
+  // Determine button label dynamically
+  let buttonLabel = currentPage.buttonLabel || "Continue";
+  if (isQuiz && quizChecked && isCorrect) {
+    buttonLabel = "Continue";
+  } else if (isQuiz && quizChecked && !isCorrect) {
+    buttonLabel = "Try again";
+  }
 
   return (
     <div className="w-full min-h-screen bg-[#111116] text-slate-100 p-6 flex flex-col gap-6">
@@ -115,60 +180,92 @@ export function Lesson1Experience({ lesson, onExit, onComplete }: LessonExperien
         }}
       />
 
-      <div className="flex-1 flex flex-col gap-4">
+      <div className="flex-1 flex flex-col gap-4" key={currentPageIndex}>
         <PageTitle
-          category={lesson.meta.category}
+          category={currentPage.category}
           title={currentPage.title}
           subtext={currentPage.subtext}
         />
 
-        {contentBox.boxType === "text" && (
-          <InfoCard heading={contentBox.title} body={contentBox.text} />
+        {contentBox && contentBox.boxType === "text" && (
+          <InfoCard
+            heading={contentBox.title || ""}
+            body={contentBox.text || ""}
+            variant={contentBox.variant}
+          />
         )}
 
-        {(contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz") &&
-          graphState && (
-            <div className="flex flex-col gap-4">
-              <LiveGraph
-                nodes={graphState.nodes}
-                edges={graphState.edges}
-                highlightedNodeIds={graphState.highlightedNodes}
-                highlightedEdgeIds={graphState.highlightedEdges}
-                onNodeMove={handleNodeMove}
-                onNodeClick={handleNodeClick}
-                onEdgeClick={handleEdgeClick}
-                onReset={handleReset}
-                mustSelectPath={!contentBox.prohibitPathSelection}
-              />
+        {contentBox && (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz") && graphState && (
+          <div className="flex flex-col gap-4">
+            <LiveGraph
+              nodes={graphState.nodes}
+              edges={graphState.edges}
+              highlightedNodeIds={graphState.highlightedNodes}
+              highlightedEdgeIds={graphState.highlightedEdges}
+              onNodeMove={handleNodeMove}
+              onNodeClick={handleNodeClick}
+              onEdgeClick={handleEdgeClick}
+              onReset={handleReset}
+              mustSelectPath={!contentBox.prohibitPathSelection}
+            />
 
-              {contentBox.boxType === "graph" && contentBox.text && (
-                <p className="text-xs text-slate-400 text-center font-medium">
-                  {contentBox.text}
-                </p>
-              )}
+            {contentBox.boxType === "graph" && contentBox.text && (
+              <p className="text-xs text-slate-400 text-center font-medium">
+                {contentBox.text}
+              </p>
+            )}
 
-              {contentBox.boxType === "graph-quiz" && (
-                <>
-                  {contentBox.question && (
-                    <h3 className="text-sm font-bold text-slate-100">
-                      {contentBox.question}
-                    </h3>
-                  )}
+            {contentBox.boxType === "graph-quiz" && (
+              <>
+                {contentBox.question && (
+                  <h3 className="text-sm font-bold text-slate-100">
+                    {contentBox.question}
+                  </h3>
+                )}
 
-                  <div className="flex flex-col gap-2.5">
-                    {contentBox.options.map((option) => (
-                      <OptionCard
-                        key={option.id}
-                        label={option.label}
-                        selected={selectedOptionId === option.id}
-                        onClick={() => setSelectedOptionId(option.id)}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
+                <div className="flex flex-col gap-2.5">
+                  {contentBox.options?.map((option) => (
+                    <OptionCard
+                      key={option.id}
+                      label={option.label}
+                      selected={selectedOptionId === option.id}
+                      onClick={() => {
+                        setSelectedOptionId(option.id);
+                        setQuizChecked(false);
+                        setIsCorrect(null);
+                        setErrorMessage(null);
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {quizChecked && isCorrect && (
+                  <InfoCard
+                    heading="That's right!"
+                    body="Great job! You identified the correct answer."
+                    variant="green"
+                  />
+                )}
+
+                {quizChecked && !isCorrect && (
+                  <InfoCard
+                    heading="Incorrect"
+                    body="That's not quite right. Select a different option and try again."
+                    variant="red"
+                  />
+                )}
+
+                {errorMessage && (
+                  <InfoCard
+                    heading="Notice"
+                    body={errorMessage}
+                    variant="red"
+                  />
+                )}
+              </>
+            )}
+          </div>
+        )}
 
         {currentPage.extraBox && (
           <InfoCard
@@ -179,14 +276,8 @@ export function Lesson1Experience({ lesson, onExit, onComplete }: LessonExperien
       </div>
 
       <LessonButton
-        label={currentPage.buttonLabel}
-        onClick={() => {
-          if (currentPageIndex < totalPages - 1) {
-            navigate(currentPageIndex + 1);
-          } else {
-            onComplete();
-          }
-        }}
+        label={buttonLabel}
+        onClick={handleNextClick}
       />
     </div>
   );

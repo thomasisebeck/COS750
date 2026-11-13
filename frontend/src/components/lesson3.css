@@ -1,0 +1,198 @@
+/* Lesson 03: mobile-first screen styling based on the supplied PathFinder designs. */
+.l3-viewport {
+  min-height: 100svh;
+  width: 100%;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111116;
+  color: #f5f2ff;
+  text-align: left;
+}
+
+.l3-screen {
+  width: min(100%, 390px);
+  min-height: 780px;
+  padding: 25px 22px 20px;
+  border: 1px solid #252430;
+  border-radius: 21px;
+  background: #121218;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 65px rgb(0 0 0 / 16%);
+}
+
+.l3-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.l3-topbar > span {
+  color: #afb0c1;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.l3-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 29px 0 28px;
+}
+
+.l3-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b7b4c8;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+.l3-back:hover, .l3-back:focus-visible { background: #292732; color: white; }
+.l3-progress-track {
+  height: 6px;
+  border-radius: 100px;
+  background: #3a3a47;
+  flex: 1;
+  overflow: hidden;
+}
+.l3-progress-track > span {
+  display: block;
+  height: 100%;
+  background: #9659f4;
+  border-radius: inherit;
+  transition: width 250ms ease;
+}
+.l3-progress-label {
+  color: #b3b0c2;
+  font-size: 10px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.l3-content { display: flex; flex: 1; flex-direction: column; gap: 18px; }
+.l3-heading { margin-bottom: 10px; }
+.l3-eyebrow {
+  color: #c69dff;
+  font-weight: 800;
+  letter-spacing: .03em;
+  font-size: 10px;
+  line-height: 1.4;
+}
+.l3-heading h1 {
+  color: #f5f3ff;
+  font-weight: 750;
+  font-size: clamp(21px, 5.5vw, 24px);
+  line-height: 1.14;
+  letter-spacing: -.025em;
+  margin: 9px 0 12px;
+}
+.l3-heading p {
+  font-size: 13px;
+  line-height: 1.42;
+  color: #a9a6b7;
+}
+
+.l3-info-card {
+  width: 100%;
+  flex-shrink: 0;
+  align-items: stretch;
+  text-align: left;
+  border-radius: 13px;
+  background: #21212b;
+  border: 1px solid #424252;
+  padding: 18px 16px;
+  gap: 13px;
+}
+.l3-info-card > div {
+  justify-content: flex-start;
+  text-align: left;
+  color: #caa6ff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+.l3-info-card > p {
+  color: #e7e4ee;
+  font-size: 13px;
+  line-height: 1.33;
+  font-weight: 400;
+  white-space: pre-line;
+}
+.l3-primary-card { min-height: 150px; }
+.l3-intro-card { min-height: 204px; border: 2px solid #1693fa; }
+.l3-tall-card { min-height: 208px; }
+.l3-takeaway {
+  border-color: transparent;
+  background: #292936;
+  min-height: 100px;
+}
+.l3-error-card {
+  min-height: 105px;
+  background: #392630;
+  border: 1px solid #eb758e;
+}
+.l3-error-card > div { color: #ff8fa5; font-size: 18px; font-weight: 750; }
+.l3-error-card > p { color: #f6e2e7; }
+
+.l3-graph {
+  width: 100%;
+  background: #22222d;
+  border: 1px solid #464657;
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 8px 10px;
+}
+.l3-graph-svg { display: block; width: 100%; height: auto; }
+.l3-edge-weight { paint-order: stroke; stroke: #22222d; stroke-width: 3px; }
+
+.l3-quiz { display: flex; flex-direction: column; gap: 16px; }
+.l3-question { color: #f1eff8; font-size: 13px; font-weight: 700; }
+.l3-options { display: flex; flex-direction: column; gap: 7px; }
+.l3-option {
+  padding: 11px 12px;
+  border-radius: 12px;
+  min-height: 44px;
+  gap: 10px;
+  background: #22222d;
+  border: 1px solid #434352;
+}
+.l3-option:hover { border-color: #9c69f9; }
+.l3-option:has(> div > div) { background: #2e293d; border-color: #a66dfb; }
+.l3-option > div { width: 16px; height: 16px; }
+.l3-option > div > div { width: 7px; height: 7px; }
+.l3-option > span { font-size: 12px; white-space: normal; line-height: 1.3; font-weight: 500; }
+.l3-locked-option { cursor: default; }
+.l3-notice { font-size: 12px; color: #e9bbcc; line-height: 1.4; }
+.l3-notice-success { color: #a7e6bf; }
+
+.l3-footer { margin-top: 30px; display: flex; flex-direction: column; gap: 12px; }
+.l3-continue-button {
+  width: 100%;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 750;
+  min-height: 49px;
+  justify-content: flex-start;
+  background: #985df1;
+}
+.l3-continue-button:hover { background: #a06cf6; }
+.l3-footnote { display: flex; align-items: center; gap: 6px; color: #b6a3d2; font-size: 11px; }
+
+@media (max-width: 480px) {
+  .l3-viewport { padding: 0; align-items: stretch; }
+  .l3-screen { width: 100%; min-height: 100svh; padding: 26px 21px 22px; border: 0; border-radius: 0; box-shadow: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .l3-progress-track > span { transition: none; }
+}
