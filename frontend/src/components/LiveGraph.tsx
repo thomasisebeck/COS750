@@ -1,5 +1,6 @@
-import React, { useState, useRef } from "react";
-import { Activity, RotateCcw } from "lucide-react";
+import React, { useId, useRef, useState } from "react";
+import { Activity, Grip, RotateCcw } from "lucide-react";
+import { edgeDrawing } from "./graphGeometry";
 
 export interface GraphNode {
   id: string;
@@ -33,6 +34,11 @@ interface LiveGraphProps {
   readOnly?: boolean;
 }
 
+/**
+ * Shared graph for all seven lessons. Keeps the existing prop contract,
+ * with touch-friendly dragging, keyboard selection, labelled weights and
+ * non-colour indicators for highlighted paths.
+ */
 export const LiveGraph: React.FC<LiveGraphProps> = ({
   nodes,
   edges,
@@ -44,287 +50,144 @@ export const LiveGraph: React.FC<LiveGraphProps> = ({
   onReset,
   width = 600,
   height = 400,
-  showCounts,
+  showCounts = false,
   mustSelectPath = true,
   isDirected = true,
   readOnly = false,
 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const id = useId().replace(/:/g, "");
+  // All lessons render in one 600×400 visual coordinate system. Smaller legacy
+  // graph datasets are scaled, not drawn with oversized circles or labels.
+  const renderWidth = 600;
+  const renderHeight = 400;
+  const renderNodes = nodes.map(node => ({...node,x:node.x * renderWidth / width,y:node.y * renderHeight / height}));
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
+  const hasMovedRef = useRef(false);
+  const nodeMap = new Map(renderNodes.map((node) => [node.id, node]));
 
-  // Offset between cursor and center of the dragged node
-  const dragOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-
-  // Track whether mouse moved significantly during press to suppress click events
-  const hasMovedRef = useRef<boolean>(false);
-
-  // Quick lookup map for node coordinates
-  const nodeMap = new Map<string, GraphNode>(nodes.map((n) => [n.id, n]));
-
-  // Helper to convert screen coordinates to SVG viewBox coordinates
-  const getSvgCoordinates = (e: React.MouseEvent) => {
-    if (!svgRef.current) return null;
-    const ctm = svgRef.current.getScreenCTM();
+  const getSvgCoordinates = (event: React.PointerEvent) => {
+    const ctm = svgRef.current?.getScreenCTM?.();
     if (!ctm) return null;
-
     return {
-      x: (e.clientX - ctm.e) / ctm.a,
-      y: (e.clientY - ctm.f) / ctm.d,
+      x: (event.clientX - ctm.e) / ctm.a,
+      y: (event.clientY - ctm.f) / ctm.d,
     };
   };
 
-  // Handle start of node drag
-  const handleMouseDown = (e: React.MouseEvent, node: GraphNode) => {
-    e.stopPropagation();
-    const coords = getSvgCoordinates(e);
+  const handlePointerDown = (event: React.PointerEvent, node: GraphNode) => {
+    if (readOnly || !onNodeMove) return;
+    event.stopPropagation();
+    const coords = getSvgCoordinates(event);
     if (!coords) return;
-
     setDraggingNodeId(node.id);
     hasMovedRef.current = false;
-
-    // Save exact offset between click position and node center
-    dragOffsetRef.current = {
-      x: coords.x - node.x,
-      y: coords.y - node.y,
-    };
+    dragOffsetRef.current = { x: coords.x - node.x, y: coords.y - node.y };
+    event.currentTarget.setPointerCapture?.(event.pointerId);
   };
 
-  // Handle node movement across SVG space
-  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (!draggingNodeId || !svgRef.current) return;
-
-    const coords = getSvgCoordinates(e);
+  const handlePointerMove = (event: React.PointerEvent<SVGSVGElement>) => {
+    if (!draggingNodeId || !onNodeMove) return;
+    const coords = getSvgCoordinates(event);
     if (!coords) return;
-
-    // Apply offset compensation
-    const rawX = coords.x - dragOffsetRef.current.x;
-    const rawY = coords.y - dragOffsetRef.current.y;
-
-    // Constrain within viewBox bounds padding
-    const x = Math.max(25, Math.min(width - 25, rawX));
-    const y = Math.max(25, Math.min(height - 25, rawY));
-
-    // Threshold movement to avoid treating tiny jitters as drags
-    const currentNode = nodeMap.get(draggingNodeId);
-    if (currentNode) {
-      const dist = Math.hypot(x - currentNode.x, y - currentNode.y);
-      if (dist > 3) {
-        hasMovedRef.current = true;
-      }
-    }
-
-    if (onNodeMove) {
-      onNodeMove(draggingNodeId, x, y);
-    }
+    const x = Math.max(28, Math.min(renderWidth - 28, coords.x - dragOffsetRef.current.x));
+    const y = Math.max(28, Math.min(renderHeight - 28, coords.y - dragOffsetRef.current.y));
+    const node = nodeMap.get(draggingNodeId);
+    if (node && Math.hypot(x - node.x, y - node.y) > 3) hasMovedRef.current = true;
+    onNodeMove(draggingNodeId, x * width / renderWidth, y * height / renderHeight);
   };
 
-  // End dragging session
-  const handleMouseUp = () => {
-    setDraggingNodeId(null);
-  };
-
-  // Node selection & auto-edge path highlighting logic
   const handleNodeSelect = (nodeId: string) => {
-    const isAlreadyHighlighted = highlightedNodeIds.includes(nodeId);
-
-    const prevNodeId =
-      highlightedNodeIds.length > 0
-        ? highlightedNodeIds[highlightedNodeIds.length - 1]
-        : null;
-
-    if (mustSelectPath && prevNodeId && !isAlreadyHighlighted) {
-      const connectingEdge = edges.find(
-        (edge) =>
-          (edge.source === prevNodeId && edge.target === nodeId) ||
-          (edge.source === nodeId && edge.target === prevNodeId),
+    if (readOnly) return;
+    const lastNode = highlightedNodeIds[highlightedNodeIds.length - 1];
+    if (mustSelectPath && lastNode && lastNode !== nodeId && !highlightedNodeIds.includes(nodeId)) {
+      const connectingEdge = edges.find((edge) =>
+        (edge.source === lastNode && edge.target === nodeId) ||
+        (!isDirected && edge.target === lastNode && edge.source === nodeId),
       );
-
-      if (
-        connectingEdge &&
-        onEdgeClick &&
-        !highlightedEdgeIds.includes(connectingEdge.id)
-      ) {
+      if (connectingEdge && onEdgeClick && !highlightedEdgeIds.includes(connectingEdge.id)) {
         onEdgeClick(connectingEdge.id);
       }
     }
-
-    if (onNodeClick) {
-      onNodeClick(nodeId);
-    }
+    onNodeClick?.(nodeId);
   };
 
-  return (
-    <div className="relative border border-slate-700 bg-slate-900 rounded-xl overflow-hidden shadow-2xl flex flex-col items-center p-4">
-      <div className="flex items-center justify-between w-full mb-3 px-2">
-        <div className="flex items-center gap-2 text-slate-200 font-medium text-sm">
-          <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
-          <span>{readOnly ? "Assessment graph" : "Interactive Sandbox"}</span>
-        </div>
-        <div className="flex items-center gap-3">
-          {showCounts && (
-            <span className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700">
-              {nodes.length} Vertices | {edges.length} Edges
-            </span>
-          )}
-          {onReset && (
-            <button
-              onClick={onReset}
-              className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-lg bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 hover:border-red-500/50 transition-colors"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Reset
-            </button>
-          )}
-        </div>
+  const accessibleDescription = `${isDirected ? "Directed" : "Undirected"} graph with ${nodes.length} vertices and ${edges.length} edges. ` +
+    edges.map((edge) => `${edge.source} ${isDirected ? "to" : "connected to"} ${edge.target}${edge.label ? `, weight ${edge.label}` : ""}`).join("; ");
+
+  return <div className="pf-live-graph">
+    <header className="pf-live-header">
+      <div className="pf-live-heading"><span className="pf-live-activity"><Activity size={16} aria-hidden="true" /></span><div><strong>{readOnly ? "Assessment graph" : "Interactive graph"}</strong><small>{readOnly ? "Study the connections and their weights" : "Select or drag a vertex to explore"}</small></div></div>
+      <div className="pf-live-actions">
+        {showCounts && <span className="pf-live-counts">{nodes.length} vertices · {edges.length} edges</span>}
+        {onReset && !readOnly && <button type="button" onClick={onReset} className="pf-live-reset" aria-label="Reset graph positions and selections"><RotateCcw size={14} aria-hidden="true" /><span>Reset</span></button>}
       </div>
-
-      <svg
-        ref={svgRef}
-        viewBox={`0 0 ${width} ${height}`}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        className="w-full h-auto max-h-[350px] bg-slate-950/50 rounded-lg border border-slate-800/80 cursor-crosshair select-none touch-none"
-      >
-        <defs>
-          <marker
-            id="arrow"
-            viewBox="0 0 10 10"
-            refX="20"
-            refY="5"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
-          </marker>
-          <marker
-            id="arrow-highlighted"
-            viewBox="0 0 10 10"
-            refX="20"
-            refY="5"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
-          </marker>
-        </defs>
-
-        {/* Render Edges */}
-        {edges.map((edge) => {
-          const sourceNode = nodeMap.get(edge.source);
-          const targetNode = nodeMap.get(edge.target);
-
-          if (!sourceNode || !targetNode) return null;
-
-          const isHighlighted = highlightedEdgeIds.includes(edge.id);
-          const midX = (sourceNode.x + targetNode.x) / 2;
-          const midY = (sourceNode.y + targetNode.y) / 2;
-
-          return (
-            <g
-              key={edge.id}
-              onClick={() => {
-                if (mustSelectPath && onEdgeClick) {
-                  onEdgeClick(edge.id);
-                }
-              }}
-              className={mustSelectPath ? "cursor-pointer group" : "group"}
-            >
-              <line
-                x1={sourceNode.x}
-                y1={sourceNode.y}
-                x2={targetNode.x}
-                y2={targetNode.y}
-                stroke={isHighlighted ? "#38bdf8" : "#475569"}
-                strokeWidth={isHighlighted ? 3 : 2}
-                className={
-                  mustSelectPath
-                    ? "transition-colors duration-300 group-hover:stroke-indigo-400"
-                    : "transition-colors duration-300"
-                }
-                markerEnd={
-                  isDirected
-                    ? isHighlighted
-                      ? "url(#arrow-highlighted)"
-                      : "url(#arrow)"
-                    : undefined
-                }
-              />
-              <line
-                x1={sourceNode.x}
-                y1={sourceNode.y}
-                x2={targetNode.x}
-                y2={targetNode.y}
-                stroke="transparent"
-                strokeWidth={12}
-              />
-              {edge.label && (
-                <text
-                  x={midX}
-                  y={midY - 8}
-                  fill={isHighlighted ? "#7dd3fc" : "#94a3b8"}
-                  fontSize="10"
-                  textAnchor="middle"
-                  className="pointer-events-none font-sans"
-                >
-                  {edge.label}
-                </text>
-              )}
-            </g>
-          );
-        })}
-
-        {/* Render Nodes */}
-        {nodes.map((node) => {
-          const isHighlighted = highlightedNodeIds.includes(node.id);
-
-          return (
-            <g
-              key={node.id}
-              transform={`translate(${node.x}, ${node.y})`}
-              onMouseDown={readOnly ? undefined : (e) => handleMouseDown(e, node)}
-              onClick={() => {
-                if (!readOnly && !hasMovedRef.current) {
-                  handleNodeSelect(node.id);
-                }
-              }}
-              className="cursor-grab active:cursor-grabbing group transition-transform duration-75"
-            >
-              {isHighlighted && (
-                <circle
-                  r={22}
-                  fill="none"
-                  stroke="#38bdf8"
-                  strokeWidth="2"
-                  strokeDasharray="4 2"
-                  className="animate-spin pointer-events-none"
-                />
-              )}
-
-              <circle
-                r={16}
-                fill={node.color || (isHighlighted ? "#0284c7" : "#1e293b")}
-                stroke={isHighlighted ? "#38bdf8" : "#64748b"}
-                strokeWidth={isHighlighted ? 3 : 2}
-                className="transition-colors duration-200 group-hover:fill-indigo-600 group-hover:stroke-indigo-400 shadow-md"
-              />
-
-              <text
-                y={28}
-                fill="#f1f5f9"
-                fontSize="11"
-                fontWeight="500"
-                textAnchor="middle"
-                className="pointer-events-none select-none font-sans drop-shadow"
-              >
-                {node.label}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
+    </header>
+    <svg
+      ref={svgRef}
+      role="group"
+      aria-label={accessibleDescription}
+      viewBox={`0 0 ${renderWidth} ${renderHeight}`}
+      className="pf-graph-svg"
+      onPointerMove={handlePointerMove}
+      onPointerUp={() => setDraggingNodeId(null)}
+      onPointerCancel={() => setDraggingNodeId(null)}
+      onPointerLeave={() => setDraggingNodeId(null)}
+    >
+      <defs>
+        <pattern id={`${id}-dots`} width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#d6dff0" /></pattern>
+        <marker id={`${id}-arrow`} viewBox="0 0 10 10" refX="17" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8d9cbe" /></marker>
+        <marker id={`${id}-selected-arrow`} viewBox="0 0 10 10" refX="17" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5d4bd0" /></marker>
+      </defs>
+      <rect width={renderWidth} height={renderHeight} rx="16" fill="#f7f9ff" />
+      <rect width={renderWidth} height={renderHeight} rx="16" fill={`url(#${id}-dots)`} />
+      {edges.map((edge) => {
+        const source = nodeMap.get(edge.source);
+        const target = nodeMap.get(edge.target);
+        if (!source || !target) return null;
+        const highlighted = highlightedEdgeIds.includes(edge.id);
+        const drawing = edgeDrawing(source, target, renderNodes);
+        const midX = drawing.labelX;
+        const midY = drawing.labelY;
+        const interactive = !readOnly && Boolean(onEdgeClick);
+        return <g
+          key={edge.id}
+          role={interactive ? "button" : undefined}
+          tabIndex={interactive ? 0 : undefined}
+          aria-label={`${edge.source} ${isDirected ? "to" : "to or from"} ${edge.target}${edge.label ? `, cost ${edge.label}` : ""}${highlighted ? ", selected" : ""}`}
+          aria-pressed={interactive ? highlighted : undefined}
+          onClick={interactive ? () => onEdgeClick?.(edge.id) : undefined}
+          onKeyDown={interactive ? (event) => {if (event.key === "Enter" || event.key === " ") {event.preventDefault();onEdgeClick?.(edge.id);}} : undefined}
+          className={interactive ? "pf-graph-edge interactive" : "pf-graph-edge"}
+        >
+          <path d={drawing.d} fill="none" stroke={highlighted ? "#5d4bd0" : "#a5afc8"} strokeWidth={highlighted ? 5 : 3} strokeDasharray={highlighted ? "9 5" : undefined} strokeLinecap="round" markerEnd={isDirected ? `url(#${id}-${highlighted ? "selected-arrow" : "arrow"})` : undefined} />
+          <path d={drawing.d} fill="none" stroke="transparent" strokeWidth={22} />
+          {edge.label && <g className="pf-edge-weight"><rect x={midX - 14} y={midY - 12} width="28" height="23" rx="8" fill={highlighted ? "#eeeaff" : "#fff"} stroke={highlighted ? "#6b58d4" : "#c9d1e3"} strokeWidth="1.5"/><text x={midX} y={midY + 4} fontSize="12" textAnchor="middle" fill={highlighted ? "#4030aa" : "#354362"} fontWeight="800" className="pointer-events-none">{edge.label}</text></g>}
+        </g>;
+      })}
+      {renderNodes.map((node) => {
+        const highlighted = highlightedNodeIds.includes(node.id);
+        const interactive = !readOnly && Boolean(onNodeClick);
+        const shortLabel = node.label.length <= 2;
+        return <g
+          key={node.id}
+          transform={`translate(${node.x}, ${node.y})`}
+          role={interactive ? "button" : undefined}
+          tabIndex={interactive ? 0 : undefined}
+          aria-label={`Vertex ${node.label}${highlighted ? ", selected" : ""}`}
+          aria-pressed={interactive ? highlighted : undefined}
+          onPointerDown={interactive ? (event) => handlePointerDown(event, node) : undefined}
+          onClick={interactive ? () => {if (!hasMovedRef.current) handleNodeSelect(node.id); else hasMovedRef.current = false;} : undefined}
+          onKeyDown={interactive ? (event) => {if (event.key === "Enter" || event.key === " ") {event.preventDefault();handleNodeSelect(node.id);}} : undefined}
+          className={interactive ? "pf-graph-node interactive" : "pf-graph-node"}
+        >
+          {highlighted && <circle r="25" fill="none" stroke="#6554db" strokeWidth="2.5" strokeDasharray="5 4" />}
+          <circle r="19" fill={highlighted ? "#5e4ed2" : (node.color ?? "#fff")} stroke={highlighted ? "#4130b0" : "#6e7da8"} strokeWidth="2.6" />
+          <text y={shortLabel ? 5 : 34} fill={shortLabel ? (highlighted ? "#fff" : "#2b3b64") : "#283653"} fontWeight="850" fontSize={shortLabel ? "15" : "13"} textAnchor="middle" className="pf-graph-node-label">{node.label}</text>
+        </g>;
+      })}
+    </svg>
+    {!readOnly && <p className="pf-live-help"><Grip size={14} aria-hidden="true"/>Click or use Tab + Enter to select. Drag with a mouse or touch to reposition.</p>}
+  </div>;
 };

@@ -29,13 +29,13 @@ function expectQuestionGraph(title: string) {
     expect(screen.queryByText('Assessment graph')).not.toBeInTheDocument();
     return;
   }
-  const graph = screen.getByText('Assessment graph').closest('div.relative')!;
+  const graph = screen.getByText('Assessment graph').closest('.pf-live-graph')!;
   const svg = graph.querySelector('svg[viewBox="0 0 600 400"]')!;
   expect(svg).toBeVisible();
   const labels = [...svg.querySelectorAll('text')].map(node => node.textContent);
   if (title === 'Follow the arrow') {
     expect(labels).toEqual(['A', 'B']);
-    expect(svg.querySelectorAll('line[marker-end="url(#arrow)"]')).toHaveLength(1);
+    expect(svg.querySelectorAll('line[marker-end]')).toHaveLength(1);
   } else {
     expect(labels).toEqual(expect.arrayContaining(['A', 'B', 'C', 'D', '4', '2', '1', '5', '8']));
     expect(svg.querySelectorAll('line[marker-end]')).toHaveLength(0);
@@ -135,7 +135,7 @@ describe('Lesson 6 assessment interaction', () => {
     const user = await startAssessment();
     expect(screen.getByText('Assessment graph')).toBeVisible();
     expect(screen.queryByRole('button', { name: /Reset/ })).not.toBeInTheDocument();
-    const graph = screen.getByText('Assessment graph').closest('div.relative')!;
+    const graph = screen.getByText('Assessment graph').closest('.pf-live-graph')!;
     const svg = graph.querySelector('svg[viewBox="0 0 600 400"]')!;
     expect(svg).toHaveAttribute('viewBox', '0 0 600 400');
     expect(svg.querySelectorAll('line[marker-end]')).toHaveLength(0);

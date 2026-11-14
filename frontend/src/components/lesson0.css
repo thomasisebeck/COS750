@@ -1,0 +1,74 @@
+/* Lesson 0 is an invitation, not a lecture: three short steps. */
+.pf-lesson-zero .pf-lesson-wrap {width:min(100%,760px);}
+.pf-zero-main {display:flex;flex:1;flex-direction:column;gap:20px;animation:pf-rise .33s cubic-bezier(.2,.8,.2,1) both;}
+.pf-zero-main h1 {font-size:clamp(27px,5vw,38px);}
+.pf-zero-contexts,.pf-zero-ready {display:flex;flex-direction:column;gap:14px;}
+.pf-context-selector {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;}
+.pf-context-tab {min-width:0;min-height:74px;display:flex;align-items:center;justify-content:center;gap:7px;flex-direction:column;border:1px solid #dce1f0;border-radius:17px;padding:11px 6px;background:#fff;color:#56647e;font-size:12px;font-weight:740;cursor:pointer;transition:background .22s,transform .22s,border-color .22s,box-shadow .22s;}
+.pf-context-tab.is-selected {background:#eeecff;color:#4435ba;border-color:#988af2;box-shadow:inset 0 0 0 1px #988af2;}
+.pf-context-card {border:1px solid #dce2f5;border-radius:23px;padding:23px;background:linear-gradient(123deg,#fff 30%,#f0f2ff);text-align:left;box-shadow:0 13px 35px #2b3c7710;animation:pf-rise .25s ease both;}
+.pf-context-icon {display:grid;place-items:center;width:47px;height:47px;border-radius:15px;background:#e8e7ff;color:#5646d6;margin-bottom:14px;}
+.pf-context-card h2 {font-size:clamp(21px,4vw,28px);font-weight:800;letter-spacing:-.03em;color:#1b2947;margin:0 0 7px;}
+.pf-context-card p {color:#53627d;font-size:14px;line-height:1.6;}
+.pf-context-question {display:flex;align-items:center;gap:10px;margin-top:17px;padding:12px 14px;border-radius:13px;background:#eaf8f5;color:#1a6863;font-size:13px;font-weight:730;}
+.pf-context-question svg {flex-shrink:0;}
+.pf-inline-note {color:#64708a;text-align:center;font-size:12px;line-height:1.5;}
+.pf-curriculum-map {display:flex;flex-direction:column;gap:17px;padding:20px;border:1px solid #dfe5f5;border-radius:24px;background:linear-gradient(140deg,#f2f2ff,#fff 62%);}
+.pf-zero-route {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;position:relative;}
+.pf-zero-route-stop {display:flex;flex-direction:column;gap:11px;align-items:flex-start;padding:17px 13px;background:#fff;border:1px solid #dfe3f0;border-radius:15px;min-width:0;}
+.pf-zero-route-stop>span {display:grid;place-items:center;width:31px;height:31px;background:#f0effd;color:#5c4ed1;border-radius:10px;font-size:12px;font-weight:900;}
+.pf-zero-route-stop strong {display:block;color:#243555;font-size:14px;line-height:1.3;}
+.pf-zero-route-stop small {display:block;color:#677590;font-size:11px;line-height:1.4;margin-top:5px;}
+.pf-zero-route-destination {background:#eceaff;border-color:#9e91e9;}
+.pf-zero-route-destination>span {color:#fff;background:#5b4cd1;}
+.pf-zero-neighbours {border-top:1px solid #e1e5f1;padding-top:15px;}
+.pf-zero-neighbours>p {color:#5e6c86;font-size:12px;margin-bottom:10px;}
+.pf-zero-neighbour-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.pf-zero-neighbour {display:flex;align-items:center;gap:8px;padding:10px 11px;background:#fff;border:1px solid #e0e4f0;border-radius:11px;color:#43516b;font-size:12px;font-weight:650;line-height:1.4;}
+.pf-zero-neighbour svg {flex-shrink:0;color:#7563c2;}
+.pf-zero-guidance {border-radius:14px;padding:12px 14px;background:#e8f8f4;color:#206b62;display:flex;align-items:flex-start;gap:9px;text-align:left;}
+.pf-zero-guidance svg {flex-shrink:0;}
+.pf-zero-guidance p {font-size:12px;line-height:1.5;}
+.pf-zero-outcomes {display:flex;flex-wrap:wrap;gap:7px 16px;border:1px solid #dfe3f6;background:#fff;border-radius:15px;padding:14px;text-align:left;}
+.pf-zero-outcomes>strong {flex-basis:100%;font-size:12px;color:#27385b;margin-bottom:2px;}
+.pf-zero-outcomes>div {display:flex;align-items:center;gap:6px;color:#4e5c7c;font-size:11px;}
+.pf-zero-outcomes>div>svg {color:#137b73;flex-shrink:0;}
+.pf-lesson-footer {padding-top:7px;}
+@keyframes pf-rise {from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@media (hover:hover) and (pointer:fine) {.pf-context-tab:hover {transform:translateY(-3px);border-color:#a198ec;box-shadow:0 10px 18px #453caf16;}}
+@media(max-width:500px) {
+  .pf-zero-main {gap:16px;}
+  .pf-context-tab {min-height:63px;padding:8px 3px;font-size:11px;}
+  .pf-context-card {padding:17px;border-radius:18px;}
+  .pf-context-icon {width:39px;height:39px;margin-bottom:10px;}
+  .pf-context-card p {font-size:13px;}
+  .pf-context-question {margin-top:13px;padding:10px;font-size:12px;}
+  .pf-curriculum-map {padding:12px;border-radius:17px;gap:11px;}
+  .pf-zero-route {grid-template-columns:1fr;gap:7px;}
+  .pf-zero-route-stop {flex-direction:row;align-items:center;gap:10px;padding:10px 12px;}
+  .pf-zero-route-stop>span {width:33px;height:33px;flex-shrink:0;}
+  .pf-zero-route-stop strong {font-size:13px;}
+  .pf-zero-route-stop small {font-size:11px;margin-top:1px;}
+  .pf-zero-neighbours {padding-top:11px;}
+  .pf-zero-neighbour {font-size:11px;padding:8px;}
+  .pf-zero-outcomes {padding:12px;}
+}
+@media(max-width:360px) {.pf-zero-neighbour-grid {grid-template-columns:1fr;}.pf-zero-outcomes {gap:6px;}}
+@media(prefers-reduced-motion:reduce) {.pf-zero-main,.pf-context-card {animation:none;}}
+/* Open-ended route exploration instead of an overlapping terminology quiz. */
+.pf-zero-story {display:flex;gap:12px;align-items:flex-start;background:#f0f0ff;border:1px solid #d9d8fa;color:#344260;border-radius:16px;padding:13px 16px;}
+.pf-zero-story>span{font-size:23px;line-height:1.3;flex-shrink:0}
+.pf-zero-story p{font-size:14px;line-height:1.65;}
+.pf-zero-route-explorer{display:flex;flex-direction:column;gap:12px;border-radius:20px;border:1px solid #dfe4f1;padding:17px;background:#fff;}
+.pf-zero-explore-copy h2{font-size:18px;font-weight:850;color:#223456;}
+.pf-zero-explore-copy p{font-size:13px;color:#64718a;margin-top:3px;line-height:1.6;}
+.pf-zero-route-choices{display:grid;gap:9px;grid-template-columns:repeat(3,minmax(0,1fr));}
+.pf-zero-route-choices button{border:1.5px solid #dce2f0;background:#fafbff;border-radius:13px;text-align:left;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:13px;min-width:0;min-height:74px;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s,background .2s;}
+.pf-zero-route-choices button.is-selected{border-color:#6a54e1;background:#f0edff;box-shadow:inset 0 0 0 1px #8d7bf0;}
+.pf-zero-route-choices button strong{font-weight:800;font-size:12px;color:#233658;display:block;}
+.pf-zero-route-choices button small{font-size:11px;color:#64728e;line-height:1.5;display:block;margin-top:5px;}
+.pf-zero-route-time{white-space:nowrap;font-size:11px;border-radius:8px;padding:4px 6px;background:#e5f7f2;color:#146c66;font-weight:850;}
+.pf-zero-discovery{font-size:13px;line-height:1.6;background:#edf7f6;padding:11px 13px;border-radius:11px;color:#235f60;}
+@media(hover:hover) and (pointer:fine){.pf-zero-route-choices button:hover{transform:translateY(-2px);box-shadow:0 8px 17px #4331a014;border-color:#9b90e9;}}
+@media(max-width:640px){.pf-zero-route-choices{grid-template-columns:1fr;}.pf-zero-route-choices button{align-items:center;min-height:62px;}.pf-zero-route-explorer{padding:13px;}.pf-zero-story p{font-size:13px;}}
+@media(prefers-reduced-motion:reduce){.pf-zero-route-choices button{transition:none!important;transform:none!important;}}

@@ -172,5 +172,48 @@ export function generateRetryQuestion(
   // Rotates options with repeated attempts while avoiding fixed correct-answer positions.
   options = shuffle(options, random);
   if (attempt % 2 === 0) options.reverse();
+  if (options.length > 1 && options.every((option, index) => option.id === previous.options[index]?.id)) {
+    options = [...options.slice(1), options[0]];
+  }
   return { ...template, state, question, options, correctAnswerId };
+}
+
+/** Build the next path-cost question on the same graph the learner just practised.
+ * This preserves conceptual continuity after a generated compare-routes retry.
+ */
+export function continuePathCostQuestion(
+  template: GraphQuizContentBox,
+  graph: GraphState,
+): GraphQuizContentBox {
+  const config = template.retryGenerator;
+  if (!config || config.kind !== "path-cost") {
+    throw new Error("The follow-on quiz must be a path-cost question.");
+  }
+  // A generated retry may have a different topology. Select a connected route
+  // on that same graph instead of assuming the original A-B-C-D still exists.
+  const path = [config.path, ["A", "B", "D"], ["A", "C", "B", "D"]]
+    .find((candidate) => {
+      try { pathCost(graph, candidate); return true; }
+      catch { return false; }
+    });
+  if (!path) throw new Error("The follow-on graph needs a route from A to D.");
+  const cost = pathCost(graph, path);
+  const distractors = [...new Set((config.distractorOffsets ?? [-2, -1, 1, 2])
+    .map((offset) => cost + offset)
+    .filter((value) => value >= 0 && value !== cost))].slice(0, 2);
+  if (distractors.length < 2) throw new Error("Not enough viable distractors.");
+  return {
+    ...template,
+    state: {
+      ...graph,
+      nodes: graph.nodes.map((node) => ({ ...node })),
+      edges: graph.edges.map((edge) => ({ ...edge })),
+      highlightedNodes: [],
+      highlightedEdges: [],
+    },
+    retryGenerator: { ...config, path },
+    question: `What is the total cost of ${path.join(" → ")} on this same graph?`,
+    options: [cost, ...distractors].map((value) => ({ id: `cost-${value}`, label: String(value) })),
+    correctAnswerId: `cost-${cost}`,
+  };
 }

@@ -2,14 +2,14 @@ import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { LessonHeader } from "./LessonHeader";
 import { PageTitle } from "./PageTitle";
-import { ProgressBar } from "./progressBar";
-import { InfoCard } from "./infoCard";
-import { OptionCard } from "./optionCard";
-import { LessonButton } from "./buttons";
+import { ProgressBar } from "./ProgressBar";
+import { InfoCard } from "./InfoCard";
+import { OptionCard } from "./OptionCard";
+import { LessonButton } from "./Buttons";
 import { LiveGraph } from "./LiveGraph";
-import { generateRetryQuestion, highlightedRoute, quizExplanation } from "../lessons/lesson3Questions";
+import { continuePathCostQuestion, generateRetryQuestion, highlightedRoute, quizExplanation } from "../lessons/lesson3Questions";
 import type { GraphQuizContentBox, GraphState, LessonData, LessonPage } from "../types/lesson";
-import { playNoteSound } from "../helpers";
+import { playNoteSound, playFeedbackSound } from "../helpers";
 
 interface Lesson3ExperienceProps {
   lesson: LessonData;
@@ -23,7 +23,7 @@ const COMPLETION_INDEX = 7;
 
 function graphForPage(page: LessonPage): GraphState | null {
   const box = page.contentBox;
-  return box.boxType === "graph" || box.boxType === "graph-quiz"
+  return box && (box.boxType === "graph" || box.boxType === "graph-quiz")
     ? { ...box.state, nodes: box.state.nodes.map((node) => ({ ...node })), edges: box.state.edges.map((edge) => ({ ...edge })) }
     : null;
 }
@@ -41,7 +41,7 @@ export function Lesson3Experience({ lesson, onExit, onComplete }: Lesson3Experie
   const [graphState, setGraphState] = useState<GraphState | null>(() => graphForPage(lesson.pages[0]));
 
   const page = lesson.pages[pageIndex];
-  const box = retryQuestions[pageIndex] ?? page.contentBox;
+  const box = retryQuestions[pageIndex] ?? page.contentBox ?? { boxType: "text" as const, title: "", text: "" };
   const isQuiz = box.boxType === "graph-quiz";
 
   function moveTo(index: number, replacement?: GraphQuizContentBox) {
@@ -56,12 +56,23 @@ export function Lesson3Experience({ lesson, onExit, onComplete }: Lesson3Experie
 
   function tryAnotherQuestion() {
     const original = lesson.pages[recoveryOrigin].contentBox;
-    if (original.boxType !== "graph-quiz") return;
+    if (original?.boxType !== "graph-quiz") return;
     const attempt = (retryCounts[recoveryOrigin] ?? 0) + 1;
     const previous = retryQuestions[recoveryOrigin] ?? original;
     const generated = generateRetryQuestion(original, previous, attempt);
     setRetryCounts((previousCounts) => ({ ...previousCounts, [recoveryOrigin]: attempt }));
-    setRetryQuestions((previousQuestions) => ({ ...previousQuestions, [recoveryOrigin]: generated }));
+    // If the first route quiz was retried, the following cost quiz must use that
+    // same set of vertices and edge weights, rather than its original JSON graph.
+    const nextTemplate = lesson.pages[SECOND_QUIZ_INDEX]?.contentBox;
+    const continuation = recoveryOrigin !== SECOND_QUIZ_INDEX &&
+      nextTemplate?.boxType === "graph-quiz" && generated.state
+        ? continuePathCostQuestion(nextTemplate, generated.state)
+        : null;
+    setRetryQuestions((previousQuestions) => ({
+      ...previousQuestions,
+      [recoveryOrigin]: generated,
+      ...(continuation ? { [SECOND_QUIZ_INDEX]: continuation } : {}),
+    }));
     setMissedQuestion(null);
     moveTo(recoveryOrigin, generated);
   }
@@ -92,6 +103,7 @@ export function Lesson3Experience({ lesson, onExit, onComplete }: Lesson3Experie
         setNotice("Choose an answer before checking.");
         return;
       }
+      playFeedbackSound(selectedOption === box.correctAnswerId);
       if (selectedOption !== box.correctAnswerId) {
         setMissedQuestion(box);
         setRecoveryOrigin(pageIndex);
@@ -156,7 +168,7 @@ export function Lesson3Experience({ lesson, onExit, onComplete }: Lesson3Experie
     : graphState;
 
   return (
-    <div className="w-full min-h-screen bg-[#111116] text-slate-100 p-6 flex flex-col gap-6">
+    <div className="pf-screen pf-lesson-screen">
       <LessonHeader lessonNumber={3} onMenuClick={onExit} />
       <ProgressBar currentIndex={pageIndex} total={lesson.pages.length} onBack={goBack} />
 
@@ -169,10 +181,10 @@ export function Lesson3Experience({ lesson, onExit, onComplete }: Lesson3Experie
 
         {box.boxType === "text" && (
           <InfoCard
-            heading={box.title}
+            heading={box.title ?? ""}
             body={pageIndex === RECOVERY_INDEX && missedQuestion
-              ? `Let's break it down.\n${quizExplanation(missedQuestion)}\n\nNow try a new graph with different edge weights.`
-              : box.text}
+              ? `Let's break it down.\n${quizExplanation(missedQuestion)}\n\nNext, we will use the updated graph for the following question too.`
+              : box.text ?? ""}
             variant={pageIndex === RECOVERY_INDEX ? "red" : "default"}
           />
         )}
@@ -208,7 +220,7 @@ export function Lesson3Experience({ lesson, onExit, onComplete }: Lesson3Experie
           <div className="flex flex-col gap-4">
             {(retryCounts[pageIndex] ?? 0) > 0 && (
               <p className="text-xs font-semibold text-violet-300" aria-live="polite">
-                New question · Attempt {(retryCounts[pageIndex] ?? 0) + 1}
+                New graph, continued learning · Attempt {(retryCounts[pageIndex] ?? 0) + 1}
               </p>
             )}
             <p className="text-sm font-bold text-slate-100">{box.question}</p>

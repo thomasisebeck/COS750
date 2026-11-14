@@ -29,19 +29,66 @@
         "prohibitPathSelection": true,
         "state": {
           "nodes": [
-            { "id": "A", "label": "A", "x": 150, "y": 175 },
-            { "id": "B", "label": "B", "x": 325, "y": 75 },
-            { "id": "C", "label": "C", "x": 325, "y": 275 },
-            { "id": "D", "label": "D", "x": 500, "y": 175 }
+            {
+              "id": "A",
+              "label": "A",
+              "x": 150,
+              "y": 175
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 325,
+              "y": 75
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 325,
+              "y": 275
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 500,
+              "y": 175
+            }
           ],
           "edges": [
-            { "id": "eA-B", "source": "A", "target": "B", "label": "" },
-            { "id": "eA-C", "source": "A", "target": "C", "label": "" },
-            { "id": "eB-C", "source": "B", "target": "C", "label": "" },
-            { "id": "eB-D", "source": "B", "target": "D", "label": "" },
-            { "id": "eC-D", "source": "C", "target": "D", "label": "" }
+            {
+              "id": "eA-B",
+              "source": "A",
+              "target": "B",
+              "label": ""
+            },
+            {
+              "id": "eA-C",
+              "source": "A",
+              "target": "C",
+              "label": ""
+            },
+            {
+              "id": "eB-C",
+              "source": "B",
+              "target": "C",
+              "label": ""
+            },
+            {
+              "id": "eB-D",
+              "source": "B",
+              "target": "D",
+              "label": ""
+            },
+            {
+              "id": "eC-D",
+              "source": "C",
+              "target": "D",
+              "label": ""
+            }
           ],
-          "highlightedNodes": ["A"],
+          "highlightedNodes": [
+            "A"
+          ],
           "highlightedEdges": []
         },
         "text": "Tap a circle to inspect a vertex."
@@ -62,28 +109,85 @@
         "prohibitPathSelection": false,
         "state": {
           "nodes": [
-            { "id": "A", "label": "A", "x": 150, "y": 175 },
-            { "id": "B", "label": "B", "x": 325, "y": 75 },
-            { "id": "C", "label": "C", "x": 325, "y": 275 },
-            { "id": "D", "label": "D", "x": 500, "y": 175 }
+            {
+              "id": "A",
+              "label": "A",
+              "x": 150,
+              "y": 175
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 325,
+              "y": 75
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 325,
+              "y": 275
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 500,
+              "y": 175
+            }
           ],
           "edges": [
-            { "id": "eA-B", "source": "A", "target": "B", "label": "" },
-            { "id": "eA-C", "source": "A", "target": "C", "label": "" },
-            { "id": "eB-C", "source": "B", "target": "C", "label": "" },
-            { "id": "eB-D", "source": "B", "target": "D", "label": "" },
-            { "id": "eC-D", "source": "C", "target": "D", "label": "" }
+            {
+              "id": "eA-B",
+              "source": "A",
+              "target": "B",
+              "label": ""
+            },
+            {
+              "id": "eA-C",
+              "source": "A",
+              "target": "C",
+              "label": ""
+            },
+            {
+              "id": "eB-C",
+              "source": "B",
+              "target": "C",
+              "label": ""
+            },
+            {
+              "id": "eB-D",
+              "source": "B",
+              "target": "D",
+              "label": ""
+            },
+            {
+              "id": "eC-D",
+              "source": "C",
+              "target": "D",
+              "label": ""
+            }
           ],
-          "highlightedNodes": ["A"],
+          "highlightedNodes": [
+            "A"
+          ],
           "highlightedEdges": []
         },
         "question": "How many vertices do you see?",
         "options": [
-          { "id": "opt-1", "label": "3 vertices" },
-          { "id": "opt-2", "label": "4 vertices" },
-          { "id": "opt-3", "label": "5 vertices" }
+          {
+            "id": "opt-1",
+            "label": "3 vertices"
+          },
+          {
+            "id": "opt-2",
+            "label": "4 vertices"
+          },
+          {
+            "id": "opt-3",
+            "label": "5 vertices"
+          }
         ],
-        "correctAnswerId": "opt-2"
+        "correctAnswerId": "opt-2",
+        "explanation": "Count the distinct circles labelled A, B, C and D. Each circle represents one vertex, so there are four vertices."
       },
       "questionType": "MULT-CHOICE",
       "buttonLabel": "Check answer"
@@ -97,19 +201,66 @@
         "prohibitPathSelection": false,
         "state": {
           "nodes": [
-            { "id": "A", "label": "A", "x": 150, "y": 175 },
-            { "id": "B", "label": "B", "x": 325, "y": 75 },
-            { "id": "C", "label": "C", "x": 325, "y": 275 },
-            { "id": "D", "label": "D", "x": 500, "y": 175 }
+            {
+              "id": "A",
+              "label": "A",
+              "x": 150,
+              "y": 175
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 325,
+              "y": 75
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 325,
+              "y": 275
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 500,
+              "y": 175
+            }
           ],
           "edges": [
-            { "id": "eA-B", "source": "A", "target": "B", "label": "" },
-            { "id": "eA-C", "source": "A", "target": "C", "label": "" },
-            { "id": "eB-C", "source": "B", "target": "C", "label": "" },
-            { "id": "eB-D", "source": "B", "target": "D", "label": "" },
-            { "id": "eC-D", "source": "C", "target": "D", "label": "" }
+            {
+              "id": "eA-B",
+              "source": "A",
+              "target": "B",
+              "label": ""
+            },
+            {
+              "id": "eA-C",
+              "source": "A",
+              "target": "C",
+              "label": ""
+            },
+            {
+              "id": "eB-C",
+              "source": "B",
+              "target": "C",
+              "label": ""
+            },
+            {
+              "id": "eB-D",
+              "source": "B",
+              "target": "D",
+              "label": ""
+            },
+            {
+              "id": "eC-D",
+              "source": "C",
+              "target": "D",
+              "label": ""
+            }
           ],
-          "highlightedNodes": ["A"],
+          "highlightedNodes": [
+            "A"
+          ],
           "highlightedEdges": []
         },
         "text": "Inspect the line linking A and B by clicking on it"
@@ -121,10 +272,8 @@
       "questionType": "EDGE_SELECTION",
       "buttonLabel": "Continue"
     },
-
     {
       "category": "YOUR TURN",
-
       "title": "Who is next to A?",
       "subtext": "Adjacent vertices have an edge between them.",
       "contentBox": {
@@ -132,33 +281,86 @@
         "prohibitPathSelection": false,
         "state": {
           "nodes": [
-            { "id": "A", "label": "A", "x": 150, "y": 175 },
-            { "id": "B", "label": "B", "x": 325, "y": 75 },
-
-            { "id": "C", "label": "C", "x": 325, "y": 275 },
-            { "id": "D", "label": "D", "x": 500, "y": 175 }
+            {
+              "id": "A",
+              "label": "A",
+              "x": 150,
+              "y": 175
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 325,
+              "y": 75
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 325,
+              "y": 275
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 500,
+              "y": 175
+            }
           ],
-
           "edges": [
-            { "id": "eA-B", "source": "A", "target": "B", "label": "" },
-            { "id": "eA-C", "source": "A", "target": "C", "label": "" },
-
-            { "id": "eB-C", "source": "B", "target": "C", "label": "" },
-            { "id": "eB-D", "source": "B", "target": "D", "label": "" },
-            { "id": "eC-D", "source": "C", "target": "D", "label": "" }
+            {
+              "id": "eA-B",
+              "source": "A",
+              "target": "B",
+              "label": ""
+            },
+            {
+              "id": "eA-C",
+              "source": "A",
+              "target": "C",
+              "label": ""
+            },
+            {
+              "id": "eB-C",
+              "source": "B",
+              "target": "C",
+              "label": ""
+            },
+            {
+              "id": "eB-D",
+              "source": "B",
+              "target": "D",
+              "label": ""
+            },
+            {
+              "id": "eC-D",
+              "source": "C",
+              "target": "D",
+              "label": ""
+            }
           ],
-          "highlightedNodes": ["A"],
+          "highlightedNodes": [
+            "A"
+          ],
           "highlightedEdges": []
         },
         "question": "Which vertices are adjacent to A?",
         "options": [
-          { "id": "opt-1", "label": "B and C" },
-          { "id": "opt-2", "label": "B and D" },
-          { "id": "opt-3", "label": "C and D" }
+          {
+            "id": "opt-1",
+            "label": "B and C"
+          },
+          {
+            "id": "opt-2",
+            "label": "B and D"
+          },
+          {
+            "id": "opt-3",
+            "label": "C and D"
+          }
         ],
-        "correctAnswerId": "opt-1"
+        "correctAnswerId": "opt-1",
+        "explanation": "Follow the edges that begin at A. A connects directly to B and C, but there is no edge between A and D."
       },
-
       "questionType": "MULT-CHOICE",
       "buttonLabel": "Check answer"
     },
@@ -171,7 +373,6 @@
         "title": "EXAMPLE: A → C → D",
         "text": "We travel from A to C along an edge, then from C to D along another edge. Each consecutive pair must be connected."
       },
-
       "extraBox": {
         "title": "KEY TAKEAWAY",
         "text": "A → D is not a direct edge in this graph. A → C → D is a valid path."

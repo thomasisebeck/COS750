@@ -72,6 +72,7 @@ export interface LessonMeta {
   lessonNumber: number;
   title?: string;
   topic?: string;
+  category?: string;
 }
 
 export interface GraphNode {
@@ -112,7 +113,7 @@ export interface TextContentBox {
 
 export interface GraphContentBox {
   boxType: "graph";
-  state?: GraphState;
+  state: GraphState;
   text?: string;
   prohibitPathSelection?: boolean;
   isDirected?: boolean;
@@ -121,6 +122,8 @@ export interface GraphContentBox {
 
 export interface QuizContentBox {
   boxType: "quiz";
+  text?: string;
+  prohibitPathSelection?: boolean;
   question: string;
   options: QuizOption[];
   correctAnswerId: string;
@@ -147,10 +150,10 @@ export type QuizRetryGenerator =
 
 export interface GraphQuizContentBox {
   boxType: "graph-quiz";
-  state?: GraphState;
-  question?: string;
-  options?: QuizOption[];
-  correctAnswerId?: string;
+  state: GraphState;
+  question: string;
+  options: QuizOption[];
+  correctAnswerId: string;
   explanation?: string;
   retryGenerator?: QuizRetryGenerator;
   text?: string;
@@ -174,6 +177,7 @@ export interface LessonPage {
   title: string;
   subtext: string;
   eyebrow?: string;
+  isDirected?: boolean;
   type?: string;
   buttonLabel?: string;
   button?: string;

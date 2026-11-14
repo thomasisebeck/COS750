@@ -28,7 +28,7 @@ export const Logo: React.FC<LogoProps> = ({ className = '' }) => {
       </svg>
 
       {/* Brand text */}
-      <span className="text-sm font-semibold tracking-tight text-white">
+      <span className="text-sm font-semibold tracking-tight text-[#172642]">
         PathFinder
       </span>
     </div>
