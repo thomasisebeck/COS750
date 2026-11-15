@@ -16,7 +16,7 @@
     "test:coverage": "node scripts/test.mjs --coverage",
     "test:lesson0": "node --experimental-strip-types --test tests/lesson0.test.mjs",
     "test:continuity": "node --experimental-strip-types --test tests/continuity.test.mjs",
-    "test:logic": "node --experimental-strip-types --test tests/lesson0.test.mjs tests/lesson3.test.mjs tests/lesson4.test.mjs tests/continuity.test.mjs tests/feedback.test.mjs tests/questionBanks.test.mjs tests/speechService.test.mjs tests/visualPolish.test.mjs",
+    "test:logic": "node --experimental-strip-types --test tests/lesson0.test.mjs tests/lesson3.test.mjs tests/lesson4.test.mjs tests/continuity.test.mjs tests/feedback.test.mjs tests/questionBanks.test.mjs tests/speechService.test.mjs tests/visualPolish.test.mjs tests/lesson5Retry.test.mjs",
     "test:question-banks": "node --experimental-strip-types --test tests/questionBanks.test.mjs"
   },
   "dependencies": {

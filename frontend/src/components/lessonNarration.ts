@@ -1,3 +1,5 @@
+import { prepareNarrationText } from "./prepareNarration.ts";
+
 /** Read the learner-facing content currently visible on a lesson page.
  * Do not read navigation, action buttons or hidden explanations/answers.
  */
@@ -23,5 +25,5 @@ export function collectLessonNarration(button: HTMLElement): string {
   }).filter(Boolean);
   // A lesson page is short; this allows the entire lesson explanation, questions
   // and feedback to be spoken by the optional high-quality voice endpoint.
-  return contents.join(". ").slice(0, 2900);
+  return prepareNarrationText(contents.join(". ").replace(/([.!?])\.\s/g, "$1 ").slice(0, 2900));
 }

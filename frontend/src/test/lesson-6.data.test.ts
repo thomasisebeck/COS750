@@ -8,14 +8,14 @@ const quizzes = typedLesson.pages.filter(page =>
   page.contentBox.boxType === 'quiz' || page.contentBox.boxType === 'graph-quiz');
 
 describe('Lesson 6 content contract', () => {
-  it('has the expected lesson identity and complete 14-screen flow', () => {
+  it('has the expected lesson identity and 18-screen flow with 14 graded questions', () => {
     expect(lesson.meta.lessonNumber).toBe(6);
-    expect(lesson.pages).toHaveLength(14);
-    expect(quizzes).toHaveLength(10);
+    expect(lesson.pages).toHaveLength(18);
+    expect(quizzes).toHaveLength(14);
     expect(lesson.pages[0].title).toBe('Show what you know');
-    expect(lesson.pages[11].pageType).toBe('results');
-    expect(lesson.pages[12].pageType).toBe('review');
-    expect(lesson.pages[13].buttonLabel).toBe('Back to learning path');
+    expect(lesson.pages[15].pageType).toBe('results');
+    expect(lesson.pages[16].pageType).toBe('review');
+    expect(lesson.pages[17].buttonLabel).toBe('Back to learning path');
   });
 
   it.each(lesson.pages.map((page, index) => ({ ...page, index })))('page $index has usable copy and an action', page => {
@@ -45,7 +45,7 @@ describe('Lesson 6 content contract', () => {
   it('uses independently checked answer keys, rather than accepting any JSON key', () => {
     const expected = ['4', 'A to B only', '8', 'A = 0; all others = \u221e',
       'B = 4; C = 2', 'C', '3', '8', 'A \u2192 C \u2192 B \u2192 D \u00b7 cost 8',
-      'All edge weights are non-negative'];
+      'All edge weights are non-negative', 'A, B and D', '9', 'B', '1'];
     expect(quizzes.map(page => {
       const box = page.contentBox;
       if (box.boxType !== 'quiz' && box.boxType !== 'graph-quiz') throw new Error('Expected a quiz');
@@ -56,7 +56,7 @@ describe('Lesson 6 content contract', () => {
   it('keeps the same valid, undirected, read-only assessment graph on every graph screen', () => {
     const graphPages = typedLesson.pages.filter(page =>
       'state' in page.contentBox && page.contentBox.isDirected === false);
-    expect(graphPages).toHaveLength(9);
+    expect(graphPages).toHaveLength(13);
     const first = graphPages[0].contentBox;
     if (!('state' in first)) throw new Error('Missing assessment graph');
     for (const page of graphPages) {
@@ -88,7 +88,8 @@ describe('Lesson 6 content contract', () => {
 
   it.each(['Find the vertices', 'Follow the arrow', 'Compute a path cost',
     'Set initial distances', 'Explore the source', 'Select the next vertex',
-    'Relax from C', 'Relax from B', 'Find the final route'])(
+    'Relax from C', 'Relax from B', 'Find the final route',
+    'Find C’s neighbours', 'Compare a second route', 'Trace the predecessor', 'Compare route savings'])(
     '%s supplies its own graph instead of relying on a previous screen', title => {
       const box = typedLesson.pages.find(page => page.title === title)!.contentBox;
       expect(box.boxType).toBe('graph-quiz');

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sparkles, X } from "lucide-react";
 import { playFeedbackSound } from "./helpers";
 import "./App.css";
@@ -18,6 +18,7 @@ import lesson4Raw from "./lessons/lesson-4.json";
 import lesson5Raw from "./lessons/lesson-5.json";
 import lesson6Raw from "./lessons/lesson-6.json";
 import type { LessonData } from "./types/lesson";
+import { normalizeCompletedLessons } from "./lessons/rewards";
 
 const lessonsMap: Record<number, LessonData> = {
   1: lesson1Raw as unknown as LessonData,
@@ -27,6 +28,9 @@ const lessonsMap: Record<number, LessonData> = {
   5: lesson5Raw as unknown as LessonData,
   6: lesson6Raw as unknown as LessonData,
 };
+
+const assessmentQuestionCount = lessonsMap[6].pages.filter(page =>
+  page.contentBox?.boxType === "quiz" || page.contentBox?.boxType === "graph-quiz").length;
 
 const lessonList: LessonSummary[] = [
   { id: 0, title: "Why graphs matter", subtitle: "The world behind the dots" },
@@ -45,13 +49,21 @@ function readPreference(key: string) {
 function readCompleted(): number[] {
   try {
     const value: unknown = JSON.parse(window.localStorage.getItem("pf-completed") ?? "[]");
-    return Array.isArray(value) ? value.filter((id): id is number => Number.isInteger(id) && id >= 0 && id <= 6) : [];
+    const ids = normalizeCompletedLessons(value);
+    const legacyResult = window.localStorage.getItem("pf-assessment-best");
+    if (legacyResult !== null && Number.isFinite(Number(legacyResult)) && !ids.includes(6)) ids.push(6);
+    return ids.sort((a,b) => a-b);
   } catch { return []; }
 }
 
-function readBestScore() {
-  try { return Math.max(0,Math.min(10,Number(window.localStorage.getItem("pf-assessment-best") ?? 0) || 0)); }
-  catch { return 0; }
+function readBestScore(): number | null {
+  try {
+    // A new grading scale: old /10 scores are kept in storage, not mislabelled as /14.
+    const stored = window.localStorage.getItem("pf-assessment-best-v2");
+    if (stored === null) return null;
+    const value = Number(stored);
+    return Number.isInteger(value) ? Math.max(0,Math.min(assessmentQuestionCount,value)) : null;
+  } catch { return null; }
 }
 function App() {
   const [bestAssessmentScore,setBestAssessmentScore] = useState(readBestScore);
@@ -59,6 +71,7 @@ function App() {
   const [view, setView] = useState<"menu" | "lesson">("menu");
   const [currentLessonId, setCurrentLessonId] = useState<number>(0);
   const [completed, setCompleted] = useState<number[]>(readCompleted);
+  const completedRef = useRef(new Set(completed));
   const [highContrast, setHighContrast] = useState(() => readPreference("pf-contrast"));
   const [reducedMotion, setReducedMotion] = useState(() => readPreference("pf-motion"));
   const [soundVolume,setSoundVolume] = useState(() => {
@@ -80,20 +93,35 @@ function App() {
     } catch { /* App remains functional when storage is unavailable. */ }
   }, [completed, highContrast, reducedMotion, soundEnabled, soundVolume]);
 
-  const saveAssessmentScore = (score:number,total:number) => {
-    const normalized = Math.round(score / Math.max(1,total) * 10);
+  const saveAssessmentScore = (score: number, total: number) => {
+    // Only record a result graded against this version's full question bank.
+    if (total !== assessmentQuestionCount || !Number.isInteger(score)) return;
+    const earned = Math.max(0,Math.min(total,score));
     setBestAssessmentScore(previous => {
-      const best = Math.max(previous,normalized);
-      try {window.localStorage.setItem("pf-assessment-best",String(best));} catch { /* Locally stored best score. */ }
+      const best = Math.max(previous ?? 0,earned);
+      try {window.localStorage.setItem("pf-assessment-best-v2",String(best));} catch { /* Storage optional. */ }
       return best;
     });
   };
+  // Keep the award idempotent even if two completion actions fire before React renders.
+  // Storage persists the lesson IDs; XP is derived from them rather than stored twice.
+  const unlockLesson = (lessonId: number): boolean => {
+    if (completedRef.current.has(lessonId)) return false;
+    completedRef.current.add(lessonId);
+    setCompleted([...completedRef.current].sort((a, b) => a - b));
+    setNewAchievement(lessonId);
+    playFeedbackSound(true);
+    return true;
+  };
+
+  const finishAssessment = (score: number, total: number): boolean => {
+    saveAssessmentScore(score, total);
+    // Grading the last answer is the completion point; review screens are optional.
+    return unlockLesson(6);
+  };
+
   const handleComplete = () => {
-    if (!completed.includes(currentLessonId)) {
-      setNewAchievement(currentLessonId);
-      playFeedbackSound(true);
-    }
-    setCompleted((previous) => previous.includes(currentLessonId) ? previous : [...previous, currentLessonId]);
+    unlockLesson(currentLessonId);
     setCurrentLessonId((previous) => Math.min(6, previous + 1));
     setView("menu");
   };
@@ -102,7 +130,7 @@ function App() {
 
   let screen;
   if (view === "menu") {
-    screen = <LearningPath lessons={lessonList} selectedLessonId={currentLessonId} completedLessonIds={completed} onSelectLesson={setCurrentLessonId} bestAssessmentScore={bestAssessmentScore} onStartLesson={(id) => {if (id !== 0 && !lessonsMap[id]) return; setCurrentLessonId(id); setView("lesson");}} />;
+    screen = <LearningPath lessons={lessonList} selectedLessonId={currentLessonId} completedLessonIds={completed} onSelectLesson={setCurrentLessonId} bestAssessmentScore={bestAssessmentScore} assessmentQuestionCount={assessmentQuestionCount} onStartLesson={(id) => {if (id !== 0 && !lessonsMap[id]) return; setNewAchievement(null); setCurrentLessonId(id); setView("lesson");}} />;
   } else if (currentLessonId === 0) {
     screen = <Lesson0Experience onExit={returnToMenu} onComplete={handleComplete} />;
   } else if (currentLessonId === 1) {
@@ -116,7 +144,7 @@ function App() {
   } else if (currentLessonId === 5) {
     screen = <Lesson5Experience lesson={currentLessonData} onExit={returnToMenu} onComplete={handleComplete} />;
   } else {
-    screen = <Lesson6Experience lesson={currentLessonData} onExit={returnToMenu} onComplete={handleComplete} onScore={saveAssessmentScore} />;
+    screen = <Lesson6Experience lesson={currentLessonData} onExit={returnToMenu} onComplete={handleComplete} onAssessmentFinished={finishAssessment} />;
   }
 
   return <div className={`pf-app ${highContrast ? "pf-high-contrast" : ""} ${reducedMotion ? "pf-reduced-motion" : ""}`}>

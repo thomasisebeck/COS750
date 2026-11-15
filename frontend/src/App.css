@@ -339,3 +339,15 @@
 @keyframes pf-speech-spin {to {transform:rotate(360deg);}}
 @media(prefers-reduced-motion:reduce){.pf-speech-loading{animation:none;}}
 .pf-reduced-motion .pf-speech-loading{animation:none;}
+
+/* Progress is a real, persistent total rather than an isolated unlock toast. */
+.pf-xp-total {display:inline-flex;align-items:center;gap:11px;width:fit-content;margin-top:16px;padding:11px 15px;background:#f0ecff;border:1px solid #d8d0fc;border-radius:16px;color:#4737ad;}
+.pf-xp-icon {display:grid;place-items:center;width:37px;height:37px;border-radius:11px;background:#fff;color:#6951cd;}
+.pf-xp-total>div {display:flex;flex-direction:column;gap:2px;text-align:left;}
+.pf-xp-total strong {font-size:19px;font-weight:850;font-variant-numeric:tabular-nums;line-height:1.2;}
+.pf-xp-total small {font-size:11px;color:#655a91;line-height:1.45;}
+.pf-achievement-xp {margin-left:auto;padding:6px 9px;border-radius:10px;background:#f0ecff;color:#5848be;font-size:12px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.pf-assessment-award {text-align:left;padding:15px 17px;border-radius:16px;background:#edf9f5;border:1px solid #b9e5d7;color:#12635e;}
+.pf-assessment-award strong {display:block;font-size:14px;font-weight:800;line-height:1.4;}
+.pf-assessment-award p {font-size:12px;line-height:1.5;margin-top:4px;color:#345f5b;}
+@media(max-width:420px) {.pf-achievement-panel>header{flex-wrap:wrap}.pf-achievement-xp{margin-left:0}.pf-xp-total{max-width:100%;padding:9px 11px}.pf-xp-total strong{font-size:17px}}

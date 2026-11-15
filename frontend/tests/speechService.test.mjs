@@ -47,3 +47,19 @@ test('Configured private narration returns an audio response without exposing th
     assert.ok(!String(response.body).includes('private-example-key'));
   } finally {globalThis.fetch=fetchBackup;}
 });
+
+
+test('Natural voice service removes emoji before sending text to the provider',async()=>{
+ const previous=globalThis.fetch;
+ let sent;
+ globalThis.fetch=async (_url,options)=>{sent=JSON.parse(options.body);return {ok:true,arrayBuffer:async()=>new Uint8Array([73,68,51]).buffer};};
+ try {
+   const response=responseMock();
+   await handleSpeechRequest(input('🎉 Great! ⭐ A → B. 🏆'),response,'private-example-key');
+   assert.equal(response.statusCode,200);
+   assert.equal(sent.input,'Great! A to B.');
+   const noText=responseMock();
+   await handleSpeechRequest(input('🏆 ⭐'),noText,'private-example-key');
+   assert.equal(noText.statusCode,400);
+ } finally {globalThis.fetch=previous;}
+});

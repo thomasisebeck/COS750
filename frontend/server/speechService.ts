@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { prepareNarrationText } from "../src/components/prepareNarration.ts";
 
 /** Server-only speech bridge. The provider key is never sent to a student's browser. */
 export async function handleSpeechRequest(
@@ -41,6 +42,9 @@ export async function handleSpeechRequest(
       return;
     }
 
+    const spokenText = prepareNarrationText(text);
+    if (!spokenText) { reply(400, "Narration has no readable text."); return; }
+
     const provider = await fetch("https://api.openai.com/v1/audio/speech", {
       method: "POST",
       headers: {
@@ -50,7 +54,7 @@ export async function handleSpeechRequest(
       body: JSON.stringify({
         model,
         voice: "marin",
-        input: text.trim(),
+        input: spokenText,
         instructions: "Speak like a warm, clear university tutor. Natural conversational pacing, friendly without exaggeration. Pronounce Dijkstra as Dike-stra. Leave a short pause between sentences.",
         response_format: "mp3",
       }),
