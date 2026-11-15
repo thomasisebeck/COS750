@@ -1,0 +1,184 @@
+{
+  "meta": {
+    "module": "Graph Theory",
+    "lessonNumber": 5,
+    "title": "Guided Practice",
+    "topic": "Dijkstra's Algorithm",
+    "category": "GUIDED PRACTICE"
+  },
+  "pages": [
+    {
+      "type": "intro",
+      "eyebrow": "GUIDED PRACTICE",
+      "title": "Now it's your turn",
+      "subtext": "Solve a fresh weighted graph. We will guide you when needed.",
+      "buttonLabel": "Begin practice",
+      "cardTitle": "THE CHALLENGE",
+      "cardText": "Start at vertex A. Find the lowest-cost route to D using Dijkstra's algorithm.",
+      "tipTitle": "HOW IT WORKS",
+      "tipText": "Observe → answer → check → learn from feedback.",
+      "contentBox": {
+        "boxType": "graph",
+        "text": "Weighted graph with nodes A, B, C, D.",
+        "prohibitPathSelection": false,
+        "isDirected": false,
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 100, "y": 200 },
+            { "id": "B", "label": "B", "x": 300, "y": 100 },
+            { "id": "C", "label": "C", "x": 300, "y": 300 },
+            { "id": "D", "label": "D", "x": 500, "y": 200 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "2" },
+            { "id": "e2", "source": "A", "target": "C", "label": "5" },
+            { "id": "e3", "source": "B", "target": "C", "label": "1" },
+            { "id": "e4", "source": "B", "target": "D", "label": "6" },
+            { "id": "e5", "source": "C", "target": "D", "label": "2" }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        }
+      }
+    },
+    {
+      "type": "quiz",
+      "eyebrow": "STEP 01",
+      "title": "Set the starting values",
+      "subtext": "Before exploring, initialise your distance table.",
+      "buttonLabel": "Check answer",
+      "cardTitle": "What is the distance to the source A?",
+      "options": [
+        { "id": "opt1", "label": "∞ (infinity)" },
+        { "id": "opt2", "label": "0" },
+        { "id": "opt3", "label": "1" }
+      ],
+      "correctAnswerId": "opt2",
+      "correctFeedback": "The distance to the starting node itself is always 0.",
+      "incorrectFeedback": "The source node starts with a distance of 0."
+    },
+    {
+      "type": "quiz",
+      "eyebrow": "STEP 02",
+      "title": "Explore A's neighbours",
+      "subtext": "A has distance 0. Its edges reach B and C.",
+      "buttonLabel": "Check answer",
+      "cardTitle": "What tentative distance should B receive?",
+      "options": [
+        { "id": "opt1", "label": "2" },
+        { "id": "opt2", "label": "5" },
+        { "id": "opt3", "label": "7" }
+      ],
+      "correctAnswerId": "opt1",
+      "correctFeedback": "Tentative distance is source distance plus edge weight (0 + 2 = 2).",
+      "incorrectFeedback": "Calculate source distance + edge weight."
+    },
+    {
+      "type": "quiz",
+      "eyebrow": "STEP 03",
+      "title": "Choose the next vertex",
+      "subtext": "A is done. The unsettled distances are B: 2, C: 5, D: ∞.",
+      "buttonLabel": "Check answer",
+      "cardTitle": "Which vertex is selected next?",
+      "options": [
+        { "id": "opt1", "label": "B (distance 2)" },
+        { "id": "opt2", "label": "C (distance 5)" },
+        { "id": "opt3", "label": "D (distance ∞)" }
+      ],
+      "correctAnswerId": "opt1",
+      "correctFeedback": "B has the smallest tentative distance (2) among unsettled vertices.",
+      "incorrectFeedback": "Always pick the unsettled vertex with the minimum tentative distance."
+    },
+    {
+      "type": "quiz",
+      "eyebrow": "STEP 04",
+      "title": "Find a shorter way to C",
+      "subtext": "Current distance C = 5. B has distance 2; B–C weighs 1.",
+      "buttonLabel": "Check answer",
+      "cardTitle": "Should C's distance be updated?",
+      "options": [
+        { "id": "opt1", "label": "Yes: 2 + 1 = 3" },
+        { "id": "opt2", "label": "No: keep 5" },
+        { "id": "opt3", "label": "Yes: 2 + 1 = 1" }
+      ],
+      "correctAnswerId": "opt1",
+      "correctFeedback": "Since 3 < 5, we update C's distance to 3.",
+      "incorrectFeedback": "New path through B gives 2 + 1 = 3, which is shorter than 5."
+    },
+    {
+      "type": "quiz",
+      "eyebrow": "STEP 05",
+      "title": "Record a predecessor",
+      "subtext": "B has distance 2 and its edge to D weighs 6.",
+      "buttonLabel": "Check answer",
+      "cardTitle": "What are D's new distance and predecessor?",
+      "options": [
+        { "id": "opt1", "label": "6 and A" },
+        { "id": "opt2", "label": "8 and B" },
+        { "id": "opt3", "label": "— and none" }
+      ],
+      "correctAnswerId": "opt2",
+      "correctFeedback": "Distance is 2 + 6 = 8, with predecessor B.",
+      "incorrectFeedback": "Add B's distance (2) to edge weight (6) to get 8."
+    },
+    {
+      "type": "quiz",
+      "eyebrow": "STEP 06",
+      "title": "Find the next minimum",
+      "subtext": "Unsettled: C: 3 and D: 8. Choose the smallest.",
+      "buttonLabel": "Check answer",
+      "cardTitle": "Who should be settled next?",
+      "options": [
+        { "id": "opt1", "label": "C (distance 3)" },
+        { "id": "opt2", "label": "D (distance 8)" },
+        { "id": "opt3", "label": "A (distance 0)" }
+      ],
+      "correctAnswerId": "opt1",
+      "correctFeedback": "C has distance 3, which is smaller than D's distance 8.",
+      "incorrectFeedback": "Compare tentative distances of unsettled vertices."
+    },
+    {
+      "type": "quiz",
+      "eyebrow": "STEP 07",
+      "title": "Improve D through C",
+      "subtext": "C has distance 3; its edge to D weights 2.",
+      "buttonLabel": "Check answer",
+      "cardTitle": "Candidate = 3 + 2. What happens to D?",
+      "options": [
+        { "id": "opt1", "label": "Keep 8" },
+        { "id": "opt2", "label": "Update to 5, predecessor C" },
+        { "id": "opt3", "label": "Update to 2, predecessor C" }
+      ],
+      "correctAnswerId": "opt2",
+      "correctFeedback": "5 < 8, so we update D's distance to 5 and set predecessor to C.",
+      "incorrectFeedback": "Since 5 is shorter than 8, update D's distance and predecessor."
+    },
+    {
+      "type": "quiz",
+      "eyebrow": "STEP 08",
+      "title": "Rebuild the path",
+      "subtext": "The final predecessor chain is D ← C ← B ← A.",
+      "buttonLabel": "Check answer",
+      "cardTitle": "Which path has total cost 5?",
+      "options": [
+        { "id": "opt1", "label": "A → B → C → D" },
+        { "id": "opt2", "label": "A → B → D" },
+        { "id": "opt3", "label": "A → C → D" }
+      ],
+      "correctAnswerId": "opt1",
+      "correctFeedback": "A → B → C → D totals 2 + 1 + 2 = 5.",
+      "incorrectFeedback": "Follow the chain backwards from D to A."
+    },
+    {
+      "type": "complete",
+      "eyebrow": "PRACTICE COMPLETE",
+      "title": "You've run Dijkstra!",
+      "subtext": "You solved the graph from A to D.",
+      "buttonLabel": "Start assessment",
+      "cardTitle": "Well done!",
+      "cardText": "A → B → C → D costs 2 + 1 + 2 = 5.",
+      "tipTitle": "FINAL SHORTEST PATH",
+      "tipText": "For independent assessment you'll solve an unfamiliar graph."
+    }
+  ]
+}

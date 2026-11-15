@@ -1,0 +1,157 @@
+{
+  "meta": {
+    "module": "Graph Theory",
+    "lessonNumber": 2,
+    "title": "Follow Connections",
+    "topic": "Adjacency & direction",
+    "category": "UNDIRECTED GRAPHS"
+  },
+  "pages": [
+    {
+      "type": "intro",
+      "eyebrow": "LESSON 02",
+      "title": "Follow Connections",
+      "subtext": "Not every connection works in both directions.",
+      "buttonLabel": "Start lesson",
+      "cardTitle": "Think about roads",
+      "cardText": "Some roads are two-way. Others only allow travel in one direction. Graphs can model both.",
+      "tipTitle": "YOU'LL LEARN",
+      "tipText": "Classify graph direction and read neighbouring vertices."
+    },
+    {
+      "type": "concept",
+      "eyebrow": "UNDIRECTED GRAPH",
+      "title": "Two-way connections",
+      "subtext": "In an undirected graph, an edge can be used both ways.",
+      "buttonLabel": "Continue",
+      "cardTitle": "A — B",
+      "cardText": "If A connects to B, then the same edge can be travelled from B to A.",
+      "tipTitle": "KEY TAKEAWAY",
+      "tipText": "No arrowheads are required. A — B and B — A refer to the same undirected connection.",
+      "contentBox": {
+        "boxType": "graph",
+        "text": "Tap connected nodes to highlight the edge.",
+        "prohibitPathSelection": false,
+        "isDirected": false,
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 150, "y": 200 },
+            { "id": "B", "label": "B", "x": 450, "y": 200 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B", "label": "5" }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        }
+      }
+    },
+    {
+      "type": "directed",
+      "eyebrow": "DIRECTED GRAPH",
+      "title": "One-way connections",
+      "subtext": "A directed edge has an arrow showing permitted movement.",
+      "buttonLabel": "Continue",
+      "cardTitle": "A → B",
+      "cardText": "A directed connection from A to B does not necessarily allow B to A.",
+      "tipTitle": "KEY TAKEAWAY",
+      "tipText": "Follow the arrowheads to see valid movement.",
+      "contentBox": {
+        "boxType": "graph",
+        "text": "Follow the arrows to see valid movement.",
+        "prohibitPathSelection": false,
+        "isDirected": true,
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 100, "y": 200 },
+            { "id": "B", "label": "B", "x": 300, "y": 100 },
+            { "id": "C", "label": "C", "x": 300, "y": 300 },
+            { "id": "D", "label": "D", "x": 500, "y": 200 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B" },
+            { "id": "e2", "source": "A", "target": "C" },
+            { "id": "e3", "source": "B", "target": "D" },
+            { "id": "e4", "source": "C", "target": "D" }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        }
+      }
+    },
+    {
+      "type": "quiz",
+      "eyebrow": "YOUR TURN",
+      "title": "Can you go backwards?",
+      "subtext": "Suppose the only directed edge is A → B.",
+      "buttonLabel": "Check answer",
+      "cardTitle": "CHECK THE ARROW",
+      "cardText": "Which journey is guaranteed by this single edge?",
+      "options": [
+        { "id": "opt1", "label": "A to B" },
+        { "id": "opt2", "label": "B to A" },
+        { "id": "opt3", "label": "Both directions" },
+        { "id": "opt4", "label": "Neither direction" }
+      ],
+      "correctAnswerId": "opt1",
+      "correctFeedback": "Directed edges have a specified direction. Undirected edges work in both directions.",
+      "incorrectFeedback": "A directed edge only allows movement in the direction of the arrow (from A to B)."
+    },
+    {
+      "type": "concept",
+      "eyebrow": "CONCEPT",
+      "title": "Find the neighbours",
+      "subtext": "Adjacent vertices are linked by an edge.",
+      "buttonLabel": "Continue",
+      "cardTitle": "A'S NEIGHBOURS",
+      "cardText": "In the undirected diagram, A has direct edges to B and C, not D.",
+      "tipTitle": "TIP",
+      "tipText": "Hint: follow only one edge away from A.",
+      "contentBox": {
+        "boxType": "graph",
+        "text": "Adjacent vertices linked by an edge.",
+        "prohibitPathSelection": false,
+        "isDirected": false,
+        "state": {
+          "nodes": [
+            { "id": "A", "label": "A", "x": 150, "y": 200 },
+            { "id": "B", "label": "B", "x": 350, "y": 100 },
+            { "id": "C", "label": "C", "x": 350, "y": 300 },
+            { "id": "D", "label": "D", "x": 500, "y": 200 }
+          ],
+          "edges": [
+            { "id": "e1", "source": "A", "target": "B" },
+            { "id": "e2", "source": "A", "target": "C" },
+            { "id": "e3", "source": "B", "target": "C" },
+            { "id": "e4", "source": "B", "target": "D" },
+            { "id": "e5", "source": "C", "target": "D" }
+          ],
+          "highlightedNodes": ["A"],
+          "highlightedEdges": []
+        }
+      }
+    },
+    {
+      "type": "list-concept",
+      "eyebrow": "BONUS CONCEPT",
+      "title": "Graphs as lists",
+      "subtext": "A computer can store neighbours in an adjacency list.",
+      "buttonLabel": "Continue",
+      "cardTitle": "ADJACENCY LIST",
+      "cardText": "A: B, C\nB: A, C, D\nC: A, B, D\nD: B, C",
+      "tipTitle": "KEY TAKEAWAY",
+      "tipText": "Lists store the vertices directly connected to each vertex; this example is undirected."
+    },
+    {
+      "type": "complete",
+      "eyebrow": "CHECKPOINT",
+      "title": "Connections understood",
+      "subtext": "You can now reason about which moves are possible.",
+      "buttonLabel": "Continue",
+      "cardTitle": "That's right!",
+      "cardText": "Directed edges have a specified direction. Undirected edges work in both directions.",
+      "tipTitle": "WHY?",
+      "tipText": "For the example graph, neighbours of A are B and C. Adjacency does not require travelling multiple edges."
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "meta": {
+    "module": "PathFinder",
+    "lessonNumber": 0,
+    "title": "Explore the connections",
+    "topic": "Discovery before definitions"
+  },
+  "pages": [
+    {
+      "type": "contexts",
+      "category": "LESSON 00 · 1 OF 3",
+      "title": "What connects your day?",
+      "subtext": "Pick a story. Think about all the different ways things can reach each other.",
+      "buttonLabel": "Try a route"
+    },
+    {
+      "type": "ready",
+      "category": "LESSON 00 · 2 OF 3",
+      "title": "Which way would you go?",
+      "subtext": "Explore a few routes through town. There are no wrong answers here.",
+      "buttonLabel": "See the bigger picture"
+    },
+    {
+      "type": "map",
+      "category": "LESSON 00 · 3 OF 3",
+      "title": "One idea. Lots of possibilities.",
+      "subtext": "The same kind of thinking helps solve many different problems.",
+      "buttonLabel": "Start Lesson 1"
+    }
+  ],
+  "contexts": [
+    {
+      "id": "routes",
+      "title": "Finding your way",
+      "tag": "Getting around",
+      "description": "You are heading across town. Some roads are busy, others are quiet. How many ways could you go?",
+      "question": "What would make you choose a different route?"
+    },
+    {
+      "id": "deliveries",
+      "title": "Where is your parcel?",
+      "tag": "Deliveries",
+      "description": "A package stops at sorting centres on its way to you. Different journeys can take different amounts of time.",
+      "question": "Could another route get it there sooner?"
+    },
+    {
+      "id": "network",
+      "title": "Sending a message",
+      "tag": "Messages",
+      "description": "When you send a message, it can travel through several devices before arriving. The journey is almost invisible.",
+      "question": "What happens if one connection stops working?"
+    }
+  ]
+}

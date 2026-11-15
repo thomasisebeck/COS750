@@ -1,0 +1,4 @@
+import React from "react";
+import { ArrowUpRight, Check } from "lucide-react";
+interface LessonCardProps { number:string; title:string; subtitle:string; completed?:boolean; onClick?:()=>void; className?:string; }
+export const LessonCard:React.FC<LessonCardProps> = ({number,title,subtitle,completed=false,onClick,className=""}) => <button type="button" onClick={onClick} aria-current={className.includes("pf-selected-card") ? "step" : undefined} className={`pf-lesson-card ${className}`}><span className="pf-lesson-number">{completed?<Check size={18}/>:number}</span><span className="pf-lesson-copy"><strong>{title}</strong><small>{subtitle}</small></span>{completed && <span className="pf-done-label">Complete</span>}<ArrowUpRight className="pf-lesson-arrow" size={19} aria-hidden="true"/></button>;

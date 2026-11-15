@@ -1,0 +1,4 @@
+import React from "react";
+import { ChevronLeft } from "lucide-react";
+interface ProgressBarProps {currentIndex:number;total:number;onBack:()=>void;className?:string;}
+export const ProgressBar:React.FC<ProgressBarProps> = ({currentIndex,total,onBack,className=""}) => {const safeTotal=Math.max(1,total);return <nav aria-label="Lesson progress" className={`pf-progress-row ${className}`}><button type="button" onClick={onBack} disabled={currentIndex === 0} aria-label="Previous page" className="pf-back-button"><ChevronLeft size={20}/></button><div className="pf-progress-rail" role="progressbar" aria-label="Lesson progress" aria-valuemin={0} aria-valuemax={safeTotal} aria-valuenow={currentIndex+1}><div style={{width:`${(currentIndex+1)/safeTotal*100}%`}} /></div><span className="pf-progress-counter">{currentIndex+1}/{safeTotal}</span></nav>;};
