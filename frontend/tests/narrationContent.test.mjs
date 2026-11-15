@@ -29,3 +29,11 @@ test('Listen reads exploratory route options and visible discoveries',()=>{
  assert.match(speech,/Past the library/);
  assert.match(speech,/different route/);
 });
+
+
+test('Listen does not read decorative emojis embedded in visible lesson text',()=>{
+ const dom=new JSDOM(`<main class="pf-zero-main"><header class="pf-page-title"><h1>🎉 Explore the town</h1><button id="listen">Listen</button><p>📍 Find A → D.</p></header><p class="pf-zero-discovery">🏆 You found a route! ✅</p></main>`);
+ const speech=collectLessonNarration(dom.window.document.getElementById('listen'));
+ assert.equal(speech,'Explore the town. Find A to D. You found a route!');
+ assert.ok(!speech.includes('🎉'));
+});

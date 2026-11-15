@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LoaderCircle, Square, Volume2, VolumeX } from "lucide-react";
 import { speechChunks } from "./speechChunks";
+import { prepareNarrationText } from "./prepareNarration";
 
 /** Speak with a natural voice when a private /api/tts route is configured.
  * Otherwise use the highest-quality English voice available on this device.
@@ -83,7 +84,8 @@ export function SpeechButton({ text, getText }: { text: string; getText?: (butto
     if (!available) return;
     if (playing || loading) { stop(); return; }
     stop();
-    const narration = (buttonRef.current && getText?.(buttonRef.current)) || text;
+    const narration = prepareNarrationText((buttonRef.current && getText?.(buttonRef.current)) || text);
+    if (!narration) return;
     const mySession = session.current;
     const pending = new AbortController();
     controller.current = pending;

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Award, Check, Compass, Sparkles } from "lucide-react";
+import { Award, Check, Compass, Sparkles, Zap } from "lucide-react";
+import { totalExperience } from "../lessons/rewards";
 import { playPianoNote } from "../helpers";
 import { LiveGraph, type GraphNode, type GraphEdge } from "./LiveGraph";
 import { Leaderboard } from "./Leaderboard";
@@ -14,7 +15,8 @@ interface LearningPathProps {
   completedLessonIds?: number[];
   onSelectLesson: (id: number) => void;
   onStartLesson: (id: number) => void;
-  bestAssessmentScore?: number;
+  bestAssessmentScore?: number | null;
+  assessmentQuestionCount: number;
 }
 
 const heroStartingNodes: GraphNode[] = [
@@ -27,11 +29,12 @@ const heroEdges: GraphEdge[] = [
   {id:"CD",source:"C",target:"D"},
 ];
 
-export const LearningPath: React.FC<LearningPathProps> = ({ lessons, selectedLessonId, completedLessonIds = [], onSelectLesson, onStartLesson, bestAssessmentScore = 0 }) => {
+export const LearningPath: React.FC<LearningPathProps> = ({ lessons, selectedLessonId, completedLessonIds = [], onSelectLesson, onStartLesson, bestAssessmentScore = null, assessmentQuestionCount }) => {
   const [heroNodes,setHeroNodes] = useState<GraphNode[]>(heroStartingNodes);
   const [heroSelections,setHeroSelections] = useState<string[]>([]);
   const [heroEdgeSelections,setHeroEdgeSelections] = useState<string[]>([]);
   const selectedLesson = lessons.find((lesson) => lesson.id === selectedLessonId) ?? lessons[0];
+  const xp = totalExperience(completedLessonIds);
   return <div className="pf-screen pf-learning-path">
     <header className="pf-path-header"><Logo /><span className="pf-header-pill"><Sparkles size={14} /> LEARN BY DOING</span></header>
     <section className="pf-path-hero">
@@ -40,6 +43,10 @@ export const LearningPath: React.FC<LearningPathProps> = ({ lessons, selectedLes
         <h1>Learn graphs by <em>trying them.</em></h1>
         <p>Start with simple connections, then work your way up to Dijkstra’s shortest-path algorithm. You’ll practise as you go.</p>
         <div className="pf-path-progress"><div><strong>{completedLessonIds.length} of {lessons.length}</strong> journeys completed</div><div className="pf-progress-track"><span style={{width:`${completedLessonIds.length / lessons.length * 100}%`}}/></div></div>
+        <div className="pf-xp-total" aria-label={`Total experience: ${xp} XP`}>
+          <span className="pf-xp-icon" aria-hidden="true"><Zap size={19} /></span>
+          <div><strong>{xp.toLocaleString()} XP</strong><small>Total earned · +100 XP per completed lesson</small></div>
+        </div>
       </div>
       <div className="pf-hero-illustration" aria-label="Try the graph illustration">
         <LiveGraph nodes={heroNodes} edges={heroEdges} width={600} height={400}
@@ -59,11 +66,11 @@ export const LearningPath: React.FC<LearningPathProps> = ({ lessons, selectedLes
       <div className="pf-path-tip"><Compass size={20}/><p>Stuck on something? You can revisit any lesson.</p></div></div>
     </section>
     <section className="pf-rewards-workspace" aria-label="Your progress and assessment leaderboard">
-      <div className="pf-achievement-panel"><header><Award size={23}/><div><span className="pf-eyebrow">YOUR PROGRESS</span><h2>Achievements</h2></div></header>
+      <div className="pf-achievement-panel"><header><Award size={23}/><div><span className="pf-eyebrow">YOUR PROGRESS</span><h2>Achievements</h2></div><span className="pf-achievement-xp">{xp.toLocaleString()} XP</span></header>
       <div className="pf-achievement-grid">{lessons.map((lesson) => <div key={lesson.id} className={`pf-achievement ${completedLessonIds.includes(lesson.id) ? "unlocked" : ""}`}>
-        <span aria-hidden="true">{completedLessonIds.includes(lesson.id) ? "★" : "☆"}</span><strong>{lesson.title}</strong><small>{completedLessonIds.includes(lesson.id) ? "Unlocked" : "Not yet"}</small>
+        <span aria-hidden="true">{completedLessonIds.includes(lesson.id) ? "★" : "☆"}</span><strong>{lesson.title}</strong><small>{completedLessonIds.includes(lesson.id) ? "Unlocked · 100 XP" : "Not yet"}</small>
       </div>)}</div></div>
-      <Leaderboard userScore={bestAssessmentScore}/>
+      <Leaderboard userScore={bestAssessmentScore} total={assessmentQuestionCount}/>
     </section>
   </div>;
 };

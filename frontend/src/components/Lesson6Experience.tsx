@@ -15,12 +15,13 @@ interface Lesson6ExperienceProps {
   lesson: LessonData;
   onExit: () => void;
   onComplete: () => void;
-  onScore?: (score: number, total: number) => void;
+  onAssessmentFinished?: (score: number, total: number) => boolean;
 }
 
-export function Lesson6Experience({ lesson, onExit, onComplete, onScore }: Lesson6ExperienceProps) {
-  const [assessment] = useState(() => assessmentBank(lesson, Math.floor(Math.random()*24)+1));
+export function Lesson6Experience({ lesson, onExit, onComplete, onAssessmentFinished }: Lesson6ExperienceProps) {
+  const [assessment, setAssessment] = useState(() => assessmentBank(lesson, Math.floor(Math.random()*24)+1));
   const [scoreSaved, setScoreSaved] = useState(false);
+  const [newAssessmentAchievement, setNewAssessmentAchievement] = useState(false);
   const [currentPageIndex, setCurrentPageIndex] = useState<number>(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -113,7 +114,11 @@ export function Lesson6Experience({ lesson, onExit, onComplete, onScore }: Lesso
   };
 
   const handleNextClick = () => {
-    if (currentPageIndex === 10 && checked && !scoreSaved) {onScore?.(score, questionCount);setScoreSaved(true);}
+    const nextPage = assessment.pages[currentPageIndex + 1];
+    if (nextPage?.pageType === "results" && checked && !scoreSaved) {
+      setNewAssessmentAchievement(onAssessmentFinished?.(score, questionCount) ?? false);
+      setScoreSaved(true);
+    }
     if (quiz && !checked) {
       if (!selectedOptionId) return;
       playFeedbackSound(selectedOptionId === quiz.correctAnswerId);
@@ -210,9 +215,13 @@ export function Lesson6Experience({ lesson, onExit, onComplete, onScore }: Lesso
             <div className="text-center py-5">
               <span className="text-5xl text-amber-300" aria-hidden="true">&#9733;</span>
               <p className="text-xl font-bold mt-3">{score} / {questionCount}</p>
-              <p className="text-sm text-slate-400">{score >= 8 ? "Excellent work!" : "Every answer is a step forward."}</p>
+              <p className="text-sm text-slate-400">{score >= Math.ceil(questionCount * 0.8) ? "Excellent work!" : "Every answer is a step forward."}</p>
             </div>
             
+            <div className="pf-assessment-award" role="status">
+              <strong>{newAssessmentAchievement ? "Achievement unlocked! · +100 XP" : "Assessment completed"}</strong>
+              <p>{newAssessmentAchievement ? "You earned the Lesson 6 achievement. You can head home or review your answers." : "Your result is recorded. You can review your answers or try for a higher score."}</p>
+            </div>
             <Leaderboard userScore={score} total={questionCount} compact />
             {assessment.pages.map((page, index) => {
               const box = page.contentBox;
@@ -230,11 +239,16 @@ export function Lesson6Experience({ lesson, onExit, onComplete, onScore }: Lesso
             <LessonButton
               label="Try assessment again"
               onClick={() => {
+                const nextAssessment = assessmentBank(lesson, Math.floor(Math.random()*24)+1);
+                setAssessment(nextAssessment);
                 setAnswers({});
                 setCurrentPageIndex(0);
+                const nextBox = nextAssessment.pages[0]?.contentBox;
+                setGraphState(nextBox && (nextBox.boxType === "graph" || nextBox.boxType === "graph-quiz") ? nextBox.state ?? null : null);
                 setChecked(false);
                 setSelectedOptionId(null);
-                goToPage(0);
+                setScoreSaved(false);
+                setNewAssessmentAchievement(false);
               }}
             />
           </div>

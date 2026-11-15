@@ -8,8 +8,7 @@ import { LessonButton } from "./Buttons";
 import { LiveGraph } from "./LiveGraph";
 import type { LessonData, GraphState } from "../types/lesson";
 import { playNoteSound, playFeedbackSound } from "../helpers";
-import { guidedPracticeBank, guidedSimilarQuestion } from "../lessons/questionBanks";
-import type { LessonPage } from "../types/lesson";
+import { guidedPracticeBank } from "../lessons/questionBanks";
 import { RotateCcw } from "lucide-react";
 
 interface Lesson5ExperienceProps {
@@ -21,14 +20,12 @@ interface Lesson5ExperienceProps {
 export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5ExperienceProps) {
   const [index, setIndex] = useState(0);
   const [practice, setPractice] = useState(() => guidedPracticeBank(lesson, Math.floor(Math.random()*24)+1));
-  const [similarAttempt, setSimilarAttempt] = useState(0);
-  const [retryPages,setRetryPages] = useState<Record<number,LessonPage>>({});
   const [selected, setSelected] = useState<string | null>(null);
   const [quizChecked, setQuizChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const page = retryPages[index] ?? practice.pages[index];
+  const page = practice.pages[index];
   const totalPages = practice.pages.length;
   const contentBox = page.contentBox;
   const isQuiz = page.type === "quiz";
@@ -215,10 +212,7 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
           navigate(index + 1);
           return;
         } else {
-          // Rephrase/shuffle a question on the SAME graph; later steps keep their costs.
-          const nextAttempt=similarAttempt+1;
-          setSimilarAttempt(nextAttempt);
-          setRetryPages(previous=>({...previous,[index]:guidedSimilarQuestion(practice,index,nextAttempt)}));
+          // Keep the original question and graph so the student can apply the feedback.
           setSelected(null);
           setQuizChecked(false);
           setIsCorrect(null);
@@ -240,7 +234,7 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
   if (isQuiz && quizChecked && isCorrect) {
     buttonLabel = "Continue";
   } else if (isQuiz && quizChecked && !isCorrect) {
-    buttonLabel = "Try a similar question";
+    buttonLabel = "Try again";
   }
 
   const activeOptions = page.options;
@@ -272,7 +266,6 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
           const freshBox = fresh.pages[0].contentBox;
           if (freshBox?.boxType === "graph") setGraphState(getGraphStateForStep(0,freshBox.state));
           setSelected(null);setQuizChecked(false);setIsCorrect(null);
-          setSimilarAttempt(0);setRetryPages({});
         }}><RotateCcw size={17}/> Generate another practice graph</button>}
 
         {/* Persistent Interactive LiveGraph Box with step-by-step highlighting */}

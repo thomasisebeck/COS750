@@ -91,7 +91,7 @@ export function guidedPracticeBank(base: LessonData, attempt: number): LessonDat
   return {...base,pages};
 }
 
-/** One random, internally consistent four-vertex assessment. All ten answers derive from the same graph. */
+/** One random, internally consistent four-vertex assessment. All fourteen answers derive from the same graph. */
 export function assessmentBank(base: LessonData, attempt: number): LessonData {
   const ac=pick([2,1,3],attempt), bc=pick([1,2],attempt), ab=ac+bc+pick([2,3],attempt);
   const bd=pick([3,4,5],attempt), cd=bc+bd+pick([2,4],attempt);
@@ -119,34 +119,11 @@ export function assessmentBank(base: LessonData, attempt: number): LessonData {
   setQuiz(9,"Which route from A to D is cheapest?",`A → C → B → D (${viaB})`,[`A → B → D (${directB})`,`A → C → D (${directC})`],`A → C → B → D totals ${ac} + ${bc} + ${bd} = ${viaB}.`);
   const restriction = attempt%2===0 ? "Dijkstra requires non-negative edge weights" : "Dijkstra is safe when every edge weight is non-negative";
   setQuiz(10,"What assumption does standard Dijkstra make?",restriction,["All edge weights must be identical","The graph cannot contain cycles"],"Dijkstra's usual correctness guarantee requires non-negative edge weights.");
+  setQuiz(11,"Which vertices share a direct edge with C?","A, B and D",["A and D","B and D"],"C has direct edges to A, B and D. Each connection counts as a neighbour.");
+  setQuiz(12,"What is the total cost of A → B → D?",String(directB),[String(viaB),String(directB+2)],`A–B costs ${ab} and B–D costs ${bd}, so the route costs ${ab} + ${bd} = ${directB}.`);
+  setQuiz(13,"Which vertex comes immediately before D on the shortest A-to-D route?","B",["A","C"],"The least-cost route is A → C → B → D. The vertex before D is B.");
+  setQuiz(14,"How much cheaper is A → C → B → D than A → B → D?",String(directB-viaB),[String(directB-viaB+1),String(directB)],`The two route costs are ${viaB} and ${directB}; the difference is ${directB-viaB}.`);
   return {...base,pages};
-}
-
-/** Alternate question about the same current graph, never a surprise graph switch. */
-export function guidedSimilarQuestion(practice: LessonData, index: number, attempt: number): LessonPage {
-  const page = practice.pages[index];
-  if (!page || page.type !== "quiz") return page;
-  const content = practice.pages[0].contentBox;
-  if (content?.boxType !== "graph") return page;
-  const byId = Object.fromEntries(content.state.edges.map(edge => [edge.id, Number(edge.label)]));
-  const ab=byId.AB,ac=byId.AC,bc=byId.BC,bd=byId.BD,cd=byId.CD;
-  const c=ab+bc, viaB=ab+bd, viaC=c+cd;
-  const rotate=attempt%2;
-  const variants: Record<number, {question:string;correct:string;wrong:string[];explanation:string}> = {
-    1: {question:"What tentative distance do all the OTHER vertices start with?",correct:"∞",wrong:["0","1"],explanation:"Only source A begins at zero; all other distances start at infinity."},
-    2: {question:"What is C's direct distance from A, before visiting B?",correct:String(ac),wrong:[String(ab),String(c)],explanation:`The direct A–C edge costs ${ac}. Later, going via B will lower it to ${c}.`},
-    3: {question:`After A, which unsettled vertex has the minimum distance?`,correct:`B (${ab})`,wrong:[`C (${ac})`,`D (∞)`],explanation:`B is closer at ${ab}, compared with C at ${ac}.`},
-    4: {question:"What is C's candidate distance using A → B → C?",correct:String(c),wrong:[String(ac),String(bc)],explanation:`Add A–B (${ab}) and B–C (${bc}): ${c}. This improves on ${ac}.`},
-    5: {question:`Which vertex is recorded as D's predecessor after B–D is explored?`,correct:"B",wrong:["A","C"],explanation:`D is reached from B with candidate distance ${ab} + ${bd} = ${viaB}.`},
-    6: {question:`B has been settled. C=${c}, D=${viaB}. Which is next?`,correct:"C",wrong:["D","A"],explanation:`C is the nearest unsettled vertex at ${c}.`},
-    7: {question:"How much shorter does D's route become through C?",correct:String(viaB-viaC),wrong:[String(cd),String(viaC)],explanation:`D improves from ${viaB} to ${viaC}, a saving of ${viaB-viaC}.`},
-    8: {question:"What is the TOTAL cost of the shortest A–D route?",correct:String(viaC),wrong:[String(viaB),String(ac+cd)],explanation:`A → B → C → D: ${ab} + ${bc} + ${cd} = ${viaC}.`},
-  };
-  const variant = variants[index];
-  if (!variant) return page;
-  // Multiple equivalent prompts per skill: both still require computing on this graph.
-  const question = rotate ? variant.question : `${variant.question} Use the weights shown above.`;
-  return {...page,cardTitle:question,correctFeedback:variant.explanation,incorrectFeedback:`Hint: ${variant.explanation}`,...toOptions(variant.correct,variant.wrong,attempt+index)};
 }
 
 /** The adjacency check can reuse the previous vertex-count retry graph. */
