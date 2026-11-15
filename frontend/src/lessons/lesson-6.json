@@ -75,11 +75,11 @@
         },
         "isDirected": false,
         "readOnly": true,
-        "text": "One graph. Ten questions. Work at your own pace."
+        "text": "One weighted graph, plus a quick arrow example. Fourteen questions at your pace."
       },
       "extraBox": {
         "title": "YOUR CHALLENGE",
-        "text": "Answer ten questions about vertices, edges, paths and Dijkstra\u2019s algorithm. Choose an answer, check it, and learn from the explanation."
+        "text": "Answer fourteen questions about vertices, edges, paths and Dijkstra’s algorithm. Choose an answer, check it, and learn from the explanation."
       },
       "questionType": "CONTINUE",
       "buttonLabel": "Start assessment"
@@ -181,7 +181,7 @@
       "subtext": "Think about directed connections.",
       "contentBox": {
         "boxType": "graph-quiz",
-        "question": "In a directed graph, what does the edge A \u2192 B allow?",
+        "question": "In a directed graph, what does the edge A → B allow?",
         "options": [
           {
             "id": "0",
@@ -235,7 +235,7 @@
       "subtext": "Add the weights along the route.",
       "contentBox": {
         "boxType": "graph-quiz",
-        "question": "What is the cost of A \u2192 C \u2192 B \u2192 D?",
+        "question": "What is the cost of A → C → B → D?",
         "options": [
           {
             "id": "0",
@@ -324,14 +324,14 @@
     },
     {
       "title": "Set initial distances",
-      "subtext": "Prepare Dijkstra\u2019s algorithm.",
+      "subtext": "Prepare Dijkstra’s algorithm.",
       "contentBox": {
         "boxType": "graph-quiz",
         "question": "When starting at A, which initial distances are correct?",
         "options": [
           {
             "id": "0",
-            "label": "A = 0; all others = \u221e"
+            "label": "A = 0; all others = ∞"
           },
           {
             "id": "1",
@@ -339,7 +339,7 @@
           },
           {
             "id": "2",
-            "label": "A = \u221e; all others = 0"
+            "label": "A = ∞; all others = 0"
           }
         ],
         "correctAnswerId": "0",
@@ -603,7 +603,7 @@
       "subtext": "Look for an improved route.",
       "contentBox": {
         "boxType": "graph-quiz",
-        "question": "B is currently 4. A \u2192 C costs 2 and C \u2192 B costs 1. What is the new distance to B?",
+        "question": "B is currently 4. A → C costs 2 and C → B costs 1. What is the new distance to B?",
         "options": [
           {
             "id": "0",
@@ -619,7 +619,7 @@
           }
         ],
         "correctAnswerId": "1",
-        "explanation": "The route through C costs 2 + 1 = 3, which improves B\u2019s previous distance of 4.",
+        "explanation": "The route through C costs 2 + 1 = 3, which improves B’s previous distance of 4.",
         "state": {
           "nodes": [
             {
@@ -695,7 +695,7 @@
       "subtext": "Update the best distance to D.",
       "contentBox": {
         "boxType": "graph-quiz",
-        "question": "B\u2019s distance is 3 and B \u2192 D costs 5. D is currently 10. What should D become?",
+        "question": "B’s distance is 3 and B → D costs 5. D is currently 10. What should D become?",
         "options": [
           {
             "id": "0",
@@ -711,7 +711,7 @@
           }
         ],
         "correctAnswerId": "1",
-        "explanation": "The route through B costs 3 + 5 = 8, improving D\u2019s previous distance of 10.",
+        "explanation": "The route through B costs 3 + 5 = 8, improving D’s previous distance of 10.",
         "state": {
           "nodes": [
             {
@@ -791,19 +791,19 @@
         "options": [
           {
             "id": "0",
-            "label": "A \u2192 B \u2192 D"
+            "label": "A → B → D"
           },
           {
             "id": "1",
-            "label": "A \u2192 C \u2192 D"
+            "label": "A → C → D"
           },
           {
             "id": "2",
-            "label": "A \u2192 C \u2192 B \u2192 D"
+            "label": "A → C → B → D"
           }
         ],
         "correctAnswerId": "2",
-        "explanation": "A \u2192 C \u2192 B \u2192 D has total cost 2 + 1 + 5 = 8, less than the other routes.",
+        "explanation": "A → C → B → D has total cost 2 + 1 + 5 = 8, less than the other routes.",
         "state": {
           "nodes": [
             {
@@ -879,7 +879,7 @@
       "subtext": "Choose when Dijkstra is appropriate.",
       "contentBox": {
         "boxType": "quiz",
-        "question": "What does Dijkstra\u2019s algorithm require for its usual correctness guarantee?",
+        "question": "What does Dijkstra’s algorithm require for its usual correctness guarantee?",
         "options": [
           {
             "id": "0",
@@ -901,6 +901,374 @@
       "buttonLabel": "Check answer"
     },
     {
+      "title": "Find C’s neighbours",
+      "subtext": "Use the graph to identify directly connected places.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "Which vertices share a direct edge with C?",
+        "options": [
+          {
+            "id": "0",
+            "label": "A, B and D"
+          },
+          {
+            "id": "1",
+            "label": "A and D"
+          },
+          {
+            "id": "2",
+            "label": "B and D"
+          }
+        ],
+        "correctAnswerId": "0",
+        "explanation": "C has edges to A, B and D. Two vertices are neighbours only when an edge connects them.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "isDirected": false,
+        "readOnly": true,
+        "prohibitPathSelection": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Compare a second route",
+      "subtext": "Try another A-to-D journey.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "What is the total cost of A → B → D?",
+        "options": [
+          {
+            "id": "0",
+            "label": "9"
+          },
+          {
+            "id": "1",
+            "label": "8"
+          },
+          {
+            "id": "2",
+            "label": "10"
+          }
+        ],
+        "correctAnswerId": "0",
+        "explanation": "A–B costs 4 and B–D costs 5, so that route costs 4 + 5 = 9.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "isDirected": false,
+        "readOnly": true,
+        "prohibitPathSelection": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Trace the predecessor",
+      "subtext": "Follow the shortest route backwards.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "On the shortest route from A to D, which vertex comes immediately before D?",
+        "options": [
+          {
+            "id": "0",
+            "label": "B"
+          },
+          {
+            "id": "1",
+            "label": "C"
+          },
+          {
+            "id": "2",
+            "label": "A"
+          }
+        ],
+        "correctAnswerId": "0",
+        "explanation": "The shortest route is A → C → B → D. B is immediately before D.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "isDirected": false,
+        "readOnly": true,
+        "prohibitPathSelection": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
+      "title": "Compare route savings",
+      "subtext": "Look for how much the better route saves.",
+      "contentBox": {
+        "boxType": "graph-quiz",
+        "question": "How much cheaper is A → C → B → D than A → B → D?",
+        "options": [
+          {
+            "id": "0",
+            "label": "1"
+          },
+          {
+            "id": "1",
+            "label": "2"
+          },
+          {
+            "id": "2",
+            "label": "3"
+          }
+        ],
+        "correctAnswerId": "0",
+        "explanation": "The route through C costs 8 and the route through B directly costs 9, so the saving is 1.",
+        "state": {
+          "nodes": [
+            {
+              "id": "A",
+              "label": "A",
+              "x": 85,
+              "y": 200,
+              "color": "#915eff"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "x": 300,
+              "y": 65
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "x": 300,
+              "y": 335
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "x": 515,
+              "y": 200
+            }
+          ],
+          "edges": [
+            {
+              "id": "AB",
+              "source": "A",
+              "target": "B",
+              "label": "4"
+            },
+            {
+              "id": "AC",
+              "source": "A",
+              "target": "C",
+              "label": "2"
+            },
+            {
+              "id": "BC",
+              "source": "B",
+              "target": "C",
+              "label": "1"
+            },
+            {
+              "id": "BD",
+              "source": "B",
+              "target": "D",
+              "label": "5"
+            },
+            {
+              "id": "CD",
+              "source": "C",
+              "target": "D",
+              "label": "8"
+            }
+          ],
+          "highlightedNodes": [],
+          "highlightedEdges": []
+        },
+        "isDirected": false,
+        "readOnly": true,
+        "prohibitPathSelection": true
+      },
+      "questionType": "MULT-CHOICE",
+      "buttonLabel": "Check answer"
+    },
+    {
       "title": "Your learning profile",
       "subtext": "See how your skills are developing.",
       "contentBox": {
@@ -913,7 +1281,7 @@
       "pageType": "results"
     },
     {
-      "title": "Let\u2019s strengthen one skill",
+      "title": "Let’s strengthen one skill",
       "subtext": "Keep building your shortest-path intuition.",
       "contentBox": {
         "boxType": "text",
@@ -925,7 +1293,7 @@
       "pageType": "review"
     },
     {
-      "title": "You\u2019re prepared to begin",
+      "title": "You’re prepared to begin",
       "subtext": "Take your graph skills into the next challenge.",
       "contentBox": {
         "boxType": "text",

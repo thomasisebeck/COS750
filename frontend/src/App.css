@@ -1,190 +1,353 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
+/* PathFinder's new light visual system. Content and lesson state remain in the existing components. */
+.pf-app {min-height:100svh;color:var(--pf-ink);background:var(--pf-bg);}
+.pf-screen {width:100%;min-height:100svh;padding:26px max(22px,calc((100vw - 1120px)/2));background:radial-gradient(circle at 2% 0%,#e8eaff 0%,transparent 26%),radial-gradient(circle at 98% 100%,#e7f9f7 0%,transparent 26%),var(--pf-bg);display:flex;flex-direction:column;gap:22px;}
+.pf-lesson-screen {padding:25px max(22px,calc((100vw - 830px)/2)) 48px;gap:20px;text-align:left;}
+.pf-lesson-wrap {display:flex;flex-direction:column;gap:20px;flex:1;width:100%;margin:0 auto;}
+.pf-page-title {display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:760px;text-align:left;}
+.pf-page-title h1 {font-size:clamp(27px,4.5vw,38px);font-weight:820;letter-spacing:-.046em;line-height:1.13;color:#192641;margin:3px 0 0;}
+.pf-page-title p {font-size:14px;line-height:1.6;color:var(--pf-muted);max-width:690px;white-space:pre-line;}
+.pf-eyebrow {font-size:11px;font-weight:850;letter-spacing:.12em;color:#5847c8;line-height:1.5;}
+.pf-lesson-header,.pf-path-header {display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.pf-lesson-header>div,.pf-path-header>div {display:flex;align-items:center;gap:11px;}
+.pf-lesson-header .text-\[\#172642\],.pf-path-header .text-\[\#172642\] {color:#1b2946;}
+.pf-header-pill {display:inline-flex;align-items:center;justify-content:center;gap:6px;color:#5d4ebe;background:#eeecff;border:1px solid #dedafa;padding:7px 12px;border-radius:99px;font-size:10px;font-weight:850;letter-spacing:.08em;white-space:nowrap;}
+.pf-home-button,.pf-back-button {display:grid;place-items:center;width:37px;height:37px;flex-shrink:0;border:1px solid var(--pf-border);background:#fff;color:#4c5d7c;border-radius:12px;cursor:pointer;transition:background .2s,transform .2s;}
+.pf-home-button:hover,.pf-back-button:hover {background:#eeedff;transform:translateY(-1px);}
+.pf-progress-row {display:flex;align-items:center;gap:14px;}
+.pf-progress-rail {flex:1;height:7px;border-radius:99px;background:#e5e9f4;overflow:hidden;}
+.pf-progress-rail>div,.pf-progress-track>span {height:100%;border-radius:inherit;background:linear-gradient(90deg,#6556e5,#2baea4);transition:width .3s ease;}
+.pf-progress-counter {font-size:12px;font-variant-numeric:tabular-nums;color:#60708b;font-weight:700;min-width:46px;text-align:right;}
+.pf-primary-button {display:flex;align-items:center;justify-content:center;gap:12px;border:0;background:#5648ca;color:#fff;width:100%;padding:15px 19px;border-radius:16px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 10px 25px #5548ca30;transition:background .2s,transform .2s,box-shadow .2s;min-height:52px;}
+.pf-primary-button:hover {background:#4436b7;transform:translateY(-2px);box-shadow:0 12px 28px #5548ca38;}
+.pf-primary-button:active {transform:scale(.99);}
+.pf-primary-button:disabled {opacity:.52;cursor:not-allowed;transform:none;box-shadow:none;}
+.pf-primary-button svg {transition:transform .2s;}
+.pf-primary-button:hover svg {transform:translateX(3px);}
+.pf-option-card {display:flex;align-items:center;gap:12px;min-height:58px;padding:14px 16px;background:white;color:#293650;border:1.5px solid #dfe5f0;border-radius:15px;text-align:left;cursor:pointer;transition:background .18s,border-color .18s,transform .18s;}
+.pf-option-card:not(:disabled):hover {border-color:#a59af7;transform:translateY(-1px);}
+.pf-option-card.is-selected {background:#efedff;border-color:#6a59d9;box-shadow:inset 0 0 0 1px #7768dc;}
+.pf-option-card:disabled {cursor:default;opacity:.8;}
+.pf-option-indicator {display:grid;place-items:center;width:21px;height:21px;border:2px solid #8c9ab1;border-radius:50%;color:#fff;flex-shrink:0;}
+.pf-option-card.is-selected .pf-option-indicator {background:#594acf;border-color:#594acf;}
+.pf-option-label {font-size:14px;line-height:1.45;font-weight:700;color:#273552;}
+.pf-info-card {display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:19px;border:1px solid #dddff4;background:#fff;text-align:left;box-shadow:0 5px 20px #374c8509;}
+.pf-info-heading {display:flex;align-items:center;gap:9px;color:#5646be;font-size:14px;line-height:1.4;}
+.pf-info-heading svg {flex-shrink:0;}
+.pf-info-card p {white-space:pre-line;color:#485773;font-size:13px;line-height:1.7;font-family:inherit;}
+.pf-info-green {background:#eaf8f4;border-color:#b6dfd6;}
+.pf-info-green .pf-info-heading {color:#0a706a;}
+.pf-info-red {background:#fff6e9;border-color:#f0d6aa;}
+.pf-info-red .pf-info-heading {color:#92541e;}
+.pf-accessibility {position:fixed;bottom:18px;right:20px;z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:12px;}
+.pf-access-trigger {display:flex;align-items:center;gap:8px;padding:11px 14px;background:#fff;color:#39486e;border:1px solid #d9dff0;box-shadow:0 8px 23px #2739691b;border-radius:99px;font-size:12px;font-weight:800;cursor:pointer;}
+.pf-access-panel {width:min(330px,calc(100vw - 32px));padding:17px;background:#fff;border:1px solid #dbe1f0;border-radius:21px;box-shadow:0 20px 50px #1f315533;display:flex;flex-direction:column;gap:10px;}
+.pf-access-heading {display:flex;justify-content:space-between;align-items:center;color:#1b2946;}
+.pf-access-heading button {border:0;background:transparent;cursor:pointer;color:#526184;display:grid;place-items:center;padding:5px;}
+.pf-access-panel p {font-size:12px;color:#65718a;line-height:1.5;}
+.pf-access-setting {width:100%;display:flex;align-items:center;justify-content:space-between;border:1px solid #e1e7f0;background:#f8faff;border-radius:12px;padding:10px 12px;text-align:left;color:#2d3a57;font-size:13px;font-weight:700;cursor:pointer;}
+.pf-switch {width:35px;height:21px;border-radius:99px;background:#d5dbea;position:relative;display:flex;align-items:center;padding:3px;color:white;}
+.pf-switch:before {content:"";width:15px;height:15px;background:white;border-radius:50%;box-shadow:0 1px 3px #0002;}
+.pf-switch.on {background:#5548ca;justify-content:flex-end;}
+.pf-switch.on:before {display:none;}
+.pf-high-contrast {--pf-bg:#fff;--pf-ink:#0b1222;--pf-muted:#25364b;--pf-border:#596878;--pf-accent:#2714a6;}
+.pf-high-contrast .pf-screen {background:#fff;}
+.pf-high-contrast .pf-info-card,.pf-high-contrast .pf-option-card,.pf-high-contrast .pf-map-topic,.pf-high-contrast .pf-lesson-card {border-color:#65718d;}
+.pf-high-contrast .pf-page-title p,.pf-high-contrast .pf-info-card p {color:#18273e;}
+.pf-reduced-motion * {animation:none!important;transition:none!important;scroll-behavior:auto!important;}
+@media(prefers-reduced-motion:reduce) {*{animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
+/* Adapt remaining legacy lesson markup to the light surface without changing the learning logic. */
+.pf-app .text-slate-100,.pf-app .text-slate-200,.pf-app .text-slate-300,.pf-app .text-zinc-200 {color:#273752;}
+.pf-app .text-slate-400,.pf-app .text-slate-500 {color:#64718d;}
+.pf-app .text-purple-400,.pf-app .text-violet-300 {color:#6350ce;}
+.pf-app .bg-slate-900\/80 {background:#fff;}
+.pf-app .border-slate-800 {border-color:#dce3f0;}
+.pf-app .text-amber-300 {color:#df9b32;}
+.lesson-six {max-width:720px;margin-inline:auto;text-align:left;}
+.lesson-six h1 {font-size:25px;}
+.lesson-six svg {max-height:250px;}
+.lesson-six p {white-space:pre-line;}
+/* Menu */
+.pf-learning-path {gap:36px;}
+.pf-path-hero {display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:center;gap:25px;margin-top:15px;}
+.pf-hero-copy {text-align:left;max-width:600px;}
+.pf-hero-copy h1 {font-size:clamp(39px,5.6vw,62px);font-weight:860;line-height:1.1;letter-spacing:-.056em;color:#1a2847;margin:13px 0 20px;}
+.pf-hero-copy h1 em {font-style:normal;color:#6455d9;}
+.pf-hero-copy>p {font-size:16px;color:#53617d;line-height:1.72;max-width:530px;}
+.pf-hero-copy .pf-eyebrow {display:flex;align-items:center;gap:9px;}
+.pf-path-progress {margin-top:27px;max-width:330px;display:flex;flex-direction:column;gap:8px;color:#66728c;font-size:12px;}
+.pf-path-progress strong {color:#2e3c61;}
+.pf-progress-track {height:7px;border-radius:99px;background:#dfe5f3;overflow:hidden;}
+.pf-progress-track>span {display:block;}
+.pf-hero-illustration {min-height:360px;position:relative;display:grid;place-items:center;border:1px solid #dbe1ff;border-radius:38px;background:linear-gradient(130deg,#efefff,#e5f7f7 70%,#f6f9ff);overflow:hidden;}
+/* The hero now contains a full interactive graph, not a standalone SVG illustration.
+   Never resize all descendant SVGs: that also stretches the tiny help icon. */
+.pf-hero-glow {position:absolute;width:270px;height:270px;border-radius:50%;background:#d5d7fd;filter:blur(50px);opacity:.4;}
+.pf-illustration-chip {position:absolute;z-index:2;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:850;background:#fff;border:1px solid #dce1ef;border-radius:99px;box-shadow:0 10px 24px #323b6a18;color:#465274;padding:9px 12px;}
+.pf-illustration-chip-one {top:26px;right:15px;}.pf-illustration-chip-two {bottom:27px;left:25px;}
+.pf-path-workspace {display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:27px;padding-bottom:30px;align-items:start;}
+.pf-section-heading {display:flex;justify-content:space-between;align-items:end;margin-bottom:16px;text-align:left;gap:12px;}
+.pf-section-heading h2 {font-size:25px;line-height:1.2;font-weight:830;letter-spacing:-.035em;margin-top:5px;}
+.pf-section-heading>span {color:#8992a8;font-size:12px;}
+.pf-path-lesson-list {display:flex;flex-direction:column;gap:9px;}
+.pf-lesson-card {display:flex;align-items:center;width:100%;gap:14px;text-align:left;background:#fff;color:#253551;border:1px solid #dce4f0;padding:13px 16px;min-height:77px;border-radius:17px;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s;}
+.pf-lesson-card:hover {transform:translateX(3px);border-color:#aaa0e8;box-shadow:0 8px 20px #2e3f7e14;}
+.pf-lesson-card.pf-selected-card {background:#f0efff;border-color:#8678e5;box-shadow:inset 0 0 0 1px #ac9fed;}
+.pf-lesson-number {flex-shrink:0;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;color:#6656d6;background:#f1efff;font-size:13px;font-weight:850;border:1px solid #e1defa;}
+.pf-selected-card .pf-lesson-number {background:#5d4ecf;color:#fff;border-color:#5d4ecf;}
+.pf-lesson-copy {display:flex;flex-direction:column;gap:3px;min-width:0;}
+.pf-lesson-copy strong {font-size:14px;color:#233250;font-weight:800;line-height:1.35;}
+.pf-lesson-copy small {font-size:12px;color:#6b7891;line-height:1.4;}
+.pf-lesson-arrow {margin-left:auto;color:#8a95af;flex-shrink:0;}
+.pf-done-label {color:#17776f;font-size:10px;font-weight:850;margin-left:auto;}
+.pf-lesson-card:has(.pf-done-label) .pf-lesson-arrow {margin-left:0;}
+.pf-path-side {display:flex;flex-direction:column;gap:13px;position:sticky;top:25px;}
+.pf-spotlight {display:flex;flex-direction:column;align-items:flex-start;gap:11px;background:#fff;border:1px solid #dde2f2;border-radius:26px;padding:26px;box-shadow:var(--pf-shadow);text-align:left;}
+.pf-spotlight-icon {display:grid;place-items:center;width:53px;height:53px;border-radius:17px;background:#edebff;color:#5c4ed1;margin-bottom:8px;}
+.pf-spotlight h3 {font-size:25px;font-weight:850;letter-spacing:-.035em;line-height:1.2;}
+.pf-spotlight>p {font-size:14px;color:#6b7690;}
+.pf-spotlight-divider {height:1px;background:#e9ecf5;width:100%;margin:8px 0 0;}
+.pf-spotlight-help {font-size:13px;color:#596881;line-height:1.65;min-height:62px;}
+.pf-spotlight .pf-primary-button {margin-top:8px;}
+.pf-path-tip {display:flex;align-items:flex-start;gap:10px;color:#2b706c;background:#e6f7f2;border-radius:19px;padding:17px;}
+.pf-path-tip svg {flex-shrink:0;}.pf-path-tip p {font-size:12px;line-height:1.5;}
+@media(max-width:800px) {.pf-path-hero{grid-template-columns:1fr}.pf-hero-illustration{min-height:280px}.pf-path-workspace{grid-template-columns:1fr}.pf-path-side{position:static}.pf-path-side .pf-spotlight{padding:22px}.pf-learning-path{gap:25px}.pf-hero-copy h1{font-size:clamp(36px,8vw,52px)}}
+@media(max-width:520px) {.pf-screen{padding:19px 16px 80px}.pf-lesson-screen{padding:18px 17px 83px}.pf-page-title h1{font-size:29px}.pf-page-title p{font-size:13px}.pf-path-hero{margin-top:0}.pf-hero-illustration{min-height:250px}.pf-path-workspace{gap:20px}.pf-learning-path{gap:23px}.pf-access-trigger>span{display:none}.pf-access-trigger{padding:12px}.pf-lesson-card{min-height:71px;padding:11px}.pf-lesson-copy strong{font-size:13px}.pf-lesson-number{height:40px;width:40px}}
+/* Shared graph: visual, keyboard-usable and meaningful without colour alone. */
+.pf-live-graph {width:100%;min-width:0;background:#fff;border:1px solid #dce3f0;border-radius:23px;padding:16px;box-shadow:0 9px 25px #2b3b680c;}
+.pf-live-header {display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.pf-live-heading {display:flex;align-items:center;gap:10px;text-align:left;}
+.pf-live-heading>div {display:flex;flex-direction:column;gap:1px;}
+.pf-live-heading strong {color:#263654;font-size:13px;font-weight:850;}
+.pf-live-heading small {color:#7b88a0;font-size:11px;}
+.pf-live-activity {display:grid;place-items:center;border-radius:11px;width:36px;height:36px;background:#e9f7f4;color:#077a74;}
+.pf-live-actions {display:flex;gap:8px;align-items:center;}
+.pf-live-counts {font-size:10px;font-weight:750;color:#6c7893;white-space:nowrap;}
+.pf-live-reset {display:inline-flex;align-items:center;gap:5px;background:#f5f7fc;color:#4e5c7a;border:1px solid #dce3ef;border-radius:10px;padding:7px 10px;font-size:11px;font-weight:780;cursor:pointer;}
+.pf-live-reset:hover {background:#eceaff;color:#4432bc;}
+.pf-graph-svg {display:block;width:100%;height:auto;max-height:360px;max-width:100%;overflow:visible;border:1px solid #e3e9f2;border-radius:14px;touch-action:none;user-select:none;}
+.pf-graph-node.interactive {cursor:grab;}
+.pf-graph-node.interactive:active {cursor:grabbing;}
+.pf-graph-edge.interactive {cursor:pointer;}
+.pf-graph-node.interactive:hover circle:last-of-type {stroke:#4434b8;stroke-width:4px;}
+.pf-graph-edge.interactive:hover>line:first-of-type {stroke:#7566de;}
+.pf-graph-node-label {pointer-events:none;user-select:none;}
+.pf-live-help {font-size:11px;display:flex;align-items:center;gap:7px;margin-top:10px;color:#6f7c95;line-height:1.5;text-align:left;}
+.pf-live-help svg {flex-shrink:0;}
+.l4-live-graph>.pf-live-graph {background:#fff;box-shadow:none;border-color:#dce4ef;padding:12px;}
+.l4-live-graph .pf-graph-svg .pf-graph-node-label {paint-order:normal;stroke:none;}
+@media(max-width:560px) {.pf-live-graph{padding:12px}.pf-live-header{align-items:flex-start}.pf-live-counts{display:none}.pf-live-help{font-size:10px}}
 
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+/* Interaction polish: playful on a pointer, deliberate and readable on touch. */
+.pf-primary-button {position:relative;isolation:isolate;overflow:hidden;transform:translateZ(0);transition:transform .32s cubic-bezier(.2,.8,.2,1),box-shadow .32s ease,background .22s ease;}
+.pf-primary-button::before {content:"";position:absolute;inset:-70% auto -70% -40%;width:36%;background:linear-gradient(90deg,transparent,#ffffff40,transparent);transform:skewX(-20deg) translateX(-180%);transition:transform .55s cubic-bezier(.2,.75,.3,1);pointer-events:none;z-index:-1;}
+.pf-primary-button:active:not(:disabled) {transform:translateY(1px) scale(.975);box-shadow:0 4px 12px #5548ca2e;}
+.pf-primary-button svg {transition:transform .35s cubic-bezier(.2,.9,.2,1);}
+.pf-option-card,.pf-lesson-card,.pf-access-trigger,.pf-access-setting,.pf-live-reset,.pf-home-button,.pf-back-button {will-change:auto;transition:transform .27s cubic-bezier(.18,.8,.25,1),box-shadow .27s ease,border-color .22s,background .22s;}
+.pf-option-card:active:not(:disabled),.pf-lesson-card:active,.pf-context-tab:active,.pf-access-setting:active {transform:scale(.985);}
+.pf-option-card.is-selected .pf-option-indicator {animation:pf-select-pop .28s cubic-bezier(.2,.85,.2,1) both;}
+.pf-info-green,.pf-info-red {animation:pf-feedback-in .3s cubic-bezier(.15,.8,.28,1) both;}
+.pf-progress-rail>div,.pf-progress-track>span {transition:width .55s cubic-bezier(.22,.8,.22,1);}
+@keyframes pf-select-pop {0%{transform:scale(.6)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes pf-feedback-in {0%{opacity:.45;transform:translateY(7px) scale(.99)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@media (hover:hover) and (pointer:fine) {
+  .pf-primary-button:hover:not(:disabled) {background:#4636bf;transform:translateY(-3px) scale(1.012);box-shadow:0 16px 27px #4d41ba35,0 4px 9px #4d41ba17;}
+  .pf-primary-button:hover:not(:disabled)::before {transform:skewX(-20deg) translateX(590%);}
+  .pf-primary-button:hover:not(:disabled) svg {transform:translateX(5px) scale(1.1);}
+  .pf-option-card:hover:not(:disabled) {background:#faf9ff;transform:translateY(-3px);border-color:#9787e6;box-shadow:0 10px 20px #3c399814;}
+  .pf-lesson-card:hover {transform:translateY(-2px) translateX(4px);box-shadow:0 13px 25px #34468719;border-color:#a99bea;}
+  .pf-lesson-card:hover .pf-lesson-arrow {transform:translateX(4px);}
+  .pf-home-button:hover,.pf-back-button:not(:disabled):hover,.pf-access-trigger:hover,.pf-live-reset:hover {transform:translateY(-2px);box-shadow:0 7px 15px #343b7819;}
+  .pf-access-setting:hover {background:#eeeaff;transform:translateX(2px);}
+}
+.pf-lesson-arrow {transition:transform .25s ease;}
+.pf-back-button:disabled {opacity:.45;cursor:default;}
+.pf-back-button:disabled:hover {transform:none;}
+
+/* Phone widths: do not squeeze desktop artwork or interactive tables into the viewport. */
+.pf-app,.pf-screen,.pf-lesson-wrap,.pf-zero-main,.pf-path-workspace,.pf-path-workspace>*,.pf-path-hero>* {min-width:0;}
+.pf-screen {overflow-x:clip;}
+.pf-page-title h1,.pf-page-title p,.pf-info-card p,.pf-spotlight h3 {overflow-wrap:break-word;}
+.pf-graph-svg {touch-action:pan-y;}
+.pf-graph-node.interactive {touch-action:none;}
+.pf-graph-edge.interactive {touch-action:manipulation;}
+.pf-accessibility {bottom:max(16px,env(safe-area-inset-bottom));right:max(14px,env(safe-area-inset-right));}
+.pf-access-panel {max-height:min(75svh,430px);overflow-y:auto;}
+@media(max-width:800px) {
+  .pf-path-hero {gap:16px;}
+  .pf-hero-illustration {min-height:220px;border-radius:23px;}
+  .pf-path-side .pf-spotlight {padding:20px;}
+  .pf-spotlight-help {min-height:0;}
+}
+@media(max-width:600px) {
+  .pf-screen {gap:17px;padding:19px 15px calc(90px + env(safe-area-inset-bottom));}
+  .pf-lesson-screen {gap:15px;padding:17px 15px calc(84px + env(safe-area-inset-bottom));}
+  .pf-lesson-wrap {gap:15px;}
+  .pf-page-title h1 {font-size:clamp(24px,6.8vw,30px);line-height:1.15;}
+  .pf-page-title p {font-size:13px;line-height:1.52;}
+  .pf-eyebrow {font-size:10px;letter-spacing:.075em;}
+  .pf-path-header .pf-header-pill {font-size:9px;padding:6px 8px;}
+  .pf-path-hero {margin-top:2px;gap:13px;}
+  .pf-hero-copy h1 {font-size:clamp(29px,8.2vw,39px);line-height:1.08;margin:8px 0 11px;}
+  .pf-hero-copy>p {font-size:13px;line-height:1.5;}
+  .pf-path-progress {margin-top:15px;}
+  .pf-hero-illustration {min-height:152px;max-height:172px;border-radius:19px;}
+  .pf-hero-illustration .pf-graph-svg {max-height:155px;}
+  .pf-illustration-chip {font-size:9px;padding:6px 9px;}
+  .pf-illustration-chip-one {top:10px;right:10px;}
+  .pf-illustration-chip-two {bottom:9px;left:11px;}
+  .pf-learning-path {gap:19px;}
+  .pf-section-heading {margin-bottom:11px;}
+  .pf-section-heading h2 {font-size:21px;}
+  .pf-path-workspace {gap:16px;}
+  .pf-spotlight {border-radius:18px;}
+  .pf-spotlight h3 {font-size:21px;}
+  .pf-spotlight-icon {width:43px;height:43px;margin-bottom:0;}
+  .pf-path-tip {padding:12px;}
+  .pf-lesson-card {gap:10px;min-height:66px;padding:10px 11px;}
+  .pf-lesson-copy {flex:1;}
+  .pf-lesson-copy strong {font-size:13px;}
+  .pf-lesson-copy small {font-size:11px;}
+  .pf-lesson-number {width:38px;height:38px;border-radius:12px;}
+  .pf-done-label {font-size:9px;}
+  .pf-lesson-wrap .pf-info-card {padding:15px;border-radius:16px;}
+  .pf-live-graph {padding:10px;border-radius:16px;}
+  .pf-live-heading strong {font-size:12px;}
+  .pf-live-heading small {font-size:10px;}
+  .pf-live-activity {width:30px;height:30px;}
+  .pf-graph-svg {border-radius:12px;}
+  .pf-live-header {margin-bottom:8px;}
+  .pf-progress-row {gap:9px;}
+  .pf-progress-counter {min-width:36px;font-size:11px;}
+  .pf-header-pill {font-size:9px;padding:6px 9px;}
+  .pf-primary-button {min-height:50px;padding:13px 16px;font-size:14px;}
+  .pf-access-trigger {min-height:46px;min-width:46px;justify-content:center;}
+  .pf-access-trigger>span {display:none;}
+}
+@media(max-width:350px) {
+  .pf-screen {padding-inline:11px;}
+  .pf-lesson-screen {padding-inline:11px;}
+  .pf-lesson-header .pf-header-pill {padding:6px 7px;}
+  .pf-page-title h1 {font-size:24px;}
+  .pf-section-heading>span {font-size:10px;}
+  .pf-lesson-card {padding:9px 8px;}
+  .pf-lesson-card .pf-lesson-arrow {width:15px;}
+  .pf-done-label {display:none;}
+}
+@media (prefers-reduced-motion:reduce) {
+  .pf-primary-button::before {display:none;}
+}
+.pf-reduced-motion .pf-primary-button::before {display:none;}
+/* Motion settings also remove the movement itself, not only the transition. */
+.pf-reduced-motion button:hover,.pf-reduced-motion button:active,
+.pf-reduced-motion .pf-lesson-card:hover,.pf-reduced-motion .pf-context-tab:hover {transform:none!important;}
+@media(prefers-reduced-motion:reduce) {
+  button:hover,button:active,.pf-lesson-card:hover,.pf-context-tab:hover {transform:none!important;}
 }
 
-.hero {
-  position: relative;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
+/* Final visual pass: readable teaching text with a single shared graph language. */
+.pf-app {font-family: "Segoe UI",Inter,system-ui,-apple-system,sans-serif;letter-spacing:0;}
+.pf-page-title h1,.pf-hero-copy h1,.pf-section-heading h2 {letter-spacing:-.026em;line-height:1.2;font-weight:780;}
+.pf-page-title p,.pf-info-card p,.pf-takeaway-copy,.pf-option-label,.pf-context-card p {font-size:clamp(14px,1.8vw,16px);line-height:1.65;letter-spacing:.002em;}
+.pf-info-heading strong,.pf-eyebrow,.pf-takeaway-label {font-weight:780;letter-spacing:.035em;}
+.pf-takeaway {display:flex;flex-direction:column;gap:7px;padding:16px 18px;border-radius:15px;border:1px solid #d7e4e6;background:#edf8f6;text-align:left;}
+.pf-takeaway-label {font-size:12px;color:#086b65;text-transform:uppercase;}
+.pf-takeaway-copy {color:#314b5a;white-space:pre-line;font-family:inherit;}
+.pf-quiz-question {font-size:16px;font-weight:780;color:#263450;line-height:1.55;text-transform:none;letter-spacing:0;}
+.pf-secondary-button {display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #cfcaf4;color:#493ab5;background:#f3f0ff;border-radius:12px;padding:11px 14px;font-size:13px;font-weight:760;cursor:pointer;align-self:flex-start;transition:transform .25s,box-shadow .25s,border-color .25s;min-height:44px;}
+.pf-secondary-button:hover {border-color:#8573de;transform:translateY(-2px);box-shadow:0 7px 18px #554bb01a;}
+.pf-page-heading {display:flex;align-items:center;gap:14px;justify-content:space-between;width:100%;min-width:0;}
+.pf-page-heading h1 {min-width:0;max-width:calc(100% - 84px);}
+.pf-speech-button {flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:6px;min-height:42px;padding:9px 11px;border:1px solid #d8d5f3;border-radius:12px;background:#fff;color:#5448b7;cursor:pointer;font-size:12px;font-weight:800;transition:background .2s,transform .25s,border-color .2s;}
+.pf-speech-button:hover:not(:disabled) {background:#eeeaff;border-color:#9586ec;transform:translateY(-2px);}
+.pf-speech-button:disabled {color:#7a8496;cursor:not-allowed;}
+.pf-hero-illustration {min-height:0!important;max-height:none!important;padding:14px;overflow:visible;}
+.pf-hero-illustration>.pf-live-graph {position:relative;z-index:2;width:100%;border-color:#d9ddff;box-shadow:0 13px 27px #5553a414;}
+.pf-hero-illustration .pf-graph-svg {width:100%!important;max-width:100%!important;max-height:310px!important;filter:none!important;}
+.pf-hero-illustration .pf-live-header {display:flex;}
+.pf-hero-illustration .pf-live-help {display:none;}
+.pf-hero-illustration .pf-live-header svg {position:static;width:16px;height:16px;max-height:none;filter:none;}
+.pf-hero-illustration .pf-live-reset svg {width:14px;height:14px;}
+.pf-live-graph .pf-graph-svg {max-height:360px;width:100%;}
+/* Results board and real local progress, distinct from fictional seed records. */
+.pf-rewards-workspace {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin:4px 0 22px;align-items:start;}
+.pf-achievement-panel,.pf-leaderboard {background:#fff;border:1px solid #dce3f3;border-radius:24px;padding:21px;box-shadow:0 11px 30px #243e7210;min-width:0;}
+.pf-achievement-panel>header {display:flex;align-items:center;gap:10px;margin-bottom:17px;color:#6555cc;}
+.pf-achievement-panel h2,.pf-leaderboard h2 {font-size:22px;font-weight:800;letter-spacing:-.025em;color:#1b2946;line-height:1.3;}
+.pf-achievement-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+.pf-achievement {display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px;border:1px dashed #d1d8e9;border-radius:14px;color:#68758c;background:#f7f9ff;}
+.pf-achievement.unlocked {border-style:solid;border-color:#c6bdf7;color:#493cb2;background:#f1eeff;}
+.pf-achievement>span {font-size:24px;line-height:1;color:#9ca6bb;}
+.pf-achievement.unlocked>span {color:#c18c20;}
+.pf-achievement strong {font-size:12px;line-height:1.3;}
+.pf-achievement small {font-size:11px;}
+.pf-leaderboard-head {display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.pf-leaderboard-head p {color:#68758d;font-size:12px;line-height:1.5;margin-top:4px;}
+.pf-reward-icon {display:grid;place-items:center;width:45px;height:45px;border-radius:13px;color:#6755cf;background:#efecff;flex-shrink:0;}
+.pf-voucher-banner {display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #d4cff7;background:#f0edff;border-radius:15px;color:#5844b6;margin-bottom:12px;}
+.pf-voucher-banner>svg {flex-shrink:0;}
+.pf-voucher-banner>div {display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
+.pf-voucher-banner strong {font-size:13px;line-height:1.4;}
+.pf-voucher-banner small {font-size:11px;line-height:1.4;}
+.pf-voucher-banner>span {font-size:10px;font-weight:850;border:1px solid #c9c0fa;padding:4px 7px;border-radius:99px;}
+.pf-ranking {display:flex;flex-direction:column;gap:6px;list-style:none;padding:0;margin:0;}
+.pf-ranking li {display:flex;align-items:center;gap:10px;min-height:42px;padding:9px 11px;border:1px solid #e3e8f3;border-radius:11px;background:#fff;}
+.pf-ranking li.is-you {border-color:#8b80e4;background:#f3f0ff;}
+.pf-rank-number {display:grid;place-items:center;flex-shrink:0;width:27px;height:27px;border-radius:8px;background:#eef1f9;color:#5544c5;font-size:13px;font-weight:820;}
+.pf-ranking li:first-child .pf-rank-number {background:#fff4d7;color:#9e7016;}
+.pf-rank-name {flex:1;font-size:13px;font-weight:750;color:#2b3a59;}
+.pf-rank-name small {color:#5b4db4;font-size:11px;}
+.pf-ranking li>strong {font-variant-numeric:tabular-nums;font-size:15px;color:#273753;}
+.pf-ranking li>strong small {font-size:11px;color:#6c7890;}
+.pf-rank-medal {color:#bd8d29;flex-shrink:0;}
+.pf-practice-note {display:flex;gap:7px;align-items:flex-start;font-size:11px;line-height:1.5;color:#66738b;margin-top:12px;}
+.pf-practice-note svg {flex-shrink:0;}
+.pf-leaderboard.is-compact {padding:16px;box-shadow:none;}
+@media(max-width:850px){.pf-rewards-workspace{grid-template-columns:1fr;}.pf-hero-illustration{padding:12px;}}
+@media(max-width:600px){
+ .pf-page-heading{gap:7px;align-items:flex-start;}
+ .pf-page-heading h1{max-width:calc(100% - 65px);font-size:clamp(24px,6.4vw,29px);}
+ .pf-speech-button{padding:10px;min-height:40px;}
+ .pf-speech-button span{display:none;}
+ .pf-page-title p,.pf-info-card p,.pf-takeaway-copy,.pf-option-label{font-size:14px;line-height:1.55;}
+ .pf-hero-illustration .pf-graph-svg{max-height:210px!important;}
+ .pf-hero-illustration .pf-live-help{display:none;}
+ .pf-hero-illustration .pf-live-graph{padding:9px;}
+ .pf-achievement-panel,.pf-leaderboard{padding:15px;border-radius:18px;}
+ .pf-achievement-grid{gap:7px;}
+ .pf-achievement{padding:10px;}
+ .pf-ranking li{padding:8px;}
 }
+@media(prefers-reduced-motion:reduce){.pf-speech-button:hover,.pf-secondary-button:hover{transform:none;}}
+.pf-reduced-motion .pf-speech-button:hover,.pf-reduced-motion .pf-secondary-button:hover{transform:none;}
+.pf-achievement-toast {position:fixed;z-index:45;left:50%;bottom:20px;transform:translateX(-50%);width:min(calc(100% - 110px),430px);display:flex;align-items:center;gap:12px;padding:14px 13px 14px 15px;border:1px solid #bfb6f5;background:#fff;box-shadow:0 15px 40px #2d31832f;border-radius:18px;animation:pf-reward-arrive .45s cubic-bezier(.15,.9,.28,1) both;}
+.pf-achievement-toast-star {display:grid;place-items:center;border-radius:12px;background:#f1ecff;color:#5944c9;width:41px;height:41px;flex-shrink:0;}
+.pf-achievement-toast>div {flex:1;min-width:0;}
+.pf-achievement-toast strong {display:block;font-size:14px;color:#253653;}
+.pf-achievement-toast p {font-size:12px;color:#5b4cba;line-height:1.5;}
+.pf-achievement-toast>button {background:#f4f5fb;border:0;border-radius:9px;padding:8px;color:#596780;cursor:pointer;}
+@keyframes pf-reward-arrive {from {opacity:0;transform:translate(-50%,22px) scale(.94)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+@media(max-width:480px){.pf-achievement-toast {left:12px;bottom:70px;transform:none;max-width:calc(100% - 78px);width:100%;animation:none;padding:11px;}.pf-achievement-toast strong{font-size:12px;}.pf-achievement-toast p{font-size:11px;}}
+@media(prefers-reduced-motion:reduce){.pf-achievement-toast{animation:none;}}
+.pf-reduced-motion .pf-achievement-toast{animation:none;}
+.pf-volume-control {display:flex;flex-direction:column;gap:7px;padding:10px 12px;border-radius:12px;background:#f7f8fe;border:1px solid #e4e8f3;}
+.pf-volume-control label {display:flex;justify-content:space-between;gap:12px;font-size:12px;font-weight:720;color:#374765;}
+.pf-volume-control label strong {font-variant-numeric:tabular-nums;color:#5648ca;}
+.pf-volume-control input {width:100%;accent-color:#5648ca;cursor:pointer;min-height:27px;}
+.pf-volume-control input:disabled {opacity:.4;cursor:not-allowed;}
+/* Spinner appears only while the natural narration service prepares the audio. */
+.pf-speech-loading {animation:pf-speech-spin .9s linear infinite;}
+@keyframes pf-speech-spin {to {transform:rotate(360deg);}}
+@media(prefers-reduced-motion:reduce){.pf-speech-loading{animation:none;}}
+.pf-reduced-motion .pf-speech-loading{animation:none;}
 
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
-}
-
-#next-steps {
-  display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
-}
-
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
-}
-
-#next-steps ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
-}
-
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
-}
-
-.ticks {
-  position: relative;
-  width: 100%;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
-
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
-  }
-}
-
-.lesson-six { max-width: 480px; margin-inline: auto; text-align: left; }
-.lesson-six h1 { margin: 4px 0 0; font-size: 24px; line-height: 1.25; letter-spacing: -0.5px; }
-.lesson-six > button:last-child { margin-top: auto; }
-.lesson-six svg { max-height: 250px; }
-.lesson-six p { white-space: pre-line; }
+/* Progress is a real, persistent total rather than an isolated unlock toast. */
+.pf-xp-total {display:inline-flex;align-items:center;gap:11px;width:fit-content;margin-top:16px;padding:11px 15px;background:#f0ecff;border:1px solid #d8d0fc;border-radius:16px;color:#4737ad;}
+.pf-xp-icon {display:grid;place-items:center;width:37px;height:37px;border-radius:11px;background:#fff;color:#6951cd;}
+.pf-xp-total>div {display:flex;flex-direction:column;gap:2px;text-align:left;}
+.pf-xp-total strong {font-size:19px;font-weight:850;font-variant-numeric:tabular-nums;line-height:1.2;}
+.pf-xp-total small {font-size:11px;color:#655a91;line-height:1.45;}
+.pf-achievement-xp {margin-left:auto;padding:6px 9px;border-radius:10px;background:#f0ecff;color:#5848be;font-size:12px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.pf-assessment-award {text-align:left;padding:15px 17px;border-radius:16px;background:#edf9f5;border:1px solid #b9e5d7;color:#12635e;}
+.pf-assessment-award strong {display:block;font-size:14px;font-weight:800;line-height:1.4;}
+.pf-assessment-award p {font-size:12px;line-height:1.5;margin-top:4px;color:#345f5b;}
+@media(max-width:420px) {.pf-achievement-panel>header{flex-wrap:wrap}.pf-achievement-xp{margin-left:0}.pf-xp-total{max-width:100%;padding:9px 11px}.pf-xp-total strong{font-size:17px}}

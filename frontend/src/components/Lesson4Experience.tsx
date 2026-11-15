@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, CircleCheck, Info, RotateCcw } from "lucide-react";
+import { ArrowRight, CircleCheck, RotateCcw } from "lucide-react";
 import { LessonHeader } from "./LessonHeader";
 import { PageTitle } from "./PageTitle";
 import { ProgressBar } from "./ProgressBar";
@@ -21,7 +21,7 @@ import {
   type NextVertexGeneratorConfig,
 } from "../lessons/lesson4Questions";
 import lesson4Raw from "../lessons/lesson-4.json";
-import { playNoteSound } from "../helpers";
+import { playNoteSound, playFeedbackSound } from "../helpers";
 import "./lesson4.css";
 
 type PageKind = "intro" | "walkthrough" | "quiz" | "limit" | "complete";
@@ -106,20 +106,44 @@ export function Lesson4Experience({
   const isQuiz = page.type === "quiz";
   const isCheckedCorrect = feedback === "correct";
   const frameIndex = isQuiz ? quizTemplate.snapshotIndex : (page.snapshotIndex ?? 0);
-  const activeTrace = isQuiz ? quiz.trace : exampleTrace;
-  const frame = activeTrace[frameIndex] ?? activeTrace[0];
+  // After remedial practice, continue the walkthrough using that very same
+  // generated graph. The table, highlighted edges and explanations all derive
+  // from its recomputed Dijkstra trace, never from the original example.
+  const quizPageIndex = lesson4.pages.findIndex((entry) => entry.type === "quiz");
+  const continuingRetry = retryNumber > 0 && index > quizPageIndex;
+  const usePracticeGraph = isQuiz || continuingRetry;
+  const activeTrace = usePracticeGraph ? quiz.trace : exampleTrace;
+  const frame = activeTrace[frameIndex] ?? activeTrace[activeTrace.length - 1];
   const previousFrame = frameIndex > 0 ? activeTrace[frameIndex - 1] : null;
-  const edges = isQuiz ? quiz.edges : LESSON4_EDGES;
+  const edges = usePracticeGraph ? quiz.edges : LESSON4_EDGES;
+  const retryWalkthrough = continuingRetry && !isQuiz && page.type === "walkthrough";
+  const activeRoute = usePracticeGraph
+    ? shortestRoute(activeTrace[activeTrace.length - 1], "D") ?? []
+    : finalRoute;
+  const dynamicTitle = retryWalkthrough
+    ? (page.showRoute ? "Rebuild your shortest route" : `Explore ${frame.current ?? "the next vertex"}`)
+    : page.title;
+  const dynamicSubtext = retryWalkthrough
+    ? (page.showRoute ? "Follow the predecessor links in your practice graph." : `The table now shows what happens after settling ${frame.current}.`)
+    : page.subtext;
+  const dynamicNote = retryWalkthrough
+    ? (page.showRoute
+      ? `TRACE BACKWARDS: ${activeRoute.slice().reverse().join(" ← ")}. Shortest route: ${activeRoute.join(" → ")}, total cost ${distanceLabel(frame.distances.D)}.`
+      : frame.updated.length
+        ? `RELAX FROM ${frame.current}: ${frame.updated.map((vertex) => `${vertex} becomes ${distanceLabel(frame.distances[vertex])} via ${frame.predecessors[vertex]}`).join("; ")}. Compare the previous distances in the tracker.`
+        : `RELAX FROM ${frame.current}: None of the remaining distances can be improved.`)
+    : page.note;
+
   
   const baseHighlightedEdges = page.showRoute
-    ? routeEdgeIds(finalRoute, LESSON4_EDGES)
-    : isQuiz
+    ? routeEdgeIds(activeRoute, edges)
+    : (isQuiz || retryWalkthrough)
       ? frame.current ? edges.filter((edge) => edge.source === frame.current || edge.target === frame.current).map((edge) => edge.id) : []
       : (page.highlightedEdges ?? []);
       
   const baseHighlightedNodes = page.showRoute
-    ? finalRoute
-    : [...new Set([...frame.settled, ...(page.activeVertex ? [page.activeVertex] : [])])];
+    ? activeRoute
+    : [...new Set([...frame.settled, ...(retryWalkthrough && frame.current ? [frame.current] : page.activeVertex ? [page.activeVertex] : [])])];
 
   const highlightedNodes = [...new Set([...baseHighlightedNodes, ...extraHighlightedNodes])];
   const highlightedEdges = [...new Set([...baseHighlightedEdges, ...extraHighlightedEdges])];
@@ -155,7 +179,9 @@ export function Lesson4Experience({
           setFeedback("empty");
           return;
         }
-        setFeedback(selected === quiz.correctAnswerId ? "correct" : "incorrect");
+        const correct = selected === quiz.correctAnswerId;
+        playFeedbackSound(correct);
+        setFeedback(correct ? "correct" : "incorrect");
         return;
       }
     }
@@ -196,13 +222,13 @@ export function Lesson4Experience({
   };
 
   return (
-    <div className="l4-experience w-full min-h-screen bg-[#111116] text-slate-100 px-4 py-6 sm:px-6 flex flex-col gap-6">
+    <div className="pf-screen pf-lesson-screen l4-experience">
       <div className="w-full max-w-[880px] mx-auto flex-1 flex flex-col gap-6">
         <LessonHeader lessonNumber={lesson4.meta.lessonNumber} onMenuClick={onExit} />
         <ProgressBar currentIndex={index} total={lesson4.pages.length} onBack={back} />
 
         <main className="flex-1 flex flex-col gap-5" key={index}>
-          <PageTitle category={page.eyebrow} title={page.title} subtext={page.subtext} />
+          <PageTitle category={page.eyebrow} title={dynamicTitle} subtext={dynamicSubtext} />
 
           {(page.type === "walkthrough" || isQuiz) && (
             <div className="l4-learning-grid">
@@ -289,7 +315,7 @@ export function Lesson4Experience({
                     <p>{frame.updated.map((v) => `${v}: ${distanceLabel(previousFrame?.distances[v] ?? Infinity)} → ${distanceLabel(frame.distances[v])} via ${frame.predecessors[v]}`).join("  ·  ")}</p>
                   </div>
                 )}
-                {page.note && !isQuiz && <p className="l4-step-note">{page.note}</p>}
+                {dynamicNote && !isQuiz && <p className="l4-step-note">{dynamicNote}</p>}
                 {isQuiz && <p className="l4-step-note">Only unsettled vertices are eligible. Compare their distances in the table—∞ means not yet reachable.</p>}
               </section>
             </div>
@@ -299,7 +325,7 @@ export function Lesson4Experience({
             <section className="l4-quiz" aria-label="Question">
               {retryNumber > 0 && (
                 <p className="l4-retry-label">
-                  NEW PRACTICE GRAPH · ATTEMPT {retryNumber + 1} · THE WORKED EXAMPLE RESUMES AFTER THIS QUESTION
+                  NEW PRACTICE GRAPH · ATTEMPT {retryNumber + 1} · WE'LL KEEP THIS GRAPH FOR THE NEXT STEPS
                 </p>
               )}
               <h3 className="l4-question">{quiz.question}</h3>
@@ -320,7 +346,7 @@ export function Lesson4Experience({
               <div aria-live="polite">
                 {feedback && <InfoCard
                   heading={feedback === "correct" ? "That's right!" : feedback === "empty" ? "Choose a vertex" : "Let's work through it"}
-                  body={feedback === "correct" ? `${quiz.explanation}${retryNumber ? " Next, we'll return to the original worked example." : ""}` : feedback === "empty"
+                  body={feedback === "correct" ? `${quiz.explanation}${retryNumber ? " We'll continue with this same graph." : ""}` : feedback === "empty"
                     ? "Pick one of the unsettled vertices, then check your answer."
                     : `${quiz.explanation} Try the same idea on a fresh graph.`}
                   variant={feedback === "correct" ? "green" : "red"}
@@ -339,12 +365,14 @@ export function Lesson4Experience({
                 />
               )}
               {page.tipTitle && page.tipText && (
-                <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col gap-1.5">
-                  <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
+                <div className="pf-takeaway">
+                  <span className="pf-takeaway-label">
                     {page.tipTitle}
                   </span>
-                  <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line font-mono">
-                    {page.tipText}
+                  <p className="pf-takeaway-copy">
+                    {page.type === "complete" && retryNumber > 0
+                      ? `Your practice graph: ${activeRoute.join(" → ")} with cost ${distanceLabel(activeTrace[activeTrace.length - 1].distances.D)}.`
+                      : page.tipText}
                   </p>
                 </div>
               )}

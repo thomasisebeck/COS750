@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { LessonHeader } from "./LessonHeader";
 import { ProgressBar } from "./ProgressBar";
 import { PageTitle } from "./PageTitle";
@@ -7,7 +7,9 @@ import { OptionCard } from "./OptionCard";
 import { LessonButton } from "./Buttons";
 import { LiveGraph } from "./LiveGraph";
 import type { LessonData, LessonPage, GraphState } from "../types/lesson";
-import { playNoteSound } from "../helpers";
+import { playNoteSound, playFeedbackSound } from "../helpers";
+import { lesson1Retry, lesson1FollowUp } from "../lessons/questionBanks";
+import type { GraphQuizContentBox } from "../types/lesson";
 
 interface LessonExperienceProps {
   lesson: LessonData;
@@ -26,9 +28,12 @@ export function Lesson1Experience({
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [retryQuestions, setRetryQuestions] = useState<Partial<Record<number, GraphQuizContentBox>>>({});
+  const [retryCount, setRetryCount] = useState<Record<number,number>>({});
+  const [continuationGraph,setContinuationGraph] = useState<GraphState | null>(null);
   const currentPage: LessonPage = lesson.pages[currentPageIndex];
   const totalPages = lesson.pages.length;
-  const contentBox = currentPage.contentBox;
+  const contentBox = retryQuestions[currentPageIndex] ?? currentPage.contentBox;
   const isQuiz = currentPage.contentBox?.boxType === "graph-quiz";
 
   const [graphState, setGraphState] = useState<GraphState | null>(() => {
@@ -38,30 +43,17 @@ export function Lesson1Experience({
     return null;
   });
 
-  // Corrected navigate function (outside of useEffect)
   function navigate(nextIndex: number) {
-    const nextContent = lesson.pages[nextIndex].contentBox;
+    const nextContent = retryQuestions[nextIndex] ?? lesson.pages[nextIndex]?.contentBox;
     setCurrentPageIndex(nextIndex);
-    setGraphState(
-      nextContent.boxType === "graph" || nextContent.boxType === "graph-quiz"
-        ? nextContent.state ?? null
-        : null
-    );
-  }
-
-  // Correct top-level useEffect hook
-  useEffect(() => {
-    const nextBox = lesson.pages[currentPageIndex]?.contentBox;
-    if (nextBox && (nextBox.boxType === "graph" || nextBox.boxType === "graph-quiz")) {
-      setGraphState(nextBox.state ?? null);
-    } else {
-      setGraphState(null);
-    }
+    setGraphState(nextIndex === 3 && continuationGraph ? continuationGraph :
+      nextContent && (nextContent.boxType === "graph" || nextContent.boxType === "graph-quiz")
+      ? nextContent.state ?? null : null);
     setSelectedOptionId(null);
     setQuizChecked(false);
     setIsCorrect(null);
     setErrorMessage(null);
-  }, [currentPageIndex, lesson]);
+  }
 
   const handleNodeMove = (nodeId: string, x: number, y: number) => {
     setGraphState((prev: GraphState | null) => {
@@ -120,12 +112,12 @@ export function Lesson1Experience({
 
   const handleReset = () => {
     if (contentBox && (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz")) {
-      setGraphState(contentBox.state ?? null);
+      setGraphState(currentPageIndex === 3 && continuationGraph ? continuationGraph : contentBox.state ?? null);
     }
   };
 
   const handleNextClick = () => {
-    if (isQuiz) {
+    if (contentBox?.boxType === "graph-quiz") {
       if (!quizChecked) {
         if (!selectedOptionId) {
           setErrorMessage("Choose an answer before checking.");
@@ -133,6 +125,7 @@ export function Lesson1Experience({
         }
         const correct = selectedOptionId === contentBox.correctAnswerId;
         setIsCorrect(correct);
+        playFeedbackSound(correct);
         setQuizChecked(true);
         setErrorMessage(null);
         return; 
@@ -142,6 +135,22 @@ export function Lesson1Experience({
         } else {
           onComplete();
         }
+        return;
+      } else {
+        // A similar question uses a new, internally consistent graph and answer.
+        const attempt = (retryCount[currentPageIndex] ?? 0) + 1;
+        const regenerated = lesson1Retry(currentPageIndex, attempt);
+        setRetryQuestions(previous => ({
+          ...previous,[currentPageIndex]:regenerated,
+          ...(currentPageIndex === 2 ? {4:lesson1FollowUp(regenerated.state,attempt)} : {}),
+        }));
+        if (currentPageIndex === 2) setContinuationGraph(regenerated.state);
+        setRetryCount(previous => ({...previous,[currentPageIndex]:attempt}));
+        setGraphState(regenerated.state);
+        setQuizChecked(false);
+        setIsCorrect(null);
+        setSelectedOptionId(null);
+        setErrorMessage("New graph, same skill. Look closely and try again.");
         return;
       }
     }
@@ -158,11 +167,11 @@ export function Lesson1Experience({
   if (isQuiz && quizChecked && isCorrect) {
     buttonLabel = "Continue";
   } else if (isQuiz && quizChecked && !isCorrect) {
-    buttonLabel = "Try again";
+    buttonLabel = "Try a new question";
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#111116] text-slate-100 p-6 flex flex-col gap-6">
+    <div className="pf-screen pf-lesson-screen">
       <LessonHeader
         lessonNumber={lesson.meta.lessonNumber}
         onMenuClick={onExit}
@@ -207,6 +216,7 @@ export function Lesson1Experience({
               onEdgeClick={handleEdgeClick}
               onReset={handleReset}
               mustSelectPath={!contentBox.prohibitPathSelection}
+              isDirected={contentBox.isDirected ?? false}
             />
 
             {contentBox.boxType === "graph" && contentBox.text && (
@@ -242,7 +252,7 @@ export function Lesson1Experience({
                 {quizChecked && isCorrect && (
                   <InfoCard
                     heading="That's right!"
-                    body="Great job! You identified the correct answer."
+                    body={contentBox.explanation ?? "Great job! You identified the correct answer."}
                     variant="green"
                   />
                 )}
@@ -250,7 +260,7 @@ export function Lesson1Experience({
                 {quizChecked && !isCorrect && (
                   <InfoCard
                     heading="Incorrect"
-                    body="That's not quite right. Select a different option and try again."
+                    body={contentBox.explanation ?? "Look closely at the highlighted vertices and edges, then try a different answer."}
                     variant="red"
                   />
                 )}

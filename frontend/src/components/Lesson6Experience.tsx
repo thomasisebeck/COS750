@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { LessonHeader } from "./LessonHeader";
 import { ProgressBar } from "./ProgressBar";
 import { PageTitle } from "./PageTitle";
@@ -7,22 +7,28 @@ import { OptionCard } from "./OptionCard";
 import { LessonButton } from "./Buttons";
 import { LiveGraph } from "./LiveGraph";
 import type { LessonData, LessonPage, GraphState } from "../types/lesson";
-import { playNoteSound } from "../helpers";
+import { playNoteSound, playFeedbackSound } from "../helpers";
+import { assessmentBank } from "../lessons/questionBanks";
+import { Leaderboard } from "./Leaderboard";
 
 interface Lesson6ExperienceProps {
   lesson: LessonData;
   onExit: () => void;
   onComplete: () => void;
+  onAssessmentFinished?: (score: number, total: number) => boolean;
 }
 
-export function Lesson6Experience({ lesson, onExit, onComplete }: Lesson6ExperienceProps) {
+export function Lesson6Experience({ lesson, onExit, onComplete, onAssessmentFinished }: Lesson6ExperienceProps) {
+  const [assessment, setAssessment] = useState(() => assessmentBank(lesson, Math.floor(Math.random()*24)+1));
+  const [scoreSaved, setScoreSaved] = useState(false);
+  const [newAssessmentAchievement, setNewAssessmentAchievement] = useState(false);
   const [currentPageIndex, setCurrentPageIndex] = useState<number>(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [checked, setChecked] = useState<boolean>(false);
 
-  const currentPage: LessonPage = lesson.pages[currentPageIndex];
-  const totalPages = lesson.pages.length;
+  const currentPage: LessonPage = assessment.pages[currentPageIndex];
+  const totalPages = assessment.pages.length;
   const contentBox = currentPage.contentBox;
 
   const [graphState, setGraphState] = useState<GraphState | null>(() => {
@@ -34,24 +40,20 @@ export function Lesson6Experience({ lesson, onExit, onComplete }: Lesson6Experie
 
   const quiz = contentBox && (contentBox.boxType === "quiz" || contentBox.boxType === "graph-quiz") ? contentBox : null;
 
-  const score = lesson.pages.reduce((sum, page, index) => {
+  const score = assessment.pages.reduce((sum, page, index) => {
     const box = page.contentBox;
     return sum + (box && (box.boxType === "quiz" || box.boxType === "graph-quiz") && answers[index] === box.correctAnswerId ? 1 : 0);
   }, 0);
 
-  const questionCount = lesson.pages.filter(page => page.contentBox && (page.contentBox.boxType === "quiz" || page.contentBox.boxType === "graph-quiz")).length;
+  const questionCount = assessment.pages.filter(page => page.contentBox && (page.contentBox.boxType === "quiz" || page.contentBox.boxType === "graph-quiz")).length;
 
   const goToPage = (index: number) => {
-    const box = lesson.pages[index]?.contentBox;
+    const box = assessment.pages[index]?.contentBox;
     setCurrentPageIndex(index);
     setGraphState(box && (box.boxType === "graph" || box.boxType === "graph-quiz") ? box.state ?? null : null);
     setSelectedOptionId(answers[index] ?? null);
     setChecked(answers[index] !== undefined);
   };
-
-  useEffect(() => {
-    goToPage(currentPageIndex);
-  }, [currentPageIndex, lesson]);
 
   const handleNodeMove = (nodeId: string, x: number, y: number) => {
     setGraphState((prev: GraphState | null) => {
@@ -112,8 +114,14 @@ export function Lesson6Experience({ lesson, onExit, onComplete }: Lesson6Experie
   };
 
   const handleNextClick = () => {
+    const nextPage = assessment.pages[currentPageIndex + 1];
+    if (nextPage?.pageType === "results" && checked && !scoreSaved) {
+      setNewAssessmentAchievement(onAssessmentFinished?.(score, questionCount) ?? false);
+      setScoreSaved(true);
+    }
     if (quiz && !checked) {
       if (!selectedOptionId) return;
+      playFeedbackSound(selectedOptionId === quiz.correctAnswerId);
       setAnswers((previous) => ({ ...previous, [currentPageIndex]: selectedOptionId }));
       setChecked(true);
       return;
@@ -127,7 +135,7 @@ export function Lesson6Experience({ lesson, onExit, onComplete }: Lesson6Experie
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#111116] text-slate-100 p-6 flex flex-col gap-6">
+    <div className="pf-screen pf-lesson-screen">
       <LessonHeader
         lessonNumber={lesson.meta.lessonNumber}
         onMenuClick={() => {
@@ -207,10 +215,15 @@ export function Lesson6Experience({ lesson, onExit, onComplete }: Lesson6Experie
             <div className="text-center py-5">
               <span className="text-5xl text-amber-300" aria-hidden="true">&#9733;</span>
               <p className="text-xl font-bold mt-3">{score} / {questionCount}</p>
-              <p className="text-sm text-slate-400">{score >= 8 ? "Excellent work!" : "Every answer is a step forward."}</p>
+              <p className="text-sm text-slate-400">{score >= Math.ceil(questionCount * 0.8) ? "Excellent work!" : "Every answer is a step forward."}</p>
             </div>
             
-            {lesson.pages.map((page, index) => {
+            <div className="pf-assessment-award" role="status">
+              <strong>{newAssessmentAchievement ? "Achievement unlocked! · +100 XP" : "Assessment completed"}</strong>
+              <p>{newAssessmentAchievement ? "You earned the Lesson 6 achievement. You can head home or review your answers." : "Your result is recorded. You can review your answers or try for a higher score."}</p>
+            </div>
+            <Leaderboard userScore={score} total={questionCount} compact />
+            {assessment.pages.map((page, index) => {
               const box = page.contentBox;
               if (!box || (box.boxType !== "quiz" && box.boxType !== "graph-quiz")) return null;
               return (
@@ -226,18 +239,23 @@ export function Lesson6Experience({ lesson, onExit, onComplete }: Lesson6Experie
             <LessonButton
               label="Try assessment again"
               onClick={() => {
+                const nextAssessment = assessmentBank(lesson, Math.floor(Math.random()*24)+1);
+                setAssessment(nextAssessment);
                 setAnswers({});
                 setCurrentPageIndex(0);
+                const nextBox = nextAssessment.pages[0]?.contentBox;
+                setGraphState(nextBox && (nextBox.boxType === "graph" || nextBox.boxType === "graph-quiz") ? nextBox.state ?? null : null);
                 setChecked(false);
                 setSelectedOptionId(null);
-                goToPage(0);
+                setScoreSaved(false);
+                setNewAssessmentAchievement(false);
               }}
             />
           </div>
         )}
 
         {currentPage.pageType === "review" && (() => {
-          const missed = lesson.pages.find((page, index) => {
+          const missed = assessment.pages.find((page, index) => {
             const box = page.contentBox;
             return box && (box.boxType === "quiz" || box.boxType === "graph-quiz") && answers[index] !== box.correctAnswerId;
           });

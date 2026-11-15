@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { LessonHeader } from "./LessonHeader";
 import { PageTitle } from "./PageTitle";
 import { ProgressBar } from "./ProgressBar";
@@ -6,8 +6,10 @@ import { InfoCard } from "./InfoCard";
 import { OptionCard } from "./OptionCard";
 import { LessonButton } from "./Buttons";
 import { LiveGraph } from "./LiveGraph";
-import type { LessonData, LessonPage, GraphState } from "../types/lesson";
-import { playNoteSound } from "../helpers";
+import type { LessonData, GraphState } from "../types/lesson";
+import { playNoteSound, playFeedbackSound } from "../helpers";
+import { guidedPracticeBank } from "../lessons/questionBanks";
+import { RotateCcw } from "lucide-react";
 
 interface Lesson5ExperienceProps {
   lesson: LessonData;
@@ -17,38 +19,40 @@ interface Lesson5ExperienceProps {
 
 export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5ExperienceProps) {
   const [index, setIndex] = useState(0);
+  const [practice, setPractice] = useState(() => guidedPracticeBank(lesson, Math.floor(Math.random()*24)+1));
   const [selected, setSelected] = useState<string | null>(null);
   const [quizChecked, setQuizChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const page = lesson.pages[index];
-  const totalPages = lesson.pages.length;
+  const page = practice.pages[index];
+  const totalPages = practice.pages.length;
   const contentBox = page.contentBox;
   const isQuiz = page.type === "quiz";
   const isCheckpoint = page.type === "checkpoint";
   const isDirected = contentBox?.isDirected ?? false;
 
   const [graphState, setGraphState] = useState<GraphState | null>(() => {
-    const baseGraph = lesson.pages[0]?.contentBox?.state ?? null;
+    const first = practice.pages[0]?.contentBox;
+    const baseGraph = first && "state" in first ? first.state : null;
     if (!baseGraph) return null;
     return getGraphStateForStep(index, baseGraph);
   });
 
-  useEffect(() => {
-    const baseGraph = lesson.pages[0]?.contentBox?.state ?? null;
-    if (baseGraph) {
-      setGraphState(getGraphStateForStep(index, baseGraph));
-    }
+  function navigate(nextIndex: number) {
+    const firstBox = practice.pages[0]?.contentBox;
+    const baseGraph = firstBox && "state" in firstBox ? firstBox.state : null;
+    setIndex(nextIndex);
+    setGraphState(baseGraph ? getGraphStateForStep(nextIndex, baseGraph) : null);
     setSelected(null);
     setQuizChecked(false);
     setIsCorrect(null);
     setErrorMessage(null);
-  }, [index, lesson]);
+  }
 
   function getGraphStateForStep(stepIndex: number, baseGraph: GraphState): GraphState {
-    let highlightedNodes: string[] = [];
-    let highlightedEdges: string[] = [];
+    let highlightedNodes: string[];
+    let highlightedEdges: string[];
 
     switch (stepIndex) {
       case 0: // Intro
@@ -175,7 +179,8 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
   };
 
   const handleReset = () => {
-    const baseGraph = lesson.pages[0]?.contentBox?.state ?? null;
+    const first = practice.pages[0]?.contentBox;
+    const baseGraph = first && "state" in first ? first.state : null;
     if (baseGraph) {
       setGraphState(getGraphStateForStep(index, baseGraph));
     }
@@ -185,7 +190,7 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
     if (index === 0) {
       onExit();
     } else {
-      setIndex(index - 1);
+      navigate(index - 1);
     }
   }
 
@@ -198,14 +203,16 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
         }
         const correct = selected === page.correctAnswerId;
         setIsCorrect(correct);
+        playFeedbackSound(correct);
         setQuizChecked(true);
         setErrorMessage(null);
         return;
       } else {
         if (isCorrect) {
-          setIndex(index + 1);
+          navigate(index + 1);
           return;
         } else {
+          // Keep the original question and graph so the student can apply the feedback.
           setSelected(null);
           setQuizChecked(false);
           setIsCorrect(null);
@@ -219,7 +226,7 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
       if (onComplete) onComplete();
       else onExit();
     } else {
-      setIndex(index + 1);
+      navigate(index + 1);
     }
   }
 
@@ -230,12 +237,13 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
     buttonLabel = "Try again";
   }
 
+  const activeOptions = page.options;
   const cardTitle = isCheckpoint && !isCorrect ? "Not quite" : (page.cardTitle || "");
   const cardText = isCheckpoint && !isCorrect ? (page.incorrectFeedback || "Review the calculation and try again.") : (page.cardText || "");
   const cardVariant = isCheckpoint && !isCorrect ? "red" : (page.type === "complete" || (isCheckpoint && isCorrect) ? "green" : "default");
 
   return (
-    <div className="w-full min-h-screen bg-[#111116] text-slate-100 p-6 flex flex-col gap-6">
+    <div className="pf-screen pf-lesson-screen">
       <LessonHeader lessonNumber={lesson.meta.lessonNumber} onMenuClick={onExit} />
 
       <ProgressBar currentIndex={index} total={totalPages} onBack={back} />
@@ -251,6 +259,14 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
             variant={cardVariant}
           />
         )}
+
+        {index === 0 && <button type="button" className="pf-secondary-button" onClick={() => {
+          const fresh = guidedPracticeBank(lesson, Math.floor(Math.random()*24)+1);
+          setPractice(fresh);
+          const freshBox = fresh.pages[0].contentBox;
+          if (freshBox?.boxType === "graph") setGraphState(getGraphStateForStep(0,freshBox.state));
+          setSelected(null);setQuizChecked(false);setIsCorrect(null);
+        }}><RotateCcw size={17}/> Generate another practice graph</button>}
 
         {/* Persistent Interactive LiveGraph Box with step-by-step highlighting */}
         {graphState && (
@@ -278,7 +294,7 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
 
         {/* Quiz Question Card Title */}
         {isQuiz && cardTitle && (
-          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300">
+          <h3 className="pf-quiz-question">
             {cardTitle}
           </h3>
         )}
@@ -287,7 +303,7 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
         {isQuiz && (
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2.5" role="group" aria-label={page.cardText}>
-              {page.options?.map((option) => (
+              {activeOptions?.map((option) => (
                 <OptionCard
                   key={option.id}
                   label={option.label}
@@ -332,11 +348,11 @@ export function Lesson5Experience({ lesson, onExit, onComplete }: Lesson5Experie
 
         {/* Tip / Key Takeaway Section */}
         {page.tipTitle && page.tipText && (!isQuiz || (isCheckpoint && isCorrect)) && (
-          <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col gap-1.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
+          <div className="pf-takeaway">
+            <span className="pf-takeaway-label">
               {page.tipTitle}
             </span>
-            <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line font-mono">
+            <p className="pf-takeaway-copy">
               {page.tipText}
             </p>
           </div>

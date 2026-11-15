@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { LessonHeader } from "./LessonHeader";
 import { PageTitle } from "./PageTitle";
 import { ProgressBar } from "./ProgressBar";
@@ -6,8 +6,9 @@ import { InfoCard } from "./InfoCard";
 import { OptionCard } from "./OptionCard";
 import { LessonButton } from "./Buttons";
 import { LiveGraph } from "./LiveGraph";
-import type { LessonData, LessonPage, GraphState } from "../types/lesson";
-import { playNoteSound } from "../helpers";
+import type { LessonData, GraphState } from "../types/lesson";
+import { playNoteSound, playFeedbackSound } from "../helpers";
+import { lesson2Retry } from "../lessons/questionBanks";
 
 interface Lesson2ExperienceProps {
   lesson: LessonData;
@@ -22,19 +23,21 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [directionAttempt, setDirectionAttempt] = useState(1);
+  const directionQuiz = lesson2Retry(directionAttempt);
   const page = lesson.pages[index];
   const totalPages = lesson.pages.length;
-  const contentBox = page.contentBox;
+  const contentBox = index === 3 ? directionQuiz : page.contentBox;
 
   // Support quizzes defined either at page level or inside contentBox (graph-quiz / quiz)
   const isQuiz = page.type === "quiz" || page.type === "checkpoint" || contentBox?.boxType === "quiz" || contentBox?.boxType === "graph-quiz";
   const isCheckpoint = page.type === "checkpoint";
-  const isDirected = contentBox?.isDirected ?? (page as any).isDirected ?? false;
+  const isDirected = contentBox?.isDirected ?? page.isDirected ?? false;
 
-  const quizOptions = page.options || (contentBox && 'options' in contentBox ? contentBox.options : []);
-  const correctAnswerId = page.correctAnswerId || (contentBox && 'correctAnswerId' in contentBox ? contentBox.correctAnswerId : undefined);
-  const correctFeedback = page.correctFeedback || (contentBox && 'explanation' in contentBox ? contentBox.explanation : "Great job!");
-  const incorrectFeedback = page.incorrectFeedback || (contentBox && 'explanation' in contentBox ? contentBox.explanation : "That's not quite right. Select a different option and try again.");
+  const quizOptions = (index === 3 ? directionQuiz.options : page.options) || (contentBox && 'options' in contentBox ? contentBox.options : []);
+  const correctAnswerId = (index === 3 ? directionQuiz.correctAnswerId : page.correctAnswerId) || (contentBox && 'correctAnswerId' in contentBox ? contentBox.correctAnswerId : undefined);
+  const correctFeedback = (index === 3 ? directionQuiz.explanation : page.correctFeedback) || (contentBox && 'explanation' in contentBox ? contentBox.explanation : undefined) || "Great job!";
+  const incorrectFeedback = (index === 3 ? directionQuiz.explanation : page.incorrectFeedback) || (contentBox && 'explanation' in contentBox ? contentBox.explanation : undefined) || "That's not quite right. Select a different option and try again.";
 
   const [graphState, setGraphState] = useState<GraphState | null>(() => {
     if (contentBox && (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz")) {
@@ -43,17 +46,16 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
     return null;
   });
 
-  useEffect(() => {
-    if (contentBox && (contentBox.boxType === "graph" || contentBox.boxType === "graph-quiz")) {
-      setGraphState(contentBox.state ?? null);
-    } else {
-      setGraphState(null);
-    }
+  function navigate(nextIndex: number) {
+    const nextBox = nextIndex === 3 ? lesson2Retry(directionAttempt) : lesson.pages[nextIndex]?.contentBox;
+    setIndex(nextIndex);
+    setGraphState(nextBox && (nextBox.boxType === "graph" || nextBox.boxType === "graph-quiz")
+      ? nextBox.state ?? null : null);
     setSelected(null);
     setQuizChecked(false);
     setIsCorrect(null);
     setErrorMessage(null);
-  }, [index]);
+  }
 
   const handleNodeMove = (nodeId: string, x: number, y: number) => {
     setGraphState((prev: GraphState | null) => {
@@ -135,7 +137,7 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
     if (index === 0) {
       onExit();
     } else {
-      setIndex(index - 1);
+      navigate(index - 1);
     }
   }
 
@@ -148,18 +150,23 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
         }
         const correct = String(selected) === String(correctAnswerId);
         setIsCorrect(correct);
+        playFeedbackSound(correct);
         setQuizChecked(true);
         setErrorMessage(null);
 
-        if (correct) {
-          setIndex(index + 1);
-        }
+        // Let learners read the feedback before proceeding.
         return;
       } else {
         if (isCorrect) {
-          setIndex(index + 1);
+          navigate(index + 1);
           return;
         } else {
+          if (index === 3) {
+            const nextQuestion = lesson2Retry(directionAttempt + 1);
+            setDirectionAttempt(previous => previous + 1);
+            setGraphState(nextQuestion.state);
+          }
+          setSelected(null);
           setQuizChecked(false);
           setIsCorrect(null);
           setErrorMessage(null);
@@ -172,7 +179,7 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
       if (onComplete) onComplete();
       else onExit();
     } else {
-      setIndex(index + 1);
+      navigate(index + 1);
     }
   }
 
@@ -181,7 +188,7 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
   if (isQuiz && quizChecked && isCorrect) {
     buttonLabel = "Continue";
   } else if (isQuiz && quizChecked && !isCorrect) {
-    buttonLabel = "Try again";
+    buttonLabel = "Try a new question";
   }
 
   const cardTitle = isCheckpoint && !isCorrect ? "Not quite" : (page.cardTitle || "");
@@ -189,7 +196,7 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
   const cardVariant = isCheckpoint && !isCorrect ? "red" : (page.type === "complete" || (isCheckpoint && isCorrect) ? "green" : "default");
 
   return (
-    <div className="w-full min-h-screen bg-[#111116] text-slate-100 p-6 flex flex-col gap-6">
+    <div className="pf-screen pf-lesson-screen">
       <LessonHeader lessonNumber={lesson.meta.lessonNumber} onMenuClick={onExit} />
 
       <ProgressBar currentIndex={index} total={totalPages} onBack={back} />
@@ -230,10 +237,12 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
           </div>
         )}
 
+        {index === 3 && <h3 className="pf-quiz-question">{directionQuiz.question}</h3>}
+
         {/* Quiz Options View */}
         {isQuiz && quizOptions && quizOptions.length > 0 && (
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2.5" role="group" aria-label={page.cardText}>
+            <div className="flex flex-col gap-2.5" role="group" aria-label={index === 3 ? directionQuiz.question : page.cardText}>
               {quizOptions.map((option) => (
                 <OptionCard
                   key={option.id}
@@ -277,11 +286,11 @@ export function Lesson2Experience({ lesson, onExit, onComplete }: Lesson2Experie
 
         {/* Tip / Key Takeaway Section */}
         {page.tipTitle && page.tipText && (!isQuiz || (isCheckpoint && isCorrect)) && (
-          <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col gap-1.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
+          <div className="pf-takeaway">
+            <span className="pf-takeaway-label">
               {page.tipTitle}
             </span>
-            <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line font-mono">
+            <p className="pf-takeaway-copy">
               {page.tipText}
             </p>
           </div>

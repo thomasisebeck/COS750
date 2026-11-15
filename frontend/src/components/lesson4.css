@@ -1,55 +1,71 @@
-/* Only Lesson 4; the shared LiveGraph and lesson controls remain unchanged. */
-.l4-experience { color-scheme: dark; }
+/* Lesson 4: calm, accessible distance tracker for the light visual system. */
+.l4-experience { color-scheme: light; }
 .l4-experience * { box-sizing: border-box; }
 .l4-learning-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
 .l4-live-graph { min-width: 0; }
-.l4-live-graph > div { box-shadow: none; border-color: #363244; background: #191a23; padding: 12px; }
+.l4-live-graph > div { box-shadow: none; border-color: #e0e5f2; background: #fff; padding: 12px; }
 .l4-live-graph svg { max-height: 270px; }
-.l4-live-graph svg g > text { font-size: 13px; paint-order: stroke; stroke: #11121a; stroke-width: 2.5px; }
-.l4-graph-help { color: #88899a; font-size: 11px; line-height: 1.5; margin: 8px 3px 0; text-align: left; }
-.l4-tracker { min-width: 0; background: #1a1a25; border: 1px solid #373443; border-radius: 17px; overflow: hidden; text-align: left; }
-.l4-tracker-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; padding: 16px 17px 13px; border-bottom:1px solid #303040; }
-.l4-overline { display: block; color: #b891fe; font-size: 9px; letter-spacing: .12em; font-weight: 800; }
-.l4-tracker-header h2 { color: #f1ecfb; font-size: 16px; line-height: 1.2; letter-spacing: -.015em; font-weight: 730; margin: 4px 0 0; }
-.l4-phase { color: #d5b9ff; border: 1px solid #55436f; background: #31273f; font-size: 10px; padding: 5px 9px; border-radius: 30px; white-space: nowrap; font-weight: 650; }
+.l4-live-graph svg g > text { font-size: 13px; paint-order: stroke; stroke: #f8faff; stroke-width: 2.5px; }
+.l4-graph-help { color: #5c6c86; font-size: 11px; line-height: 1.5; margin: 8px 3px 0; text-align: left; }
+.l4-tracker { min-width: 0; background: #fff; border: 1px solid #dbe2ef; border-radius: 17px; overflow: hidden; text-align: left; }
+.l4-tracker-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; padding: 16px 17px 13px; border-bottom:1px solid #e2e7f0; }
+.l4-overline { display: block; color: #5a48cb; font-size: 9px; letter-spacing: .12em; font-weight: 800; }
+.l4-tracker-header h2 { color: #20304d; font-size: 16px; line-height: 1.2; letter-spacing: -.015em; font-weight: 730; margin: 4px 0 0; }
+.l4-phase { color: #4e3cc7; border: 1px solid #d0c8f7; background: #efedff; font-size: 10px; padding: 5px 9px; border-radius: 30px; white-space: nowrap; font-weight: 650; }
 .l4-table-scroll { overflow-x:auto; }
-.l4-distance-table { width:100%; min-width: 310px; border-collapse:collapse; font-size:12px; text-align:left; color: #e8e5ef; font-variant-numeric: tabular-nums; }
-.l4-distance-table thead th { color:#9992ab; font-weight:700; text-transform: uppercase; font-size:9px; letter-spacing: .07em; padding:12px 9px 9px; }
+.l4-distance-table { width:100%; min-width: 310px; border-collapse:collapse; font-size:12px; text-align:left; color: #263653; font-variant-numeric: tabular-nums; }
+.l4-distance-table thead th { color:#536480; font-weight:700; text-transform: uppercase; font-size:9px; letter-spacing: .07em; padding:12px 9px 9px; }
 .l4-distance-table thead th:first-child, .l4-distance-table tbody th { padding-left: 16px; }
 .l4-distance-table tbody td { padding:10px 9px; }
-.l4-distance-table tbody tr { border-top:1px solid #2a2a38; }
-.l4-distance-table tbody tr.l4-row-updated { background: #272039; }
-.l4-distance-table tbody tr.l4-row-current { background: #252334; }
-.l4-vertex { display:grid; place-items:center; width:28px; height:28px; color:#d6cee2; background:#303140; border:1px solid #505263; border-radius:50%; font-weight:800; font-size:12px; }
-.l4-vertex-settled { background:#403157; color:#f2e5ff; border-color:#9e75d9; }
-.l4-cost { color:#f6f3fd; font-weight:850; font-size:16px; }
-.l4-infinity { color: #8f8a9f; font-weight:750; font-size:17px; }
-.l4-via { font-weight:650; color:#bbb5cb; }
-.l4-change { display:inline-flex; align-items:center; gap:4px; white-space:nowrap; color:#c59cff; }
-.l4-change strong { color:#e0c6ff; font-weight:850; font-size:15px; }
-.l4-before { font-size:12px; text-decoration:line-through; color:#9b93ab; }
+.l4-distance-table tbody tr { border-top:1px solid #e8ecf3; }
+.l4-distance-table tbody tr.l4-row-updated { background: #ebeaff; }
+.l4-distance-table tbody tr.l4-row-current { background: #f4f6ff; }
+.l4-vertex { display:grid; place-items:center; width:28px; height:28px; color:#334563; background:#edf1f8; border:1px solid #b6c1d7; border-radius:50%; font-weight:800; font-size:12px; }
+.l4-vertex-settled { background:#ebe8ff; color:#3c2db1; border-color:#8675de; }
+.l4-cost { color:#223254; font-weight:850; font-size:16px; }
+.l4-infinity { color: #64718b; font-weight:750; font-size:17px; }
+.l4-via { font-weight:650; color:#56657e; }
+.l4-change { display:inline-flex; align-items:center; gap:4px; white-space:nowrap; color:#6250cd; }
+.l4-change strong { color:#4c3abb; font-weight:850; font-size:15px; }
+.l4-before { font-size:12px; text-decoration:line-through; color:#788399; }
 .l4-status { display:inline-flex; align-items:center; border-radius:30px; padding:4px 7px; white-space:nowrap; font-size:10px; line-height:1.1; font-weight:760; }
-.l4-status-done { background:#17382f; color:#8ff2c5; border:1px solid #28634c; }
-.l4-status-new { background:#433054; color:#e1bdff; border:1px solid #6d4a8d; }
-.l4-status-open { background:#292b38; color:#ada9bc; border:1px solid #404050; }
-.l4-tracker-legend { display:flex; flex-wrap:wrap; gap:12px; color:#aba5bc; font-size:10px; line-height:1.35; padding:11px 15px; border-top:1px solid #303040; }
+.l4-status-done { background:#e4f7ed; color:#066d61; border:1px solid #aad7c5; }
+.l4-status-new { background:#edeaff; color:#4d3abb; border:1px solid #aa99e9; }
+.l4-status-open { background:#f2f5fb; color:#5b6a84; border:1px solid #d5ddeb; }
+.l4-tracker-legend { display:flex; flex-wrap:wrap; gap:12px; color:#65718b; font-size:10px; line-height:1.35; padding:11px 15px; border-top:1px solid #e2e7f0; }
 .l4-tracker-legend > div { display:inline-flex; align-items:center; gap:6px; }
-.l4-tracker-legend svg { color:#8ff2c5; }
+.l4-tracker-legend svg { color:#066d61; }
 .l4-legend-dot { display:inline-block; width:8px; height:8px; border-radius:50%; }
-.l4-legend-dot-purple { background:#ba8bfd; }
-.l4-step-note { margin: 0 12px 12px; padding: 11px 12px; background:#252335; border-left: 2px solid #ad84ea; border-radius:5px; color:#d1c9df; font-size:11px; line-height:1.5; }
-.l4-insight { margin: 1px 12px 12px; border-radius:10px; padding: 11px 12px; background:#252437; color:#c5bed2; }
-.l4-insight-title { display:flex; align-items:center; gap:6px; color:#cfadff; font-size:10px; letter-spacing:.025em; font-weight:800; text-transform:uppercase; }
+.l4-legend-dot-purple { background:#6e60dc; }
+.l4-step-note { margin: 0 12px 12px; padding: 11px 12px; background:#f2f0ff; border-left: 2px solid #7161d8; border-radius:5px; color:#4d5a77; font-size:11px; line-height:1.5; }
+.l4-insight { margin: 1px 12px 12px; border-radius:10px; padding: 11px 12px; background:#eff2ff; color:#52617c; }
+.l4-insight-title { display:flex; align-items:center; gap:6px; color:#5142b9; font-size:10px; letter-spacing:.025em; font-weight:800; text-transform:uppercase; }
 .l4-insight p { margin:5px 0 0; font-size:11px; line-height:1.5; }
 .l4-quiz { display:flex; flex-direction:column; gap:12px; }
-.l4-retry-label { color:#c4a2f8; font-size:11px; letter-spacing:.065em; font-weight:800; }
-.l4-question { margin: 0; color:#f2eefe; text-align:left; font-size:15px; line-height:1.4; font-weight:780; }
+.l4-retry-label { color:#5747c4; font-size:11px; letter-spacing:.065em; font-weight:800; }
+.l4-question { margin: 0; color:#1e2d4b; text-align:left; font-size:15px; line-height:1.4; font-weight:780; }
 .l4-options { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:9px; }
 .l4-options button { padding:12px 10px; border-radius:12px; min-width:0; }
 .l4-options button span { font-size:12px; overflow:visible; white-space:normal; }
 .l4-footer { margin-top:auto; padding-top:4px; }
 .l4-sr-only { position:absolute; width:1px; height:1px; overflow:hidden; padding:0; margin:-1px; border:0; clip:rect(0,0,0,0); white-space:nowrap; }
-.l4-experience button:focus-visible { outline:2px solid #d3b0ff; outline-offset:2px; }
+.l4-experience button:focus-visible { outline:2px solid #5d49cb; outline-offset:2px; }
 @media (min-width:780px) { .l4-learning-grid { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); align-items:start; } }
 @media (max-width:470px) { .l4-tracker-header { padding:13px 12px; } .l4-distance-table thead th { padding:9px 6px; } .l4-distance-table tbody td { padding:9px 6px; } .l4-distance-table thead th:first-child, .l4-distance-table tbody th { padding-left:11px; } .l4-options { grid-template-columns:1fr; } .l4-live-graph svg { max-height:245px; } }
 @media (prefers-reduced-motion: reduce) { .l4-experience * { scroll-behavior:auto; animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+/* Keep the Dijkstra tracker readable on narrow phones without widening the page. */
+@media(max-width:600px) {
+  .l4-experience .max-w-\[880px\] {min-width:0;gap:16px;}
+  .l4-live-graph svg {max-height:210px;}
+  .l4-learning-grid {gap:11px;}
+  .l4-quiz {gap:9px;}
+  .l4-question {font-size:14px;}
+  .l4-distance-table {font-size:11px;}
+  .l4-tracker {max-width:100%;}
+  .l4-table-scroll {width:100%;max-width:100%;-webkit-overflow-scrolling:touch;}
+}
+@media(max-width:400px) {
+  .l4-options {grid-template-columns:1fr;gap:7px;}
+  .l4-tracker-legend {gap:5px;flex-direction:column;}
+  .l4-tracker-header {padding:12px;}
+}
