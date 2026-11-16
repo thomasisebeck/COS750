@@ -22,8 +22,8 @@ An interactive educational web application developed for **COS 750: Educational 
 
 ## 📚 Documentation & Design Links
 
-*   **Instructional Design (ID) Document:** [Link to ID Document PDF/Markdown](#)
-*   **Software Engineering (SE) Document:** [Link to SE Document PDF/Markdown](#)
+*   **Instructional Design (ID) Document:** [Link to ID Document PDF](https://github.com/thomasisebeck/COS750/blob/readme/docs/The%20Final%20Brain%20Cell%20-%20ID%20Doc.pdf)
+*   **Software Engineering (SE) Document:** [Link to SE Document PDF](https://github.com/thomasisebeck/COS750/blob/readme/docs/The%20Final%20Brain%20Cell%20-%20SE%20Doc.pdf)
 *   **Figma Design & Wireframes:** [Link to Figma Designs](https://www.figma.com/design/JuhNPSeExQGgTpgEYcJUHq/PathFinder-%E2%80%94-UI-Screens---Learning-Storyboard?node-id=11-2&t=3wzEgkyPi8HZS9Lk-1)
 
 ---
@@ -61,6 +61,7 @@ Follow these instructions to get a copy of the project up and running on your lo
    ```bash
    npm run local-dev
 5. **Open the app in your browser**
+
    This will be dependent on your localhost settings.
 
 ---
@@ -71,6 +72,8 @@ Follow these instructions to get a copy of the project up and running on your lo
 2. **Inclusive & Accessible UI:** Designed with high-contrast accessibility tokens and toggles for reduced motion, contrast, sound effects, and volume.
 3. **Multi-Sensory Feedback:** Dynamic audio cues (piano notes on component interactions and audio feedback for notifications).
 4. **Optional Narration:** Built-in `SpeechButton` component supporting server-side text-to-speech (`/api/tts`) with a seamless browser speech-synthesis fallback.
+
+---
 
 ## 📄 License & Acknowledgments
 Developed as part of the COS 750 curriculum requirements at the University of Pretoria, Department of Computer Science (2026).
